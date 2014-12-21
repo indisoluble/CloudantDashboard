@@ -16,6 +16,7 @@
 		FF8620881A473A2C00AC68D2 /* CloudantDashboardTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8620871A473A2C00AC68D2 /* CloudantDashboardTests.m */; };
 		FF8620961A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8620951A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m */; };
 		FF8620991A4746F400AC68D2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FF86209B1A4746F400AC68D2 /* Localizable.strings */; };
+		FF8620A11A474B8A00AC68D2 /* ICDAuthorizationPlist.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8620A01A474B8A00AC68D2 /* ICDAuthorizationPlist.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,8 @@
 		FF86209C1A47478D00AC68D2 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
 		FF86209D1A47478D00AC68D2 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		FF86209E1A47478D00AC68D2 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		FF86209F1A474B8A00AC68D2 /* ICDAuthorizationPlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDAuthorizationPlist.h; sourceTree = "<group>"; };
+		FF8620A01A474B8A00AC68D2 /* ICDAuthorizationPlist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDAuthorizationPlist.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +138,8 @@
 			children = (
 				FF8620941A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.h */,
 				FF8620951A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m */,
+				FF86209F1A474B8A00AC68D2 /* ICDAuthorizationPlist.h */,
+				FF8620A01A474B8A00AC68D2 /* ICDAuthorizationPlist.m */,
 				FF8620931A473E2D00AC68D2 /* ICDAuthorizationProtocol.h */,
 			);
 			path = Authorization;
@@ -243,6 +248,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FF8620741A473A2C00AC68D2 /* ViewController.m in Sources */,
+				FF8620A11A474B8A00AC68D2 /* ICDAuthorizationPlist.m in Sources */,
 				FF8620711A473A2C00AC68D2 /* AppDelegate.m in Sources */,
 				FF86206E1A473A2C00AC68D2 /* main.m in Sources */,
 				FF8620961A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m in Sources */,
