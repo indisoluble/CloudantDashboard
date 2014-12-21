@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Enrique de la Torre. All rights reserved.
 //
 
+#import <Restkit/RestKit.h>
+
 #import "ViewController.h"
 
 #import "ICDAuthorizationPlist.h"
@@ -41,7 +43,7 @@
     NSString *thisPassword = nil;
     NSError *thisError = nil;
     BOOL success = [auth resolveUsername:&thisUsername password:&thisPassword error:&thisError];
-    NSLog(@"%@, %@, %i, %@", thisUsername, thisPassword, success, thisError);
+    RKLogInfo(@"%@, %@, %i, %@", thisUsername, thisPassword, success, thisError);
 }
 
 @end

@@ -1,0 +1,4 @@
+platform :ios, '8.1'
+
+pod 'RestKit',         '~> 0.24.0'
+pod 'RestKit/Testing', '~> 0.24.0'
