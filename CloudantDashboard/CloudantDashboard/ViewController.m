@@ -8,20 +8,29 @@
 
 #import "ViewController.h"
 
+
+
 @interface ViewController ()
 
 @end
 
+
+
 @implementation ViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-}
-
-- (void)didReceiveMemoryWarning {
+#pragma mark - Memory management
+- (void)didReceiveMemoryWarning
+{
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+
+#pragma mark - View lifecycle
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    // Do any additional setup after loading the view, typically from a nib.
 }
 
 @end

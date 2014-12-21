@@ -14,6 +14,8 @@
 		FF8620791A473A2C00AC68D2 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF8620781A473A2C00AC68D2 /* Images.xcassets */; };
 		FF86207C1A473A2C00AC68D2 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF86207A1A473A2C00AC68D2 /* LaunchScreen.xib */; };
 		FF8620881A473A2C00AC68D2 /* CloudantDashboardTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8620871A473A2C00AC68D2 /* CloudantDashboardTests.m */; };
+		FF8620961A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8620951A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m */; };
+		FF8620991A4746F400AC68D2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FF86209B1A4746F400AC68D2 /* Localizable.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +42,13 @@
 		FF8620811A473A2C00AC68D2 /* CloudantDashboardTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CloudantDashboardTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF8620861A473A2C00AC68D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FF8620871A473A2C00AC68D2 /* CloudantDashboardTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CloudantDashboardTests.m; sourceTree = "<group>"; };
+		FF8620931A473E2D00AC68D2 /* ICDAuthorizationProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDAuthorizationProtocol.h; sourceTree = "<group>"; };
+		FF8620941A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDAuthorizationErrorBuilder.h; sourceTree = "<group>"; };
+		FF8620951A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDAuthorizationErrorBuilder.m; sourceTree = "<group>"; };
+		FF86209A1A4746F400AC68D2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		FF86209C1A47478D00AC68D2 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
+		FF86209D1A47478D00AC68D2 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		FF86209E1A47478D00AC68D2 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,13 +90,14 @@
 		FF86206A1A473A2C00AC68D2 /* CloudantDashboard */ = {
 			isa = PBXGroup;
 			children = (
+				FF8620921A473DED00AC68D2 /* Authorization */,
 				FF86206F1A473A2C00AC68D2 /* AppDelegate.h */,
 				FF8620701A473A2C00AC68D2 /* AppDelegate.m */,
 				FF8620721A473A2C00AC68D2 /* ViewController.h */,
 				FF8620731A473A2C00AC68D2 /* ViewController.m */,
 				FF8620751A473A2C00AC68D2 /* Main.storyboard */,
-				FF8620781A473A2C00AC68D2 /* Images.xcassets */,
 				FF86207A1A473A2C00AC68D2 /* LaunchScreen.xib */,
+				FF8620781A473A2C00AC68D2 /* Images.xcassets */,
 				FF86206B1A473A2C00AC68D2 /* Supporting Files */,
 			);
 			path = CloudantDashboard;
@@ -98,6 +108,7 @@
 			children = (
 				FF86206C1A473A2C00AC68D2 /* Info.plist */,
 				FF86206D1A473A2C00AC68D2 /* main.m */,
+				FF86209B1A4746F400AC68D2 /* Localizable.strings */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -117,6 +128,16 @@
 				FF8620861A473A2C00AC68D2 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		FF8620921A473DED00AC68D2 /* Authorization */ = {
+			isa = PBXGroup;
+			children = (
+				FF8620941A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.h */,
+				FF8620951A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m */,
+				FF8620931A473E2D00AC68D2 /* ICDAuthorizationProtocol.h */,
+			);
+			path = Authorization;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -182,6 +203,7 @@
 			knownRegions = (
 				en,
 				Base,
+				es,
 			);
 			mainGroup = FF86205F1A473A2C00AC68D2;
 			productRefGroup = FF8620691A473A2C00AC68D2 /* Products */;
@@ -200,6 +222,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FF8620771A473A2C00AC68D2 /* Main.storyboard in Resources */,
+				FF8620991A4746F400AC68D2 /* Localizable.strings in Resources */,
 				FF86207C1A473A2C00AC68D2 /* LaunchScreen.xib in Resources */,
 				FF8620791A473A2C00AC68D2 /* Images.xcassets in Resources */,
 			);
@@ -222,6 +245,7 @@
 				FF8620741A473A2C00AC68D2 /* ViewController.m in Sources */,
 				FF8620711A473A2C00AC68D2 /* AppDelegate.m in Sources */,
 				FF86206E1A473A2C00AC68D2 /* main.m in Sources */,
+				FF8620961A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,6 +272,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				FF8620761A473A2C00AC68D2 /* Base */,
+				FF86209C1A47478D00AC68D2 /* es */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -256,8 +281,18 @@
 			isa = PBXVariantGroup;
 			children = (
 				FF86207B1A473A2C00AC68D2 /* Base */,
+				FF86209D1A47478D00AC68D2 /* es */,
 			);
 			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+		FF86209B1A4746F400AC68D2 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FF86209A1A4746F400AC68D2 /* Base */,
+				FF86209E1A47478D00AC68D2 /* es */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
