@@ -6,11 +6,15 @@
 //  Copyright (c) 2014 Enrique de la Torre. All rights reserved.
 //
 
-#import <Restkit/RestKit.h>
-
 #import "ViewController.h"
 
 #import "ICDAuthorizationPlist.h"
+
+#import "ICDNetworkManager+Helper.h"
+
+#import "ICDRequestAllDatabases.h"
+
+#import "ICDLog.h"
 
 
 
@@ -43,7 +47,12 @@
     NSString *thisPassword = nil;
     NSError *thisError = nil;
     BOOL success = [auth resolveUsername:&thisUsername password:&thisPassword error:&thisError];
-    RKLogInfo(@"%@, %@, %i, %@", thisUsername, thisPassword, success, thisError);
+    ICDLogInfo(@"%@, %@, %i, %@", thisUsername, thisPassword, success, thisError);
+    
+    ICDNetworkManager *networkManager = [ICDNetworkManager networkManagerWithUsername:thisUsername
+                                                                             password:thisPassword];
+    ICDRequestAllDatabases *requestAllDBs = [[ICDRequestAllDatabases alloc] init];
+    [networkManager executeRequest:requestAllDBs];
 }
 
 @end
