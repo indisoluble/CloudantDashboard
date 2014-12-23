@@ -52,6 +52,7 @@
 		FF028DD91A489691008D2561 /* ICDMockRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDMockRequest.m; sourceTree = "<group>"; };
 		FF028DE21A48B7FF008D2561 /* ICDNetworkManager+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ICDNetworkManager+Helper.h"; sourceTree = "<group>"; };
 		FF028DE31A48B7FF008D2561 /* ICDNetworkManager+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ICDNetworkManager+Helper.m"; sourceTree = "<group>"; };
+		FF2D02281A48DFBF00E03C6E /* ICDRequestAllDatabasesDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestAllDatabasesDelegate.h; sourceTree = "<group>"; };
 		FF8620681A473A2C00AC68D2 /* CloudantDashboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CloudantDashboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF86206C1A473A2C00AC68D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FF86206D1A473A2C00AC68D2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -147,6 +148,7 @@
 			children = (
 				FF028DC41A488873008D2561 /* ICDRequestAllDatabases.h */,
 				FF028DC51A488873008D2561 /* ICDRequestAllDatabases.m */,
+				FF2D02281A48DFBF00E03C6E /* ICDRequestAllDatabasesDelegate.h */,
 				FF028DC61A488873008D2561 /* ICDRequestProtocol.h */,
 			);
 			path = Request;

@@ -31,15 +31,32 @@
 #pragma mark - ICDRequestProtocol methods
 - (void)executeRequestWithObjectManager:(id)objectManager
 {
+    __weak ICDRequestAllDatabases *weakSelf = self;
+    
+    void (^successBlock)(RKObjectRequestOperation *op, RKMappingResult *mapResult) = ^(RKObjectRequestOperation *op, RKMappingResult *mapResult)
+    {
+        __strong ICDRequestAllDatabases *strongSelf = weakSelf;
+        if (strongSelf && strongSelf.delegate)
+        {
+            [strongSelf.delegate request:strongSelf didGetDatabases:mapResult.array];
+        }
+    };
+    
+    void (^failureBlock)(RKObjectRequestOperation *op, NSError *err) = ^(RKObjectRequestOperation *op, NSError *err)
+    {
+        __strong ICDRequestAllDatabases *strongSelf = weakSelf;
+        if (strongSelf && strongSelf.delegate)
+        {
+            [strongSelf.delegate request:strongSelf didFailWithError:err];
+        }
+    };
+    
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
     
     [thisObjectManager getObjectsAtPath:ICDREQUESTALLDATABASES_PATHPATTERN
                              parameters:nil
-                                success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-                                    ICDLogInfo(@"Success: %@", mappingResult.array);
-                                } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-                                    ICDLogError(@"Error: %@", error);
-                                }];
+                                success:successBlock
+                                failure:failureBlock];
 }
 
 + (void)configureObjectManager:(id)objectManager

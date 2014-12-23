@@ -18,7 +18,9 @@
 
 
 
-@interface ViewController ()
+@interface ViewController () <ICDRequestAllDatabasesDelegate>
+
+@property (strong, nonatomic) ICDRequestAllDatabases *requestAllDBs;
 
 @end
 
@@ -51,8 +53,23 @@
     
     ICDNetworkManager *networkManager = [ICDNetworkManager networkManagerWithUsername:thisUsername
                                                                              password:thisPassword];
-    ICDRequestAllDatabases *requestAllDBs = [[ICDRequestAllDatabases alloc] init];
-    [networkManager executeRequest:requestAllDBs];
+    
+    self.requestAllDBs = [[ICDRequestAllDatabases alloc] init];
+    self.requestAllDBs.delegate = self;
+    
+    [networkManager executeRequest:self.requestAllDBs];
+}
+
+
+#pragma mark - ICDRequestAllDatabasesDelegate methods
+- (void)request:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
+{
+    ICDLogError(@"Error: %@", error);
+}
+
+- (void)request:(id<ICDRequestProtocol>)request didGetDatabases:(NSArray *)databases
+{
+    ICDLogInfo(@"Databases: %@", databases);
 }
 
 @end

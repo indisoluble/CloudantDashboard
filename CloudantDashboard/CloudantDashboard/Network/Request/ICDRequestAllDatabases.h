@@ -9,9 +9,12 @@
 #import <Foundation/Foundation.h>
 
 #import "ICDRequestProtocol.h"
+#import "ICDRequestAllDatabasesDelegate.h"
 
 
 
 @interface ICDRequestAllDatabases : NSObject <ICDRequestProtocol>
+
+@property (weak, nonatomic) id<ICDRequestAllDatabasesDelegate> delegate;
 
 @end
