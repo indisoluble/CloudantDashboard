@@ -14,9 +14,9 @@
 		FF028DD41A4892F0008D2561 /* ICDNetworkManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FF028DD31A4892F0008D2561 /* ICDNetworkManagerTests.m */; };
 		FF028DDA1A489691008D2561 /* ICDMockRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = FF028DD91A489691008D2561 /* ICDMockRequest.m */; };
 		FF028DE41A48B7FF008D2561 /* ICDNetworkManager+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = FF028DE31A48B7FF008D2561 /* ICDNetworkManager+Helper.m */; };
+		FF2D023E1A48F77300E03C6E /* ICDDatabasesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D023D1A48F77300E03C6E /* ICDDatabasesTableViewController.m */; };
 		FF86206E1A473A2C00AC68D2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FF86206D1A473A2C00AC68D2 /* main.m */; };
 		FF8620711A473A2C00AC68D2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8620701A473A2C00AC68D2 /* AppDelegate.m */; };
-		FF8620741A473A2C00AC68D2 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8620731A473A2C00AC68D2 /* ViewController.m */; };
 		FF8620771A473A2C00AC68D2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FF8620751A473A2C00AC68D2 /* Main.storyboard */; };
 		FF8620791A473A2C00AC68D2 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF8620781A473A2C00AC68D2 /* Images.xcassets */; };
 		FF86207C1A473A2C00AC68D2 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF86207A1A473A2C00AC68D2 /* LaunchScreen.xib */; };
@@ -53,13 +53,14 @@
 		FF028DE21A48B7FF008D2561 /* ICDNetworkManager+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ICDNetworkManager+Helper.h"; sourceTree = "<group>"; };
 		FF028DE31A48B7FF008D2561 /* ICDNetworkManager+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ICDNetworkManager+Helper.m"; sourceTree = "<group>"; };
 		FF2D02281A48DFBF00E03C6E /* ICDRequestAllDatabasesDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestAllDatabasesDelegate.h; sourceTree = "<group>"; };
+		FF2D023C1A48F77300E03C6E /* ICDDatabasesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDDatabasesTableViewController.h; sourceTree = "<group>"; };
+		FF2D023D1A48F77300E03C6E /* ICDDatabasesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDDatabasesTableViewController.m; sourceTree = "<group>"; };
+		FF2D02401A48FAD500E03C6E /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
 		FF8620681A473A2C00AC68D2 /* CloudantDashboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CloudantDashboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF86206C1A473A2C00AC68D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FF86206D1A473A2C00AC68D2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		FF86206F1A473A2C00AC68D2 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		FF8620701A473A2C00AC68D2 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		FF8620721A473A2C00AC68D2 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		FF8620731A473A2C00AC68D2 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		FF8620761A473A2C00AC68D2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		FF8620781A473A2C00AC68D2 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		FF86207B1A473A2C00AC68D2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -69,7 +70,6 @@
 		FF8620941A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDAuthorizationErrorBuilder.h; sourceTree = "<group>"; };
 		FF8620951A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDAuthorizationErrorBuilder.m; sourceTree = "<group>"; };
 		FF86209A1A4746F400AC68D2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
-		FF86209C1A47478D00AC68D2 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
 		FF86209D1A47478D00AC68D2 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		FF86209E1A47478D00AC68D2 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		FF86209F1A474B8A00AC68D2 /* ICDAuthorizationPlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDAuthorizationPlist.h; sourceTree = "<group>"; };
@@ -195,6 +195,24 @@
 			path = Request;
 			sourceTree = "<group>";
 		};
+		FF2D023A1A48F66B00E03C6E /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				FF2D023B1A48F73F00E03C6E /* Databases */,
+				FF8620751A473A2C00AC68D2 /* Main.storyboard */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		FF2D023B1A48F73F00E03C6E /* Databases */ = {
+			isa = PBXGroup;
+			children = (
+				FF2D023C1A48F77300E03C6E /* ICDDatabasesTableViewController.h */,
+				FF2D023D1A48F77300E03C6E /* ICDDatabasesTableViewController.m */,
+			);
+			path = Databases;
+			sourceTree = "<group>";
+		};
 		FF86205F1A473A2C00AC68D2 = {
 			isa = PBXGroup;
 			children = (
@@ -219,17 +237,12 @@
 			isa = PBXGroup;
 			children = (
 				FF8620921A473DED00AC68D2 /* Authorization */,
+				FF2D023A1A48F66B00E03C6E /* Controller */,
 				FF9C0C381A47919E001C4EBA /* Log */,
 				FF028DBC1A487682008D2561 /* Model */,
 				FF028DC11A488710008D2561 /* Network */,
-				FF86206F1A473A2C00AC68D2 /* AppDelegate.h */,
-				FF8620701A473A2C00AC68D2 /* AppDelegate.m */,
-				FF8620721A473A2C00AC68D2 /* ViewController.h */,
-				FF8620731A473A2C00AC68D2 /* ViewController.m */,
-				FF8620751A473A2C00AC68D2 /* Main.storyboard */,
-				FF86207A1A473A2C00AC68D2 /* LaunchScreen.xib */,
-				FF8620781A473A2C00AC68D2 /* Images.xcassets */,
 				FF86206B1A473A2C00AC68D2 /* Supporting Files */,
+				FF8620781A473A2C00AC68D2 /* Images.xcassets */,
 			);
 			path = CloudantDashboard;
 			sourceTree = "<group>";
@@ -237,10 +250,13 @@
 		FF86206B1A473A2C00AC68D2 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				FF86206F1A473A2C00AC68D2 /* AppDelegate.h */,
+				FF8620701A473A2C00AC68D2 /* AppDelegate.m */,
 				FF8620A81A475C4200AC68D2 /* cloudantAuthorization.plist */,
 				FF86206C1A473A2C00AC68D2 /* Info.plist */,
-				FF86206D1A473A2C00AC68D2 /* main.m */,
+				FF86207A1A473A2C00AC68D2 /* LaunchScreen.xib */,
 				FF86209B1A4746F400AC68D2 /* Localizable.strings */,
+				FF86206D1A473A2C00AC68D2 /* main.m */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -421,13 +437,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FF8620741A473A2C00AC68D2 /* ViewController.m in Sources */,
 				FF8620A11A474B8A00AC68D2 /* ICDAuthorizationPlist.m in Sources */,
 				FF028DBF1A4876F6008D2561 /* ICDModelDatabase.m in Sources */,
 				FF028DCA1A488895008D2561 /* ICDNetworkManager.m in Sources */,
 				FF8620711A473A2C00AC68D2 /* AppDelegate.m in Sources */,
 				FF028DC71A488873008D2561 /* ICDRequestAllDatabases.m in Sources */,
 				FF86206E1A473A2C00AC68D2 /* main.m in Sources */,
+				FF2D023E1A48F77300E03C6E /* ICDDatabasesTableViewController.m in Sources */,
 				FF8620961A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m in Sources */,
 				FF028DE41A48B7FF008D2561 /* ICDNetworkManager+Helper.m in Sources */,
 			);
@@ -457,9 +473,10 @@
 			isa = PBXVariantGroup;
 			children = (
 				FF8620761A473A2C00AC68D2 /* Base */,
-				FF86209C1A47478D00AC68D2 /* es */,
+				FF2D02401A48FAD500E03C6E /* es */,
 			);
 			name = Main.storyboard;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		FF86207A1A473A2C00AC68D2 /* LaunchScreen.xib */ = {
