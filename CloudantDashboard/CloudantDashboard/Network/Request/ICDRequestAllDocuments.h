@@ -1,5 +1,5 @@
 //
-//  ICDRequestAllDocumentsForADatabase.h
+//  ICDRequestAllDocuments.h
 //  CloudantDashboard
 //
 //  Created by Enrique de la Torre (dev) on 23/12/2014.
@@ -9,13 +9,13 @@
 #import <Foundation/Foundation.h>
 
 #import "ICDRequestProtocol.h"
-#import "ICDRequestAllDocumentsForADatabaseDelegate.h"
+#import "ICDRequestAllDocumentsDelegate.h"
 
 
 
-@interface ICDRequestAllDocumentsForADatabase : NSObject <ICDRequestProtocol>
+@interface ICDRequestAllDocuments : NSObject <ICDRequestProtocol>
 
-@property (weak, nonatomic) id<ICDRequestAllDocumentsForADatabaseDelegate> delegate;
+@property (weak, nonatomic) id<ICDRequestAllDocumentsDelegate> delegate;
 
 - (id)initWithDatabaseName:(NSString *)dbName;
 

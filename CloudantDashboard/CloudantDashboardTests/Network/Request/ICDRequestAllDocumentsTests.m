@@ -1,5 +1,5 @@
 //
-//  ICDRequestAllDocumentsForADatabaseTests.m
+//  ICDRequestAllDocumentsTests.m
 //  CloudantDashboard
 //
 //  Created by Enrique de la Torre (dev) on 23/12/2014.
@@ -9,17 +9,17 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#import "ICDRequestAllDocumentsForADatabase.h"
+#import "ICDRequestAllDocuments.h"
 
 
 
-@interface ICDRequestAllDocumentsForADatabaseTests : XCTestCase
+@interface ICDRequestAllDocumentsTests : XCTestCase
 
 @end
 
 
 
-@implementation ICDRequestAllDocumentsForADatabaseTests
+@implementation ICDRequestAllDocumentsTests
 
 - (void)setUp
 {
@@ -37,13 +37,13 @@
 
 - (void)testSimpleInitFails
 {
-    XCTAssertNil([[ICDRequestAllDocumentsForADatabase alloc] init],
+    XCTAssertNil([[ICDRequestAllDocuments alloc] init],
                  @"Without a name, we can not request the documents in a database");
 }
 
 - (void)testInitWithoutADatabaseNameFails
 {
-    XCTAssertNil([[ICDRequestAllDocumentsForADatabase alloc] initWithDatabaseName:nil],
+    XCTAssertNil([[ICDRequestAllDocuments alloc] initWithDatabaseName:nil],
                  @"Without a name, we can not request the documents in a database");
 }
 

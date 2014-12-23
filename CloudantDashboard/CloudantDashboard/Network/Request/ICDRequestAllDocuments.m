@@ -1,5 +1,5 @@
 //
-//  ICDRequestAllDocumentsForADatabase.m
+//  ICDRequestAllDocuments.m
 //  CloudantDashboard
 //
 //  Created by Enrique de la Torre (dev) on 23/12/2014.
@@ -8,22 +8,22 @@
 
 #import <RestKit/RestKit.h>
 
-#import "ICDRequestAllDocumentsForADatabase.h"
+#import "ICDRequestAllDocuments.h"
 
 #import "ICDModelDocument.h"
 
 
 
-#define ICDREQUESTALLDOCUMENTSFORADATABASE_JSON_DOCUMENT_KEY_ID     @"id"
-#define ICDREQUESTALLDOCUMENTSFORADATABASE_JSON_DOCUMENT_KEY_REV    @"value.rev"
+#define ICDREQUESTALLDOCUMENTS_JSON_DOCUMENT_KEY_ID     @"id"
+#define ICDREQUESTALLDOCUMENTS_JSON_DOCUMENT_KEY_REV    @"value.rev"
 
-#define ICDREQUESTALLDOCUMENTSFORADATABASE_METHOD       @"_all_docs"
-#define ICDREQUESTALLDOCUMENTSFORADATABASE_PATHPATTERN  [@"/:databaseName/" stringByAppendingString:ICDREQUESTALLDOCUMENTSFORADATABASE_METHOD]
-#define ICDREQUESTALLDOCUMENTSFORADATABASE_KEYPATH      @"rows"
+#define ICDREQUESTALLDOCUMENTS_METHOD       @"_all_docs"
+#define ICDREQUESTALLDOCUMENTS_PATHPATTERN  [@"/:databaseName/" stringByAppendingString:ICDREQUESTALLDOCUMENTS_METHOD]
+#define ICDREQUESTALLDOCUMENTS_KEYPATH      @"rows"
 
 
 
-@interface ICDRequestAllDocumentsForADatabase ()
+@interface ICDRequestAllDocuments ()
 
 @property (strong, nonatomic) NSString *path;
 
@@ -31,7 +31,7 @@
 
 
 
-@implementation ICDRequestAllDocumentsForADatabase
+@implementation ICDRequestAllDocuments
 
 #pragma mark - Init object
 - (id)init
@@ -50,7 +50,7 @@
         }
         else
         {
-            _path = [NSString stringWithFormat:@"/%@/%@", dbName, ICDREQUESTALLDOCUMENTSFORADATABASE_METHOD];
+            _path = [NSString stringWithFormat:@"/%@/%@", dbName, ICDREQUESTALLDOCUMENTS_METHOD];
         }
     }
     
@@ -61,23 +61,23 @@
 #pragma mark - ICDRequestProtocol methods
 - (void)executeRequestWithObjectManager:(id)objectManager
 {
-    __weak ICDRequestAllDocumentsForADatabase *weakSelf = self;
+    __weak ICDRequestAllDocuments *weakSelf = self;
     
     void (^successBlock)(RKObjectRequestOperation *op, RKMappingResult *mapResult) = ^(RKObjectRequestOperation *op, RKMappingResult *mapResult)
     {
-        __strong ICDRequestAllDocumentsForADatabase *strongSelf = weakSelf;
+        __strong ICDRequestAllDocuments *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)
         {
-            [strongSelf.delegate requestAllDocumentsForADatabase:strongSelf didGetDocuments:mapResult.array];
+            [strongSelf.delegate requestAllDocuments:strongSelf didGetDocuments:mapResult.array];
         }
     };
     
     void (^failureBlock)(RKObjectRequestOperation *op, NSError *err) = ^(RKObjectRequestOperation *op, NSError *err)
     {
-        __strong ICDRequestAllDocumentsForADatabase *strongSelf = weakSelf;
+        __strong ICDRequestAllDocuments *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)
         {
-            [strongSelf.delegate requestAllDocumentsForADatabase:strongSelf didFailWithError:err];
+            [strongSelf.delegate requestAllDocuments:strongSelf didFailWithError:err];
         }
     };
     
@@ -93,8 +93,8 @@
 {
     // Mapping
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[ICDModelDocument class]];
-    [mapping addAttributeMappingsFromDictionary:@{ICDREQUESTALLDOCUMENTSFORADATABASE_JSON_DOCUMENT_KEY_ID: ICDMODELDOCUMENT_PROPERTY_KEY_ID,
-                                                  ICDREQUESTALLDOCUMENTSFORADATABASE_JSON_DOCUMENT_KEY_REV: ICDMODELDOCUMENT_PROPERTY_KEY_REV}];
+    [mapping addAttributeMappingsFromDictionary:@{ICDREQUESTALLDOCUMENTS_JSON_DOCUMENT_KEY_ID: ICDMODELDOCUMENT_PROPERTY_KEY_ID,
+                                                  ICDREQUESTALLDOCUMENTS_JSON_DOCUMENT_KEY_REV: ICDMODELDOCUMENT_PROPERTY_KEY_REV}];
     
     // Status code
     NSIndexSet *statusCodes = [NSIndexSet indexSetWithIndex:RKStatusCodeClassSuccessful];
@@ -102,8 +102,8 @@
     // Response descriptor
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping
                                                                                             method:RKRequestMethodGET
-                                                                                       pathPattern:ICDREQUESTALLDOCUMENTSFORADATABASE_PATHPATTERN
-                                                                                           keyPath:ICDREQUESTALLDOCUMENTSFORADATABASE_KEYPATH
+                                                                                       pathPattern:ICDREQUESTALLDOCUMENTS_PATHPATTERN
+                                                                                           keyPath:ICDREQUESTALLDOCUMENTS_KEYPATH
                                                                                        statusCodes:statusCodes];
     
     // Configure

@@ -8,7 +8,7 @@
 
 #import "ICDDocumentsTableViewController.h"
 
-#import "ICDRequestAllDocumentsForADatabase.h"
+#import "ICDRequestAllDocuments.h"
 
 #import "ICDModelDocument.h"
 
@@ -20,12 +20,12 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 
 
-@interface ICDDocumentsTableViewController () <ICDRequestAllDocumentsForADatabaseDelegate>
+@interface ICDDocumentsTableViewController () <ICDRequestAllDocumentsDelegate>
 {
-    ICDRequestAllDocumentsForADatabase *_requestAllDocs;
+    ICDRequestAllDocuments *_requestAllDocs;
 }
 
-@property (strong, nonatomic, readonly) ICDRequestAllDocumentsForADatabase *requestAllDocs;
+@property (strong, nonatomic, readonly) ICDRequestAllDocuments *requestAllDocs;
 
 @property (strong, nonatomic) NSArray *allDocuments;
 
@@ -56,11 +56,11 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     [self requestDocumentsForDatabase];
 }
 
-- (ICDRequestAllDocumentsForADatabase *)requestAllDocs
+- (ICDRequestAllDocuments *)requestAllDocs
 {
     if (!_requestAllDocs && self.databaseName)
     {
-        _requestAllDocs = [[ICDRequestAllDocumentsForADatabase alloc] initWithDatabaseName:self.databaseName];
+        _requestAllDocs = [[ICDRequestAllDocuments alloc] initWithDatabaseName:self.databaseName];
         _requestAllDocs.delegate = self;
     }
     
@@ -116,7 +116,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 
 #pragma mark - ICDRequestAllDocumentsForADatabaseDelegate methods
-- (void)requestAllDocumentsForADatabase:(id<ICDRequestProtocol>)request didGetDocuments:(NSArray *)documents
+- (void)requestAllDocuments:(id<ICDRequestProtocol>)request didGetDocuments:(NSArray *)documents
 {
     if (request != self.requestAllDocs)
     {
@@ -133,7 +133,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     }
 }
 
-- (void)requestAllDocumentsForADatabase:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
+- (void)requestAllDocuments:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
     if (request != self.requestAllDocs)
     {
