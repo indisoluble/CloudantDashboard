@@ -21,7 +21,7 @@
 #pragma mark - NSObject methods
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"Database name: %@", self.name];
+    return [NSString stringWithFormat:@"Database <%@>", self.name];
 }
 
 @end

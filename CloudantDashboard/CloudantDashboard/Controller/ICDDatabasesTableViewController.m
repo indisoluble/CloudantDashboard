@@ -8,8 +8,11 @@
 
 #import "ICDDatabasesTableViewController.h"
 
+#import "ICDDocumentsTableViewController.h"
+
 #import "ICDAuthorizationPlist.h"
 #import "ICDNetworkManager+Helper.h"
+
 #import "ICDRequestAllDatabases.h"
 
 #import "ICDModelDatabase.h"
@@ -44,7 +47,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     if (!_networkManager)
     {
-        ICDAuthorizationPlist *authentication = [[ICDAuthorizationPlist alloc] init];
+        id<ICDAuthorizationProtocol> authentication = [[ICDAuthorizationPlist alloc] init];
         
         NSString *username = nil;
         NSString *password = nil;
@@ -98,6 +101,17 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 }
 
 
+#pragma mark - Navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([sender isKindOfClass:[UITableViewCell class]] &&
+        [segue.destinationViewController isKindOfClass:[ICDDocumentsTableViewController class]])
+    {
+        [self prepareForSegueDocumentsVC:segue.destinationViewController withCell:sender];
+    }
+}
+
+
 #pragma mark - UITableViewDataSource methods
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -106,7 +120,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ICDModelDatabase *database = (ICDModelDatabase *)[self.allDatabases objectAtIndex:indexPath.row];
+    ICDModelDatabase *database = (ICDModelDatabase *)self.allDatabases[indexPath.row];
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kICDDatabasesTVCCellID forIndexPath:indexPath];
     cell.textLabel.text = database.name;
@@ -116,16 +130,28 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 
 #pragma mark - ICDRequestAllDatabasesDelegate methods
-- (void)request:(id<ICDRequestProtocol>)request didGetDatabases:(NSArray *)databases
+- (void)requestAllDatabases:(id<ICDRequestProtocol>)request didGetDatabases:(NSArray *)databases
 {
     self.allDatabases = databases;
     
     [self.tableView reloadData];
 }
 
-- (void)request:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
+- (void)requestAllDatabases:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
     ICDLogError(@"Error: %@", error);
+}
+
+
+#pragma mark - Private methods
+- (void)prepareForSegueDocumentsVC:(ICDDocumentsTableViewController *)documentVC
+                          withCell:(UITableViewCell *)cell
+{
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    ICDModelDatabase *database = (ICDModelDatabase *)self.allDatabases[indexPath.row];
+    
+    documentVC.networkManager = self.networkManager;
+    documentVC.databaseName = database.name;
 }
 
 @end

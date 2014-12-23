@@ -1,0 +1,22 @@
+//
+//  ICDRequestAllDocumentsForADatabaseDelegate.h
+//  CloudantDashboard
+//
+//  Created by Enrique de la Torre (dev) on 23/12/2014.
+//  Copyright (c) 2014 Enrique de la Torre. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+
+
+@protocol ICDRequestProtocol;
+
+
+
+@protocol ICDRequestAllDocumentsForADatabaseDelegate <NSObject>
+
+- (void)requestAllDocumentsForADatabase:(id<ICDRequestProtocol>)request didGetDocuments:(NSArray *)documents;
+- (void)requestAllDocumentsForADatabase:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error;
+
+@end

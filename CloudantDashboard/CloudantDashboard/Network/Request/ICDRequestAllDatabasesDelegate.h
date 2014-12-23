@@ -16,7 +16,7 @@
 
 @protocol ICDRequestAllDatabasesDelegate <NSObject>
 
-- (void)request:(id<ICDRequestProtocol>)request didGetDatabases:(NSArray *)databases;
-- (void)request:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error;
+- (void)requestAllDatabases:(id<ICDRequestProtocol>)request didGetDatabases:(NSArray *)databases;
+- (void)requestAllDatabases:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error;
 
 @end

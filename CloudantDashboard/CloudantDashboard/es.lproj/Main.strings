@@ -1,3 +1,21 @@
 
 /* Class = "IBUINavigationItem"; title = "Databases"; ObjectID = "G8l-7N-qJq"; */
 "G8l-7N-qJq.title" = "Bases de Datos";
+
+/* Class = "IBUITableViewController"; title = "Documents"; ObjectID = "L1e-ud-3uE"; */
+"L1e-ud-3uE.title" = "Documentos";
+
+/* Class = "IBUILabel"; text = "Document ID"; ObjectID = "Xm5-55-MPO"; */
+"Xm5-55-MPO.text" = "ID del documento";
+
+/* Class = "IBUILabel"; text = "Document Revision"; ObjectID = "cBH-1m-eFb"; */
+"cBH-1m-eFb.text" = "Revisión del documento";
+
+/* Class = "IBUILabel"; text = "Title"; ObjectID = "hJw-0r-f8k"; */
+"hJw-0r-f8k.text" = "Título";
+
+/* Class = "IBUITableViewController"; title = "Databases"; ObjectID = "ruC-cS-hIP"; */
+"ruC-cS-hIP.title" = "Bases de Datos";
+
+/* Class = "IBUINavigationItem"; title = "Documents"; ObjectID = "siY-iW-qgr"; */
+"siY-iW-qgr.title" = "Documentos";

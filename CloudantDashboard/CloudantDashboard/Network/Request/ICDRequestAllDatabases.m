@@ -16,7 +16,8 @@
 
 
 
-#define ICDREQUESTALLDATABASES_PATHPATTERN  @"/_all_dbs"
+#define ICDREQUESTALLDATABASES_PATH         @"/_all_dbs"
+#define ICDREQUESTALLDATABASES_PATHPATTERN  ICDREQUESTALLDATABASES_PATH
 
 
 
@@ -38,7 +39,7 @@
         __strong ICDRequestAllDatabases *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)
         {
-            [strongSelf.delegate request:strongSelf didGetDatabases:mapResult.array];
+            [strongSelf.delegate requestAllDatabases:strongSelf didGetDatabases:mapResult.array];
         }
     };
     
@@ -47,13 +48,13 @@
         __strong ICDRequestAllDatabases *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)
         {
-            [strongSelf.delegate request:strongSelf didFailWithError:err];
+            [strongSelf.delegate requestAllDatabases:strongSelf didFailWithError:err];
         }
     };
     
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
     
-    [thisObjectManager getObjectsAtPath:ICDREQUESTALLDATABASES_PATHPATTERN
+    [thisObjectManager getObjectsAtPath:ICDREQUESTALLDATABASES_PATH
                              parameters:nil
                                 success:successBlock
                                 failure:failureBlock];
