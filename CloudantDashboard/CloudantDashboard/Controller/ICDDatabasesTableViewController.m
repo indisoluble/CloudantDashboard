@@ -14,6 +14,7 @@
 #import "ICDNetworkManager+Helper.h"
 
 #import "ICDRequestAllDatabases.h"
+#import "ICDRequestDeleteDatabase.h"
 
 #import "ICDModelDatabase.h"
 
@@ -25,16 +26,17 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 
 
-@interface ICDDatabasesTableViewController () <ICDRequestAllDatabasesDelegate>
+@interface ICDDatabasesTableViewController () <ICDRequestAllDatabasesDelegate, ICDRequestDeleteDatabaseDelegate>
 {
     ICDNetworkManager *_networkManager;
-    ICDRequestAllDatabases *_requestAllDBs;
 }
 
 @property (strong, nonatomic, readonly) ICDNetworkManager *networkManager;
-@property (strong, nonatomic, readonly) ICDRequestAllDatabases *requestAllDBs;
 
-@property (strong, nonatomic) NSArray *allDatabases;
+@property (strong, nonatomic) ICDRequestAllDatabases *requestAllDBs;
+@property (strong, nonatomic) ICDRequestDeleteDatabase *requestDeleteDB;
+
+@property (strong, nonatomic) NSMutableArray *allDatabases;
 
 @end
 
@@ -59,17 +61,6 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     return _networkManager;
 }
 
-- (ICDRequestAllDatabases *)requestAllDBs
-{
-    if (!_requestAllDBs)
-    {
-        _requestAllDBs = [[ICDRequestAllDatabases alloc] init];
-        _requestAllDBs.delegate = self;
-    }
-    
-    return _requestAllDBs;
-}
-
 
 #pragma mark - Init object
 - (id)initWithCoder:(NSCoder *)aDecoder
@@ -77,7 +68,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     self = [super initWithCoder:aDecoder];
     if (self)
     {
-        _allDatabases = @[];
+        _allDatabases = [NSMutableArray array];
     }
     
     return self;
@@ -129,11 +120,25 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     return cell;
 }
 
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    ICDModelDatabase *database = (ICDModelDatabase *)self.allDatabases[indexPath.row];
+    
+    [self executeRequestDeleteDBWithName:database.name];
+}
+
 
 #pragma mark - ICDRequestAllDatabasesDelegate methods
 - (void)requestAllDatabases:(id<ICDRequestProtocol>)request didGetDatabases:(NSArray *)databases
 {
-    self.allDatabases = databases;
+    [self releaseRequestAllDBs];
+    
+    self.allDatabases = [NSMutableArray arrayWithArray:databases];
     
     [self.refreshControl endRefreshing];
     [self.tableView reloadData];
@@ -143,7 +148,27 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     ICDLogError(@"Error: %@", error);
     
+    [self releaseRequestAllDBs];
+    
     [self.refreshControl endRefreshing];
+}
+
+#pragma mark - ICDRequestDeleteDatabaseDelegate methods
+- (void)requestDeleteDatabase:(id<ICDRequestProtocol>)request didDeleteDatabaseWithName:(NSString *)dbName
+{
+    [self releaseRequestDeleteDB];
+    
+    ICDModelDatabase *database = [ICDModelDatabase databaseWithName:dbName];
+    [self.allDatabases removeObject:database];
+    
+    [self.tableView reloadData];
+}
+
+- (void)requestDeleteDatabase:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
+{
+    ICDLogError(@"Error: %@", error);
+    
+    [self releaseRequestDeleteDB];
 }
 
 
@@ -158,10 +183,61 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (void)executeRequestAllDBs
 {
+    if ([self isExecutingRequest])
+    {
+        ICDLogTrace(@"There is a request ongoing. Abort");
+        
+        return;
+    }
+    
     if (self.networkManager)
     {
+        self.requestAllDBs = [[ICDRequestAllDatabases alloc] init];
+        self.requestAllDBs.delegate = self;
+        
         [self.networkManager executeRequest:self.requestAllDBs];
     }
+}
+
+- (void)releaseRequestAllDBs
+{
+    if (self.requestAllDBs)
+    {
+        self.requestAllDBs.delegate = nil;
+        self.requestAllDBs = nil;
+    }
+}
+
+- (void)executeRequestDeleteDBWithName:(NSString *)dbName
+{
+    if ([self isExecutingRequest])
+    {
+        ICDLogTrace(@"There is a request ongoing. Abort");
+        
+        return;
+    }
+    
+    if (self.networkManager && dbName)
+    {
+        self.requestDeleteDB = [[ICDRequestDeleteDatabase alloc] initWithDatabaseName:dbName];
+        self.requestDeleteDB.delegate = self;
+        
+        [self.networkManager executeRequest:self.requestDeleteDB];
+    }
+}
+
+- (void)releaseRequestDeleteDB
+{
+    if (self.requestDeleteDB)
+    {
+        self.requestDeleteDB.delegate = nil;
+        self.requestDeleteDB = nil;
+    }
+}
+
+- (BOOL)isExecutingRequest
+{
+    return (self.requestAllDBs || self.requestDeleteDB);
 }
 
 - (void)prepareForSegueDocumentsVC:(ICDDocumentsTableViewController *)documentVC
