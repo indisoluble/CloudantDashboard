@@ -16,7 +16,6 @@
 
 
 #define ICDREQUESTDOCUMENT_PATH_FORMAT  @"/%@/%@"
-#define ICDREQUESTDOCUMENT_PATHPATTERN  [NSString stringWithFormat:ICDREQUESTDOCUMENT_PATH_FORMAT, @":databaseName", @":documentId"]
 
 #define ICDREQUESTDOCUMENT_DOCDICTIONARY_PROPERTY_KEY_DIC   @"dictionary"
 
@@ -68,42 +67,75 @@
 #pragma mark - ICDRequestProtocol methods
 - (void)executeRequestWithObjectManager:(id)objectManager
 {
+    RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
+    RKResponseDescriptor *responseDescriptor = [ICDRequestDocument responseDescriptorForPath:self.path];
+    
+    [self executeRequestWithObjectManager:thisObjectManager responseDescriptor:responseDescriptor];
+}
+
+
+#pragma mark - Private methods
+- (void)executeRequestWithObjectManager:(RKObjectManager *)objectManager responseDescriptor:(RKResponseDescriptor *)responseDescriptor
+{
+    // Add configuration
+    [objectManager addResponseDescriptor:responseDescriptor];
+    
+    // Execute request
     __weak ICDRequestDocument *weakSelf = self;
     
     void (^successBlock)(RKObjectRequestOperation *op, RKMappingResult *mapResult) = ^(RKObjectRequestOperation *op, RKMappingResult *mapResult)
     {
+        // Remove configuration
+        [objectManager removeResponseDescriptor:responseDescriptor];
+        
+        // Notify
         __strong ICDRequestDocument *strongSelf = weakSelf;
-        if (strongSelf && strongSelf.delegate)
+        if (strongSelf)
         {
             ICDRequestDocumentDictionary *docDictionary = (ICDRequestDocumentDictionary *)[mapResult firstObject];
             
-            JSONSyntaxHighlight *jsh = [[JSONSyntaxHighlight alloc] initWithJSON:docDictionary.dictionary];
-            NSAttributedString *highlightJSON = [jsh highlightJSON];
-            
-            [strongSelf.delegate requestDocument:strongSelf didGetDocument:highlightJSON];
+            [strongSelf notifySuccessWithDocumentDictionary:docDictionary];
         }
     };
     
     void (^failureBlock)(RKObjectRequestOperation *op, NSError *err) = ^(RKObjectRequestOperation *op, NSError *err)
     {
+        // Remove configuration
+        [objectManager removeResponseDescriptor:responseDescriptor];
+
+        // Notify
         __strong ICDRequestDocument *strongSelf = weakSelf;
-        if (strongSelf && strongSelf.delegate)
+        if (strongSelf)
         {
-            [strongSelf.delegate requestDocument:strongSelf didFailWithError:err];
+            [strongSelf notifyFailureWithError:err];
         }
     };
-
     
-    RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
-    
-    [thisObjectManager getObject:nil
-                            path:self.path
-                      parameters:nil
-                         success:successBlock
-                         failure:failureBlock];
+    [objectManager getObject:nil path:self.path parameters:nil success:successBlock failure:failureBlock];
 }
 
-+ (void)configureObjectManager:(id)objectManager
+- (void)notifySuccessWithDocumentDictionary:(ICDRequestDocumentDictionary *)docDictionary
+{
+    if (self.delegate)
+    {
+        JSONSyntaxHighlight *jsh = [[JSONSyntaxHighlight alloc] initWithJSON:docDictionary.dictionary];
+        NSAttributedString *highlightJSON = [jsh highlightJSON];
+        
+        [self.delegate requestDocument:self didGetDocument:highlightJSON];
+    }
+}
+
+- (void)notifyFailureWithError:(NSError *)err
+{
+    if (self.delegate)
+    {
+        [self.delegate requestDocument:self didFailWithError:err];
+    }
+}
+
+
+#pragma mark - Private class methods
++ (RKResponseDescriptor *)responseDescriptorForPath:(NSString *)path
 {
     // Mapping
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[ICDRequestDocumentDictionary class]];
@@ -116,12 +148,11 @@
     // Response descriptor
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping
                                                                                             method:RKRequestMethodGET
-                                                                                       pathPattern:ICDREQUESTDOCUMENT_PATHPATTERN
+                                                                                       pathPattern:path
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    // Configure
-    [(RKObjectManager *)objectManager addResponseDescriptor:responseDescriptor];
+    return responseDescriptor;
 }
 
 @end

@@ -16,8 +16,4 @@
 
 @property (assign, nonatomic, readonly) NSUInteger executeRequestCounter;
 
-+ (void)resetConfigureCounter;
-+ (void)incConfigureCounter;
-+ (NSUInteger)configureCounter;
-
 @end

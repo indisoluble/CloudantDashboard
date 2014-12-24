@@ -14,8 +14,7 @@
 
 
 
-#define ICDREQUESTALLDATABASES_PATH         @"/_all_dbs"
-#define ICDREQUESTALLDATABASES_PATHPATTERN  ICDREQUESTALLDATABASES_PATH
+#define ICDREQUESTALLDATABASES_PATH @"/_all_dbs"
 
 
 
@@ -30,10 +29,28 @@
 #pragma mark - ICDRequestProtocol methods
 - (void)executeRequestWithObjectManager:(id)objectManager
 {
+    RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
+    RKResponseDescriptor *responseDescriptor = [ICDRequestAllDatabases responseDescriptor];
+    
+    [self executeRequestWithObjectManager:thisObjectManager responseDescriptor:responseDescriptor];
+}
+
+
+#pragma mark - Private methods
+- (void)executeRequestWithObjectManager:(RKObjectManager *)objectManager responseDescriptor:(RKResponseDescriptor *)responseDescriptor
+{
+    // Add configuration
+    [objectManager addResponseDescriptor:responseDescriptor];
+    
+    // Execute request
     __weak ICDRequestAllDatabases *weakSelf = self;
     
     void (^successBlock)(RKObjectRequestOperation *op, RKMappingResult *mapResult) = ^(RKObjectRequestOperation *op, RKMappingResult *mapResult)
     {
+        // Remove configuration
+        [objectManager removeResponseDescriptor:responseDescriptor];
+        
+        // Notify
         __strong ICDRequestAllDatabases *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)
         {
@@ -43,6 +60,10 @@
     
     void (^failureBlock)(RKObjectRequestOperation *op, NSError *err) = ^(RKObjectRequestOperation *op, NSError *err)
     {
+        // Remove configuration
+        [objectManager removeResponseDescriptor:responseDescriptor];
+        
+        // Notify
         __strong ICDRequestAllDatabases *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)
         {
@@ -50,15 +71,12 @@
         }
     };
     
-    RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
-    
-    [thisObjectManager getObjectsAtPath:ICDREQUESTALLDATABASES_PATH
-                             parameters:nil
-                                success:successBlock
-                                failure:failureBlock];
+    [objectManager getObjectsAtPath:ICDREQUESTALLDATABASES_PATH parameters:nil success:successBlock failure:failureBlock];
 }
 
-+ (void)configureObjectManager:(id)objectManager
+
+#pragma mark - Private class methods
++ (RKResponseDescriptor *)responseDescriptor
 {
     // Mapping
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[ICDModelDatabase class]];
@@ -71,12 +89,11 @@
     // Response descriptor
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping
                                                                                             method:RKRequestMethodGET
-                                                                                       pathPattern:ICDREQUESTALLDATABASES_PATHPATTERN
+                                                                                       pathPattern:ICDREQUESTALLDATABASES_PATH
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    // Configure
-    [(RKObjectManager *)objectManager addResponseDescriptor:responseDescriptor];
+    return responseDescriptor;
 }
 
 @end

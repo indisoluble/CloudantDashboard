@@ -14,6 +14,4 @@
 
 - (void)executeRequestWithObjectManager:(id)objectManager;
 
-+ (void)configureObjectManager:(id)objectManager;
-
 @end

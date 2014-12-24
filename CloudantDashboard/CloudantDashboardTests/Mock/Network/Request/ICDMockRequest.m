@@ -10,10 +10,6 @@
 
 
 
-static NSUInteger icdMockRequestConfigurationCounter = 0;
-
-
-
 @interface ICDMockRequest ()
 
 @end
@@ -39,28 +35,6 @@ static NSUInteger icdMockRequestConfigurationCounter = 0;
 - (void)executeRequestWithObjectManager:(id)objectManager
 {
     _executeRequestCounter++;
-}
-
-+ (void)configureObjectManager:(id)objectManager
-{
-    [ICDMockRequest incConfigureCounter];
-}
-
-
-#pragma mark - Public class methods
-+ (void)resetConfigureCounter
-{
-    icdMockRequestConfigurationCounter = 0;
-}
-
-+ (void)incConfigureCounter
-{
-    icdMockRequestConfigurationCounter++;
-}
-
-+ (NSUInteger)configureCounter
-{
-    return icdMockRequestConfigurationCounter;
 }
 
 @end

@@ -18,7 +18,6 @@
 #define ICDREQUESTALLDOCUMENTS_JSON_DOCUMENT_KEY_REV    @"value.rev"
 
 #define ICDREQUESTALLDOCUMENTS_PATH_FORMAT  @"/%@/_all_docs"
-#define ICDREQUESTALLDOCUMENTS_PATHPATTERN  [NSString stringWithFormat:ICDREQUESTALLDOCUMENTS_PATH_FORMAT, @":databaseName"]
 #define ICDREQUESTALLDOCUMENTS_KEYPATH      @"rows"
 
 
@@ -61,10 +60,28 @@
 #pragma mark - ICDRequestProtocol methods
 - (void)executeRequestWithObjectManager:(id)objectManager
 {
+    RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
+    RKResponseDescriptor *responseDescriptor = [ICDRequestAllDocuments responseDescriptorForPath:self.path];
+    
+    [self executeRequestWithObjectManager:thisObjectManager responseDescriptor:responseDescriptor];
+}
+
+
+#pragma mark - Private methods
+- (void)executeRequestWithObjectManager:(RKObjectManager *)objectManager responseDescriptor:(RKResponseDescriptor *)responseDescriptor
+{
+    // Add configuration
+    [objectManager addResponseDescriptor:responseDescriptor];
+    
+    // Execute request
     __weak ICDRequestAllDocuments *weakSelf = self;
     
     void (^successBlock)(RKObjectRequestOperation *op, RKMappingResult *mapResult) = ^(RKObjectRequestOperation *op, RKMappingResult *mapResult)
     {
+        // Remove configuration
+        [objectManager removeResponseDescriptor:responseDescriptor];
+        
+        // Notify
         __strong ICDRequestAllDocuments *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)
         {
@@ -74,6 +91,10 @@
     
     void (^failureBlock)(RKObjectRequestOperation *op, NSError *err) = ^(RKObjectRequestOperation *op, NSError *err)
     {
+        // Remove configuration
+        [objectManager removeResponseDescriptor:responseDescriptor];
+        
+        // Notify
         __strong ICDRequestAllDocuments *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)
         {
@@ -81,15 +102,12 @@
         }
     };
     
-    RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
-    
-    [thisObjectManager getObjectsAtPath:self.path
-                             parameters:nil
-                                success:successBlock
-                                failure:failureBlock];
+    [objectManager getObjectsAtPath:self.path parameters:nil success:successBlock failure:failureBlock];
 }
 
-+ (void)configureObjectManager:(id)objectManager
+
+#pragma mark - Private class methods
++ (RKResponseDescriptor *)responseDescriptorForPath:(NSString *)path
 {
     // Mapping
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[ICDModelDocument class]];
@@ -102,12 +120,11 @@
     // Response descriptor
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping
                                                                                             method:RKRequestMethodGET
-                                                                                       pathPattern:ICDREQUESTALLDOCUMENTS_PATHPATTERN
+                                                                                       pathPattern:path
                                                                                            keyPath:ICDREQUESTALLDOCUMENTS_KEYPATH
                                                                                        statusCodes:statusCodes];
     
-    // Configure
-    [(RKObjectManager *)objectManager addResponseDescriptor:responseDescriptor];
+    return responseDescriptor;
 }
 
 @end

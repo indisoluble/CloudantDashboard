@@ -13,7 +13,6 @@
 @interface ICDNetworkManager ()
 
 @property (strong, nonatomic) id objectManager;
-@property (strong, nonatomic) NSMutableSet *configuredRequests;
 
 @end
 
@@ -39,7 +38,6 @@
         else
         {
             _objectManager = objectManager;
-            _configuredRequests = [NSMutableSet set];
         }
     }
     
@@ -50,22 +48,7 @@
 #pragma mark - Public methods
 - (void)executeRequest:(id<ICDRequestProtocol>)request
 {
-    [self configureManagerWithRequest:request];
-    
     [request executeRequestWithObjectManager:self.objectManager];
-}
-
-
-#pragma mark - Private methods
-- (void)configureManagerWithRequest:(id<ICDRequestProtocol>)request
-{
-    Class requestClass = [request class];
-    if (![self.configuredRequests containsObject:requestClass])
-    {
-        [self.configuredRequests addObject:requestClass];
-        
-        [(Class<ICDRequestProtocol>)requestClass configureObjectManager:self.objectManager];
-    }
 }
 
 @end
