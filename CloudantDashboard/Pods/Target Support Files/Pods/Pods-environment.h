@@ -18,6 +18,12 @@
 #define COCOAPODS_VERSION_MINOR_ISO8601DateFormatterValueTransformer 6
 #define COCOAPODS_VERSION_PATCH_ISO8601DateFormatterValueTransformer 0
 
+// JSONSyntaxHighlight
+#define COCOAPODS_POD_AVAILABLE_JSONSyntaxHighlight
+#define COCOAPODS_VERSION_MAJOR_JSONSyntaxHighlight 1
+#define COCOAPODS_VERSION_MINOR_JSONSyntaxHighlight 0
+#define COCOAPODS_VERSION_PATCH_JSONSyntaxHighlight 0
+
 // RKValueTransformers
 #define COCOAPODS_POD_AVAILABLE_RKValueTransformers
 #define COCOAPODS_VERSION_MAJOR_RKValueTransformers 1
