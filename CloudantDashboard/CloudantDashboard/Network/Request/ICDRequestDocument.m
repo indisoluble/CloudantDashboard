@@ -32,6 +32,7 @@
 @interface ICDRequestDocument ()
 
 @property (strong, nonatomic) NSString *path;
+@property (strong, nonatomic) RKResponseDescriptor *responseDescriptor;
 
 @end
 
@@ -57,6 +58,7 @@
         else
         {
             _path = [NSString stringWithFormat:ICDREQUESTDOCUMENT_PATH_FORMAT, dbName, documentId];
+            _responseDescriptor = [ICDRequestDocument responseDescriptorForPath:_path];
         }
     }
     
@@ -68,17 +70,10 @@
 - (void)executeRequestWithObjectManager:(id)objectManager
 {
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
-    RKResponseDescriptor *responseDescriptor = [ICDRequestDocument responseDescriptorForPath:self.path];
+    RKResponseDescriptor *thisResponseDescriptor = self.responseDescriptor;
     
-    [self executeRequestWithObjectManager:thisObjectManager responseDescriptor:responseDescriptor];
-}
-
-
-#pragma mark - Private methods
-- (void)executeRequestWithObjectManager:(RKObjectManager *)objectManager responseDescriptor:(RKResponseDescriptor *)responseDescriptor
-{
     // Add configuration
-    [objectManager addResponseDescriptor:responseDescriptor];
+    [thisObjectManager addResponseDescriptor:thisResponseDescriptor];
     
     // Execute request
     __weak ICDRequestDocument *weakSelf = self;
@@ -86,7 +81,7 @@
     void (^successBlock)(RKObjectRequestOperation *op, RKMappingResult *mapResult) = ^(RKObjectRequestOperation *op, RKMappingResult *mapResult)
     {
         // Remove configuration
-        [objectManager removeResponseDescriptor:responseDescriptor];
+        [thisObjectManager removeResponseDescriptor:thisResponseDescriptor];
         
         // Notify
         __strong ICDRequestDocument *strongSelf = weakSelf;
@@ -101,8 +96,8 @@
     void (^failureBlock)(RKObjectRequestOperation *op, NSError *err) = ^(RKObjectRequestOperation *op, NSError *err)
     {
         // Remove configuration
-        [objectManager removeResponseDescriptor:responseDescriptor];
-
+        [thisObjectManager removeResponseDescriptor:thisResponseDescriptor];
+        
         // Notify
         __strong ICDRequestDocument *strongSelf = weakSelf;
         if (strongSelf)
@@ -111,9 +106,11 @@
         }
     };
     
-    [objectManager getObject:nil path:self.path parameters:nil success:successBlock failure:failureBlock];
+    [thisObjectManager getObject:nil path:self.path parameters:nil success:successBlock failure:failureBlock];
 }
 
+
+#pragma mark - Private methods
 - (void)notifySuccessWithDocumentDictionary:(ICDRequestDocumentDictionary *)docDictionary
 {
     if (self.delegate)

@@ -20,27 +20,34 @@
 
 @interface ICDRequestAllDatabases ()
 
+@property (strong, nonatomic) RKResponseDescriptor *responseDescriptor;
+
 @end
 
 
 
 @implementation ICDRequestAllDatabases
 
+#pragma mark - Init object
+- (id)init
+{
+    self = [super init];
+    if (self)
+    {
+        _responseDescriptor = [ICDRequestAllDatabases responseDescriptor];
+    }
+    
+    return self;
+}
+
 #pragma mark - ICDRequestProtocol methods
 - (void)executeRequestWithObjectManager:(id)objectManager
 {
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
-    RKResponseDescriptor *responseDescriptor = [ICDRequestAllDatabases responseDescriptor];
+    RKResponseDescriptor *thisResponseDescriptor = self.responseDescriptor;
     
-    [self executeRequestWithObjectManager:thisObjectManager responseDescriptor:responseDescriptor];
-}
-
-
-#pragma mark - Private methods
-- (void)executeRequestWithObjectManager:(RKObjectManager *)objectManager responseDescriptor:(RKResponseDescriptor *)responseDescriptor
-{
     // Add configuration
-    [objectManager addResponseDescriptor:responseDescriptor];
+    [thisObjectManager addResponseDescriptor:thisResponseDescriptor];
     
     // Execute request
     __weak ICDRequestAllDatabases *weakSelf = self;
@@ -48,7 +55,7 @@
     void (^successBlock)(RKObjectRequestOperation *op, RKMappingResult *mapResult) = ^(RKObjectRequestOperation *op, RKMappingResult *mapResult)
     {
         // Remove configuration
-        [objectManager removeResponseDescriptor:responseDescriptor];
+        [thisObjectManager removeResponseDescriptor:thisResponseDescriptor];
         
         // Notify
         __strong ICDRequestAllDatabases *strongSelf = weakSelf;
@@ -61,7 +68,7 @@
     void (^failureBlock)(RKObjectRequestOperation *op, NSError *err) = ^(RKObjectRequestOperation *op, NSError *err)
     {
         // Remove configuration
-        [objectManager removeResponseDescriptor:responseDescriptor];
+        [thisObjectManager removeResponseDescriptor:thisResponseDescriptor];
         
         // Notify
         __strong ICDRequestAllDatabases *strongSelf = weakSelf;
@@ -71,7 +78,7 @@
         }
     };
     
-    [objectManager getObjectsAtPath:ICDREQUESTALLDATABASES_PATH parameters:nil success:successBlock failure:failureBlock];
+    [thisObjectManager getObjectsAtPath:ICDREQUESTALLDATABASES_PATH parameters:nil success:successBlock failure:failureBlock];
 }
 
 
