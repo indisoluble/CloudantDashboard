@@ -97,6 +97,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     [super viewDidLoad];
     
+    [self addRefreshControl];
     [self executeRequestAllDBs];
 }
 
@@ -134,16 +135,27 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     self.allDatabases = databases;
     
+    [self.refreshControl endRefreshing];
     [self.tableView reloadData];
 }
 
 - (void)requestAllDatabases:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
     ICDLogError(@"Error: %@", error);
+    
+    [self.refreshControl endRefreshing];
 }
 
 
 #pragma mark - Private methods
+- (void)addRefreshControl
+{
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(executeRequestAllDBs) forControlEvents:UIControlEventValueChanged];
+    
+    self.refreshControl = refreshControl;
+}
+
 - (void)executeRequestAllDBs
 {
     if (self.networkManager)
