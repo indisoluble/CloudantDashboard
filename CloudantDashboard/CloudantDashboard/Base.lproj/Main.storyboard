@@ -27,7 +27,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="L1e-ud-3uE" kind="show" identifier="showDocuments" id="kxe-s6-7Dp"/>
+                                    <segue destination="L1e-ud-3uE" kind="show" identifier="showAllDocuments" id="kxe-s6-7Dp"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -70,6 +70,9 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="FAb-ub-VPK" kind="show" identifier="showDocument" id="5QJ-du-HAy"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -82,6 +85,42 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vdg-Km-QkJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="986" y="422"/>
+        </scene>
+        <!--Document-->
+        <scene sceneID="FOu-kr-OW3">
+            <objects>
+                <viewController title="Document" id="FAb-ub-VPK" customClass="ICDDocumentViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="X9c-Jv-R3W"/>
+                        <viewControllerLayoutGuide type="bottom" id="fTz-XB-6wr"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="buT-bw-1ks">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" usesAttributedText="YES" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bRs-yB-oHc">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <attributedString key="attributedText"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="bRs-yB-oHc" firstAttribute="leading" secondItem="buT-bw-1ks" secondAttribute="leading" id="30b-JF-lOo"/>
+                            <constraint firstItem="bRs-yB-oHc" firstAttribute="bottom" secondItem="fTz-XB-6wr" secondAttribute="top" id="6Bs-gQ-lPr"/>
+                            <constraint firstAttribute="trailing" secondItem="bRs-yB-oHc" secondAttribute="trailing" id="7ub-5g-NCi"/>
+                            <constraint firstItem="bRs-yB-oHc" firstAttribute="top" secondItem="buT-bw-1ks" secondAttribute="top" id="fWo-GV-RKs"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Document" id="02U-HK-5Je"/>
+                    <connections>
+                        <outlet property="textView" destination="bRs-yB-oHc" id="bfn-rE-Daa"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NEs-HP-jFW" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1694" y="422"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="zoA-CT-UGL">

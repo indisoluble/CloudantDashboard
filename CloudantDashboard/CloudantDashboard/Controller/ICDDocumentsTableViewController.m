@@ -8,6 +8,8 @@
 
 #import "ICDDocumentsTableViewController.h"
 
+#import "ICDDocumentViewController.h"
+
 #import "ICDRequestAllDocuments.h"
 
 #import "ICDModelDocument.h"
@@ -27,6 +29,10 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 @property (strong, nonatomic, readonly) ICDRequestAllDocuments *requestAllDocs;
 
+@property (strong, nonatomic) ICDNetworkManager *networkManager;
+
+@property (strong, nonatomic) NSString *databaseName;
+
 @property (strong, nonatomic) NSArray *allDocuments;
 
 @end
@@ -36,26 +42,6 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 @implementation ICDDocumentsTableViewController
 
 #pragma mark - Synthesize properties
-- (void)setNetworkManager:(ICDNetworkManager *)networkManager
-{
-    _networkManager = networkManager;
-    
-    [self requestDocumentsForDatabase];
-}
-
-- (void)setDatabaseName:(NSString *)databaseName
-{
-    _databaseName = databaseName;
-    
-    if (_requestAllDocs)
-    {
-        _requestAllDocs.delegate = nil;
-        _requestAllDocs = nil;
-    }
-    
-    [self requestDocumentsForDatabase];
-}
-
 - (ICDRequestAllDocuments *)requestAllDocs
 {
     if (!_requestAllDocs && self.databaseName)
@@ -94,6 +80,17 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+}
+
+
+#pragma mark - Navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([sender isKindOfClass:[UITableViewCell class]] &&
+        [segue.destinationViewController isKindOfClass:[ICDDocumentViewController class]])
+    {
+        [self prepareForSegueDocumentVC:segue.destinationViewController withCell:sender];
+    }
 }
 
 
@@ -146,13 +143,46 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 }
 
 
+#pragma mark - Public methods
+- (void)useNetworkManager:(ICDNetworkManager *)networkManager
+             databaseName:(NSString *)databaseName
+{
+    self.networkManager = networkManager;
+    self.databaseName = databaseName;
+    
+    [self releaseRequestAllDocs];
+    
+    [self executeRequestAllDocs];
+}
+
+
 #pragma mark - Private methods
-- (void)requestDocumentsForDatabase
+- (void)releaseRequestAllDocs
+{
+    if (_requestAllDocs)
+    {
+        _requestAllDocs.delegate = nil;
+        _requestAllDocs = nil;
+    }
+}
+
+- (void)executeRequestAllDocs
 {
     if (self.networkManager && self.requestAllDocs)
     {
         [self.networkManager executeRequest:self.requestAllDocs];
     }
+}
+
+- (void)prepareForSegueDocumentVC:(ICDDocumentViewController *)documentVC
+                         withCell:(UITableViewCell *)cell
+{
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    ICDModelDocument *document = (ICDModelDocument *)self.allDocuments[indexPath.row];
+    
+    [documentVC useNetworkManager:self.networkManager
+                     databaseName:self.databaseName
+                       documentId:document.documentId];
 }
 
 @end

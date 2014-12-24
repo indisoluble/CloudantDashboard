@@ -150,8 +150,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     ICDModelDatabase *database = (ICDModelDatabase *)self.allDatabases[indexPath.row];
     
-    documentVC.networkManager = self.networkManager;
-    documentVC.databaseName = database.name;
+    [documentVC useNetworkManager:self.networkManager databaseName:database.name];
 }
 
 @end

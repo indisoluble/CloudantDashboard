@@ -12,8 +12,6 @@
 
 #import "ICDModelDatabase.h"
 
-#import "ICDLog.h"
-
 
 
 #define ICDREQUESTALLDATABASES_PATH         @"/_all_dbs"

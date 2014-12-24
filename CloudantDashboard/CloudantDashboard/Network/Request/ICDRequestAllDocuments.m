@@ -17,8 +17,8 @@
 #define ICDREQUESTALLDOCUMENTS_JSON_DOCUMENT_KEY_ID     @"id"
 #define ICDREQUESTALLDOCUMENTS_JSON_DOCUMENT_KEY_REV    @"value.rev"
 
-#define ICDREQUESTALLDOCUMENTS_METHOD       @"_all_docs"
-#define ICDREQUESTALLDOCUMENTS_PATHPATTERN  [@"/:databaseName/" stringByAppendingString:ICDREQUESTALLDOCUMENTS_METHOD]
+#define ICDREQUESTALLDOCUMENTS_PATH_FORMAT  @"/%@/_all_docs"
+#define ICDREQUESTALLDOCUMENTS_PATHPATTERN  [NSString stringWithFormat:ICDREQUESTALLDOCUMENTS_PATH_FORMAT, @":databaseName"]
 #define ICDREQUESTALLDOCUMENTS_KEYPATH      @"rows"
 
 
@@ -50,7 +50,7 @@
         }
         else
         {
-            _path = [NSString stringWithFormat:@"/%@/%@", dbName, ICDREQUESTALLDOCUMENTS_METHOD];
+            _path = [NSString stringWithFormat:ICDREQUESTALLDOCUMENTS_PATH_FORMAT, dbName];
         }
     }
     
