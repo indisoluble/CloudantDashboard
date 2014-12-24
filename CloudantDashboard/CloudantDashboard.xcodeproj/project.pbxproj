@@ -25,6 +25,8 @@
 		FF73864F1A4B31AA008B2AA2 /* ICDRequestDeleteDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = FF73864E1A4B31AA008B2AA2 /* ICDRequestDeleteDatabase.m */; };
 		FF7386511A4B351E008B2AA2 /* ICDRequestDeleteDatabaseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FF7386501A4B351E008B2AA2 /* ICDRequestDeleteDatabaseTests.m */; };
 		FF7386551A4B38A9008B2AA2 /* ICDRequestResponseValueOk.m in Sources */ = {isa = PBXBuildFile; fileRef = FF7386541A4B38A9008B2AA2 /* ICDRequestResponseValueOk.m */; };
+		FF73865A1A4B6956008B2AA2 /* RKObjectManager+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = FF7386591A4B6956008B2AA2 /* RKObjectManager+Helper.m */; };
+		FF73865D1A4B700C008B2AA2 /* ICDRequestResponseValueError.m in Sources */ = {isa = PBXBuildFile; fileRef = FF73865C1A4B700C008B2AA2 /* ICDRequestResponseValueError.m */; };
 		FF86206E1A473A2C00AC68D2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FF86206D1A473A2C00AC68D2 /* main.m */; };
 		FF8620711A473A2C00AC68D2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8620701A473A2C00AC68D2 /* AppDelegate.m */; };
 		FF8620771A473A2C00AC68D2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FF8620751A473A2C00AC68D2 /* Main.storyboard */; };
@@ -86,6 +88,10 @@
 		FF7386531A4B38A9008B2AA2 /* ICDRequestResponseValueOk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestResponseValueOk.h; sourceTree = "<group>"; };
 		FF7386541A4B38A9008B2AA2 /* ICDRequestResponseValueOk.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestResponseValueOk.m; sourceTree = "<group>"; };
 		FF7386561A4B3E38008B2AA2 /* ICDRequestDeleteDatabaseDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestDeleteDatabaseDelegate.h; sourceTree = "<group>"; };
+		FF7386581A4B6956008B2AA2 /* RKObjectManager+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RKObjectManager+Helper.h"; sourceTree = "<group>"; };
+		FF7386591A4B6956008B2AA2 /* RKObjectManager+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RKObjectManager+Helper.m"; sourceTree = "<group>"; };
+		FF73865B1A4B700C008B2AA2 /* ICDRequestResponseValueError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestResponseValueError.h; sourceTree = "<group>"; };
+		FF73865C1A4B700C008B2AA2 /* ICDRequestResponseValueError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestResponseValueError.m; sourceTree = "<group>"; };
 		FF8620681A473A2C00AC68D2 /* CloudantDashboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CloudantDashboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF86206C1A473A2C00AC68D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FF86206D1A473A2C00AC68D2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -179,6 +185,7 @@
 			isa = PBXGroup;
 			children = (
 				FF7386521A4B381B008B2AA2 /* Auxiliar */,
+				FF7386571A4B6918008B2AA2 /* Category */,
 				FF028DC41A488873008D2561 /* ICDRequestAllDatabases.h */,
 				FF028DC51A488873008D2561 /* ICDRequestAllDatabases.m */,
 				FF2D02281A48DFBF00E03C6E /* ICDRequestAllDatabasesDelegate.h */,
@@ -265,10 +272,21 @@
 		FF7386521A4B381B008B2AA2 /* Auxiliar */ = {
 			isa = PBXGroup;
 			children = (
+				FF73865B1A4B700C008B2AA2 /* ICDRequestResponseValueError.h */,
+				FF73865C1A4B700C008B2AA2 /* ICDRequestResponseValueError.m */,
 				FF7386531A4B38A9008B2AA2 /* ICDRequestResponseValueOk.h */,
 				FF7386541A4B38A9008B2AA2 /* ICDRequestResponseValueOk.m */,
 			);
 			path = Auxiliar;
+			sourceTree = "<group>";
+		};
+		FF7386571A4B6918008B2AA2 /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				FF7386581A4B6956008B2AA2 /* RKObjectManager+Helper.h */,
+				FF7386591A4B6956008B2AA2 /* RKObjectManager+Helper.m */,
+			);
+			path = Category;
 			sourceTree = "<group>";
 		};
 		FF86205F1A473A2C00AC68D2 = {
@@ -507,9 +525,11 @@
 				FF028DC71A488873008D2561 /* ICDRequestAllDatabases.m in Sources */,
 				FF73864F1A4B31AA008B2AA2 /* ICDRequestDeleteDatabase.m in Sources */,
 				FF86206E1A473A2C00AC68D2 /* main.m in Sources */,
+				FF73865A1A4B6956008B2AA2 /* RKObjectManager+Helper.m in Sources */,
 				FF8620961A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m in Sources */,
 				FF028DE41A48B7FF008D2561 /* ICDNetworkManager+Helper.m in Sources */,
 				FF6FEA561A4A094D00988CD3 /* ICDDocumentViewController.m in Sources */,
+				FF73865D1A4B700C008B2AA2 /* ICDRequestResponseValueError.m in Sources */,
 				FF6FEA441A49DEBD00988CD3 /* ICDDocumentsTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
