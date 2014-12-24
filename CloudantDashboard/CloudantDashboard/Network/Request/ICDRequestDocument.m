@@ -7,6 +7,7 @@
 //
 
 #import <RestKit/RestKit.h>
+#import <JSONSyntaxHighlight/JSONSyntaxHighlight.h>
 
 #import "ICDRequestDocument.h"
 
@@ -74,9 +75,12 @@
         __strong ICDRequestDocument *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)
         {
-            NSString *string = op.HTTPRequestOperation.responseString;
-            NSAttributedString *attributedString = [[NSAttributedString alloc] initWithString:string];
-            [strongSelf.delegate requestDocument:strongSelf didGetDocument:attributedString];
+            ICDRequestDocumentDictionary *docDictionary = (ICDRequestDocumentDictionary *)[mapResult firstObject];
+            
+            JSONSyntaxHighlight *jsh = [[JSONSyntaxHighlight alloc] initWithJSON:docDictionary.dictionary];
+            NSAttributedString *highlightJSON = [jsh highlightJSON];
+            
+            [strongSelf.delegate requestDocument:strongSelf didGetDocument:highlightJSON];
         }
     };
     
