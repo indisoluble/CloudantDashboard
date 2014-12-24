@@ -97,7 +97,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     [super viewDidLoad];
     
-    [self.networkManager executeRequest:self.requestAllDBs];
+    [self executeRequestAllDBs];
 }
 
 
@@ -144,6 +144,14 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 
 #pragma mark - Private methods
+- (void)executeRequestAllDBs
+{
+    if (self.networkManager)
+    {
+        [self.networkManager executeRequest:self.requestAllDBs];
+    }
+}
+
 - (void)prepareForSegueDocumentsVC:(ICDDocumentsTableViewController *)documentVC
                           withCell:(UITableViewCell *)cell
 {
