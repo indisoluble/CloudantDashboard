@@ -338,14 +338,14 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
         return NO;
     }
     
-    if (!dbName)
+    self.requestCreateDB = [[ICDRequestCreateDatabase alloc] initWithDatabaseName:dbName];
+    if (!self.requestCreateDB)
     {
-        ICDLogTrace(@"No name provided. Abort");
+        ICDLogWarning(@"Request not created with database name <%@>. Abort", dbName);
         
         return NO;
     }
     
-    self.requestCreateDB = [[ICDRequestCreateDatabase alloc] initWithDatabaseName:dbName];
     self.requestCreateDB.delegate = self;
     
     [self.networkManager executeRequest:self.requestCreateDB];
@@ -378,14 +378,14 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
         return NO;
     }
     
-    if (!dbName)
+    self.requestDeleteDB = [[ICDRequestDeleteDatabase alloc] initWithDatabaseName:dbName];
+    if (!self.requestDeleteDB)
     {
-        ICDLogTrace(@"No name provided. Abort");
+        ICDLogWarning(@"Request not created with database name <%@>. Abort", dbName);
         
         return NO;
     }
     
-    self.requestDeleteDB = [[ICDRequestDeleteDatabase alloc] initWithDatabaseName:dbName];
     self.requestDeleteDB.delegate = self;
     
     [self.networkManager executeRequest:self.requestDeleteDB];

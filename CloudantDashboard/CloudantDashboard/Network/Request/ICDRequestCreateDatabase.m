@@ -49,13 +49,16 @@
     self = [super init];
     if (self)
     {
-        if (!dbName)
+        NSCharacterSet *whiteSpacesAndNewLines = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+        NSString *trimmedDBName = (dbName ? [dbName stringByTrimmingCharactersInSet:whiteSpacesAndNewLines] : nil);
+        
+        if (!trimmedDBName || ([trimmedDBName length] == 0))
         {
             self = nil;
         }
         else
         {
-            _dbName = dbName;
+            _dbName = trimmedDBName;
             _path = [NSString stringWithFormat:ICDREQUESTCREATEDATABASE_PATH_FORMAT, _dbName];
             _responseDescriptors = [ICDRequestCreateDatabase responseDescriptorsWithPath:_path];
         }

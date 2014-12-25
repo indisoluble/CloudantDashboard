@@ -43,7 +43,14 @@
     {
         _requestDocument = [[ICDRequestDocument alloc] initWithDatabaseName:self.databaseName
                                                                  documentId:self.documentId];
-        _requestDocument.delegate = self;
+        if (_requestDocument)
+        {
+            _requestDocument.delegate = self;
+        }
+        else
+        {
+            ICDLogWarning(@"Request not created with dbName <%@> and docId <%@>", self.databaseName, self.documentId);
+        }
     }
     
     return _requestDocument;

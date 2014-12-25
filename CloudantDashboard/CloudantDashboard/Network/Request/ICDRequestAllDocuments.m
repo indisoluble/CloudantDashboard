@@ -44,13 +44,16 @@
     self = [super init];
     if (self)
     {
-        if (!dbName)
+        NSCharacterSet *whiteSpacesAndNewLines = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+        NSString *trimmedDBName = (dbName ? [dbName stringByTrimmingCharactersInSet:whiteSpacesAndNewLines] : nil);
+        
+        if (!trimmedDBName || ([trimmedDBName length] == 0))
         {
             self = nil;
         }
         else
         {
-            _path = [NSString stringWithFormat:ICDREQUESTALLDOCUMENTS_PATH_FORMAT, dbName];
+            _path = [NSString stringWithFormat:ICDREQUESTALLDOCUMENTS_PATH_FORMAT, trimmedDBName];
             _responseDescriptor = [ICDRequestAllDocuments responseDescriptorForPath:_path];
         }
     }

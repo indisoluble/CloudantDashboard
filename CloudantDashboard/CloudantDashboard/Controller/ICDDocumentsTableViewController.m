@@ -44,10 +44,17 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 #pragma mark - Synthesize properties
 - (ICDRequestAllDocuments *)requestAllDocs
 {
-    if (!_requestAllDocs && self.databaseName)
+    if (!_requestAllDocs)
     {
         _requestAllDocs = [[ICDRequestAllDocuments alloc] initWithDatabaseName:self.databaseName];
-        _requestAllDocs.delegate = self;
+        if (_requestAllDocs)
+        {
+            _requestAllDocs.delegate = self;
+        }
+        else
+        {
+            ICDLogWarning(@"Request not created with database name <%@>", self.databaseName);
+        }
     }
     
     return _requestAllDocs;

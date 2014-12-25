@@ -45,4 +45,16 @@
     XCTAssertNil([[ICDRequestCreateDatabase alloc] initWithDatabaseName:nil], @"A database requires a name");
 }
 
+- (void)testInitWithEmptyDatabaseNameFails
+{
+    XCTAssertNil([[ICDRequestCreateDatabase alloc] initWithDatabaseName:@""],
+                 @"A database can not be created with an empty name");
+}
+
+- (void)testInitWithDatabaseNameEqualToSpacesFails
+{
+    XCTAssertNil([[ICDRequestCreateDatabase alloc] initWithDatabaseName:@"  "],
+                 @"Only spaces is equal to an empty database name");
+}
+
 @end

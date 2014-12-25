@@ -53,4 +53,28 @@
                  @"Database and document id are required to find a document");
 }
 
+- (void)testInitWithEmptyDatabaseNameFails
+{
+    XCTAssertNil([[ICDRequestDocument alloc] initWithDatabaseName:@"" documentId:@"documentId"],
+                 @"An empty name is not a valid database name");
+}
+
+- (void)testInitWithDatabaseNameEqualToSpacesFails
+{
+    XCTAssertNil([[ICDRequestDocument alloc] initWithDatabaseName:@"  " documentId:@"documentId"],
+                 @"Only spaces is equal to an empty database name");
+}
+
+- (void)testInitWithEmptyDocumentIdFails
+{
+    XCTAssertNil([[ICDRequestDocument alloc] initWithDatabaseName:@"databaseName" documentId:@""],
+                 @"An empty id is not a valid id for a document");
+}
+
+- (void)testInitWithDocumentIdEqualToSpacesFails
+{
+    XCTAssertNil([[ICDRequestDocument alloc] initWithDatabaseName:@"databaseName" documentId:@"  "],
+                 @"Only spaces is equal to an empty document id");
+}
+
 @end

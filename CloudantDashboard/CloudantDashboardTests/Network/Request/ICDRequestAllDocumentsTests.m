@@ -47,4 +47,16 @@
                  @"Without a name, we can not request the documents in a database");
 }
 
+- (void)testInitWithEmptyDatabaseNameFails
+{
+    XCTAssertNil([[ICDRequestAllDocuments alloc] initWithDatabaseName:@""],
+                 @"An empty name is not a valid databae name");
+}
+
+- (void)testInitWithDatabaseNameEqualToSpacesFails
+{
+    XCTAssertNil([[ICDRequestAllDocuments alloc] initWithDatabaseName:@"  "],
+                 @"Only spaces is equal to an empty database name");
+}
+
 @end

@@ -47,4 +47,16 @@
                  @"Without a name there is no way to know the database to delete");
 }
 
+- (void)testInitWithEmptyDatabaseNameFails
+{
+    XCTAssertNil([[ICDRequestDeleteDatabase alloc] initWithDatabaseName:@""],
+                 @"An empty name is not a valid database name");
+}
+
+- (void)testInitWithDatabaseNameEqualToSpacesFails
+{
+    XCTAssertNil([[ICDRequestDeleteDatabase alloc] initWithDatabaseName:@"  "],
+                 @"Only spaces is equal to an empty database name");
+}
+
 @end

@@ -11,21 +11,13 @@
 
 #import "ICDRequestDocument.h"
 
+#import "ICDRequestResponseValueDictionary.h"
+
 #import "ICDLog.h"
 
 
 
 #define ICDREQUESTDOCUMENT_PATH_FORMAT  @"/%@/%@"
-
-#define ICDREQUESTDOCUMENT_DOCDICTIONARY_PROPERTY_KEY_DIC   @"dictionary"
-
-
-
-@interface ICDRequestDocumentDictionary : NSObject
-
-@property (strong, nonatomic) NSDictionary *dictionary;
-
-@end
 
 
 
@@ -51,13 +43,18 @@
     self = [super init];
     if (self)
     {
-        if (!dbName || !documentId)
+        NSCharacterSet *whiteSpacesAndNewLines = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+        
+        NSString *trimmedDBName = (dbName ? [dbName stringByTrimmingCharactersInSet:whiteSpacesAndNewLines] : nil);
+        NSString *trimmedDocId = (documentId ? [documentId stringByTrimmingCharactersInSet:whiteSpacesAndNewLines] : nil);
+        
+        if (!trimmedDBName || !trimmedDocId || ([trimmedDBName length] == 0) || ([trimmedDocId length] == 0))
         {
             self = nil;
         }
         else
         {
-            _path = [NSString stringWithFormat:ICDREQUESTDOCUMENT_PATH_FORMAT, dbName, documentId];
+            _path = [NSString stringWithFormat:ICDREQUESTDOCUMENT_PATH_FORMAT, trimmedDBName, trimmedDocId];
             _responseDescriptor = [ICDRequestDocument responseDescriptorForPath:_path];
         }
     }
@@ -87,7 +84,7 @@
         __strong ICDRequestDocument *strongSelf = weakSelf;
         if (strongSelf)
         {
-            ICDRequestDocumentDictionary *docDictionary = (ICDRequestDocumentDictionary *)[mapResult firstObject];
+            ICDRequestResponseValueDictionary *docDictionary = (ICDRequestResponseValueDictionary *)[mapResult firstObject];
             
             [strongSelf notifySuccessWithDocumentDictionary:docDictionary];
         }
@@ -111,7 +108,7 @@
 
 
 #pragma mark - Private methods
-- (void)notifySuccessWithDocumentDictionary:(ICDRequestDocumentDictionary *)docDictionary
+- (void)notifySuccessWithDocumentDictionary:(ICDRequestResponseValueDictionary *)docDictionary
 {
     if (self.delegate)
     {
@@ -135,9 +132,9 @@
 + (RKResponseDescriptor *)responseDescriptorForPath:(NSString *)path
 {
     // Mapping
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[ICDRequestDocumentDictionary class]];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[ICDRequestResponseValueDictionary class]];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil
-                                                                      toKeyPath:ICDREQUESTDOCUMENT_DOCDICTIONARY_PROPERTY_KEY_DIC]];
+                                                                      toKeyPath:ICDREQUESTRESPONSEVALUEDICTIONARY_PROPERTY_KEY_DIC]];
     
     // Status code
     NSIndexSet *statusCodes = [NSIndexSet indexSetWithIndex:RKStatusCodeClassSuccessful];
@@ -151,11 +148,5 @@
     
     return responseDescriptor;
 }
-
-@end
-
-
-
-@implementation ICDRequestDocumentDictionary
 
 @end
