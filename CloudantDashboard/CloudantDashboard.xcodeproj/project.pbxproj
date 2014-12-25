@@ -39,6 +39,8 @@
 		FF8620991A4746F400AC68D2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FF86209B1A4746F400AC68D2 /* Localizable.strings */; };
 		FF8620A11A474B8A00AC68D2 /* ICDAuthorizationPlist.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8620A01A474B8A00AC68D2 /* ICDAuthorizationPlist.m */; };
 		FF8620A91A475C4200AC68D2 /* cloudantAuthorization.plist in Resources */ = {isa = PBXBuildFile; fileRef = FF8620A81A475C4200AC68D2 /* cloudantAuthorization.plist */; };
+		FFE135BE1A4C974E002F9E23 /* ICDRequestCreateDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE135BD1A4C974E002F9E23 /* ICDRequestCreateDocument.m */; };
+		FFE135C11A4C9EE1002F9E23 /* ICDRequestCreateDocumentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE135C01A4C9EE1002F9E23 /* ICDRequestCreateDocumentTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -121,6 +123,10 @@
 		FF8620A01A474B8A00AC68D2 /* ICDAuthorizationPlist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDAuthorizationPlist.m; sourceTree = "<group>"; };
 		FF8620A81A475C4200AC68D2 /* cloudantAuthorization.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = cloudantAuthorization.plist; path = ../../cloudantAuthorization.plist; sourceTree = SOURCE_ROOT; };
 		FF9C0C391A479201001C4EBA /* ICDLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICDLog.h; sourceTree = "<group>"; };
+		FFE135BC1A4C974E002F9E23 /* ICDRequestCreateDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestCreateDocument.h; sourceTree = "<group>"; };
+		FFE135BD1A4C974E002F9E23 /* ICDRequestCreateDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestCreateDocument.m; sourceTree = "<group>"; };
+		FFE135BF1A4C985B002F9E23 /* ICDRequestCreateDocumentDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestCreateDocumentDelegate.h; sourceTree = "<group>"; };
+		FFE135C01A4C9EE1002F9E23 /* ICDRequestCreateDocumentTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestCreateDocumentTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -204,6 +210,9 @@
 				FF4877801A4C42A600F157D5 /* ICDRequestCreateDatabase.h */,
 				FF4877811A4C42A600F157D5 /* ICDRequestCreateDatabase.m */,
 				FF4877831A4C442400F157D5 /* ICDRequestCreateDatabaseDelegate.h */,
+				FFE135BC1A4C974E002F9E23 /* ICDRequestCreateDocument.h */,
+				FFE135BD1A4C974E002F9E23 /* ICDRequestCreateDocument.m */,
+				FFE135BF1A4C985B002F9E23 /* ICDRequestCreateDocumentDelegate.h */,
 				FF73864D1A4B31AA008B2AA2 /* ICDRequestDeleteDatabase.h */,
 				FF73864E1A4B31AA008B2AA2 /* ICDRequestDeleteDatabase.m */,
 				FF7386561A4B3E38008B2AA2 /* ICDRequestDeleteDatabaseDelegate.h */,
@@ -276,6 +285,7 @@
 			children = (
 				FF6FEA4C1A49F68F00988CD3 /* ICDRequestAllDocumentsTests.m */,
 				FF4877841A4C469500F157D5 /* ICDRequestCreateDatabaseTests.m */,
+				FFE135C01A4C9EE1002F9E23 /* ICDRequestCreateDocumentTests.m */,
 				FF7386501A4B351E008B2AA2 /* ICDRequestDeleteDatabaseTests.m */,
 				FF6FEA511A49FA6200988CD3 /* ICDRequestDocumentTests.m */,
 			);
@@ -542,6 +552,7 @@
 				FF73864F1A4B31AA008B2AA2 /* ICDRequestDeleteDatabase.m in Sources */,
 				FF86206E1A473A2C00AC68D2 /* main.m in Sources */,
 				FF73865A1A4B6956008B2AA2 /* RKObjectManager+Helper.m in Sources */,
+				FFE135BE1A4C974E002F9E23 /* ICDRequestCreateDocument.m in Sources */,
 				FF8620961A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m in Sources */,
 				FF028DE41A48B7FF008D2561 /* ICDNetworkManager+Helper.m in Sources */,
 				FF6FEA561A4A094D00988CD3 /* ICDDocumentViewController.m in Sources */,
@@ -557,6 +568,7 @@
 			files = (
 				FF028DDA1A489691008D2561 /* ICDMockRequest.m in Sources */,
 				FF4877851A4C469500F157D5 /* ICDRequestCreateDatabaseTests.m in Sources */,
+				FFE135C11A4C9EE1002F9E23 /* ICDRequestCreateDocumentTests.m in Sources */,
 				FF6FEA4D1A49F68F00988CD3 /* ICDRequestAllDocumentsTests.m in Sources */,
 				FF028DD41A4892F0008D2561 /* ICDNetworkManagerTests.m in Sources */,
 				FF6FEA521A49FA6200988CD3 /* ICDRequestDocumentTests.m in Sources */,

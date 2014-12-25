@@ -11,6 +11,7 @@
 #import "ICDDocumentViewController.h"
 
 #import "ICDRequestAllDocuments.h"
+#import "ICDRequestCreateDocument.h"
 
 #import "ICDModelDocument.h"
 
@@ -22,15 +23,18 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 
 
-@interface ICDDocumentsTableViewController () <ICDRequestAllDocumentsDelegate>
+@interface ICDDocumentsTableViewController ()
+    <ICDRequestAllDocumentsDelegate,
+    ICDRequestCreateDocumentDelegate>
 
 @property (strong, nonatomic) ICDNetworkManager *networkManager;
 
 @property (strong, nonatomic) ICDRequestAllDocuments *requestAllDocs;
+@property (strong, nonatomic) ICDRequestCreateDocument *requestCreateDoc;
 
 @property (strong, nonatomic) NSString *databaseName;
 
-@property (strong, nonatomic) NSArray *allDocuments;
+@property (strong, nonatomic) NSMutableArray *allDocuments;
 
 @end
 
@@ -44,7 +48,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     self = [super initWithCoder:aDecoder];
     if (self)
     {
-        _allDocuments = @[];
+        _allDocuments = [NSMutableArray array];
     }
     
     return self;
@@ -110,7 +114,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     [self releaseRequestAllDocs];
     
-    self.allDocuments = documents;
+    self.allDocuments = [NSMutableArray arrayWithArray:documents];
     
     if ([self isViewLoaded])
     {
@@ -139,6 +143,42 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 }
 
 
+#pragma mark - ICDRequestCreateDocumentDelegate methods
+- (void)requestCreateDocument:(id<ICDRequestProtocol>)request didCreateDocument:(ICDModelDocument *)document
+{
+    if (request != self.requestCreateDoc)
+    {
+        ICDLogDebug(@"Received document from unexpected request. Ignore");
+        
+        return;
+    }
+    
+    [self releaseRequestCreateDoc];
+    
+    [self.allDocuments addObject:document];
+    
+    if ([self isViewLoaded])
+    {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:([self.allDocuments count] - 1) inSection:0];
+        [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    }
+}
+
+- (void)requestCreateDocument:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
+{
+    if (request != self.requestCreateDoc)
+    {
+        ICDLogDebug(@"Received error from unexpected request. Ignore");
+        
+        return;
+    }
+    
+    ICDLogError(@"Error: %@", error);
+    
+    [self releaseRequestCreateDoc];
+}
+
+
 #pragma mark - Public methods
 - (void)useNetworkManager:(ICDNetworkManager *)networkManager
              databaseName:(NSString *)databaseName
@@ -155,7 +195,16 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 #pragma mark - Private methods
 - (void)customizeUI
 {
+    [self addAddBarButtonItem];
     [self addRefreshControl];
+}
+
+- (void)addAddBarButtonItem
+{
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                                                          target:self
+                                                                          action:@selector(executeRequestCreateDoc)];
+    self.navigationItem.rightBarButtonItem = item;
 }
 
 - (void)addRefreshControl
@@ -216,9 +265,49 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     }
 }
 
+- (BOOL)executeRequestCreateDoc
+{
+    if ([self isExecutingRequest])
+    {
+        ICDLogTrace(@"There is a request ongoing. Abort");
+        
+        return NO;
+    }
+    
+    if (!self.networkManager)
+    {
+        ICDLogTrace(@"No network manager. Abort");
+        
+        return NO;
+    }
+    
+    self.requestCreateDoc = [[ICDRequestCreateDocument alloc] initWithDatabaseName:self.databaseName];
+    if (!self.requestCreateDoc)
+    {
+        ICDLogWarning(@"Request not created with database name <%@>. Abort", self.databaseName);
+        
+        return NO;
+    }
+    
+    self.requestCreateDoc.delegate = self;
+    
+    [self.networkManager executeRequest:self.requestCreateDoc];
+    
+    return YES;
+}
+
+- (void)releaseRequestCreateDoc
+{
+    if (self.requestCreateDoc)
+    {
+        self.requestCreateDoc.delegate = nil;
+        self.requestCreateDoc = nil;
+    }
+}
+
 - (BOOL)isExecutingRequest
 {
-    return (self.requestAllDocs != nil);
+    return (self.requestAllDocs || self.requestCreateDoc);
 }
 
 - (void)prepareForSegueDocumentVC:(ICDDocumentViewController *)documentVC

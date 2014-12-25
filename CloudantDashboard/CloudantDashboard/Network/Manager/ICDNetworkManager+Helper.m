@@ -44,6 +44,7 @@
                        value:ICDNETWORKMANAGER_HEADER_CONTENTTYPE_VALUE];
     [client setDefaultHeader:ICDNETWORKMANAGER_HEADER_ACCEPT_KEY
                        value:ICDNETWORKMANAGER_HEADER_ACCEPT_VALUE];
+    client.parameterEncoding = AFJSONParameterEncoding;
     
     RKObjectManager *objectManager = [[RKObjectManager alloc] initWithHTTPClient:client];
     
