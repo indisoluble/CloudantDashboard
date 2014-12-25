@@ -23,13 +23,10 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 
 @interface ICDDocumentsTableViewController () <ICDRequestAllDocumentsDelegate>
-{
-    ICDRequestAllDocuments *_requestAllDocs;
-}
-
-@property (strong, nonatomic, readonly) ICDRequestAllDocuments *requestAllDocs;
 
 @property (strong, nonatomic) ICDNetworkManager *networkManager;
+
+@property (strong, nonatomic) ICDRequestAllDocuments *requestAllDocs;
 
 @property (strong, nonatomic) NSString *databaseName;
 
@@ -40,26 +37,6 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 
 @implementation ICDDocumentsTableViewController
-
-#pragma mark - Synthesize properties
-- (ICDRequestAllDocuments *)requestAllDocs
-{
-    if (!_requestAllDocs)
-    {
-        _requestAllDocs = [[ICDRequestAllDocuments alloc] initWithDatabaseName:self.databaseName];
-        if (_requestAllDocs)
-        {
-            _requestAllDocs.delegate = self;
-        }
-        else
-        {
-            ICDLogWarning(@"Request not created with database name <%@>", self.databaseName);
-        }
-    }
-    
-    return _requestAllDocs;
-}
-
 
 #pragma mark - Init object
 - (id)initWithCoder:(NSCoder *)aDecoder
@@ -87,6 +64,8 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self customizeUI];
 }
 
 
@@ -129,10 +108,13 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
         return;
     }
     
+    [self releaseRequestAllDocs];
+    
     self.allDocuments = documents;
     
     if ([self isViewLoaded])
     {
+        [self.refreshControl endRefreshing];
         [self.tableView reloadData];
     }
 }
@@ -147,6 +129,13 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     }
     
     ICDLogError(@"Error: %@", error);
+    
+    [self releaseRequestAllDocs];
+    
+    if ([self isViewLoaded])
+    {
+        [self.refreshControl endRefreshing];
+    }
 }
 
 
@@ -164,21 +153,72 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 
 #pragma mark - Private methods
-- (void)releaseRequestAllDocs
+- (void)customizeUI
 {
-    if (_requestAllDocs)
+    [self addRefreshControl];
+}
+
+- (void)addRefreshControl
+{
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self
+                       action:@selector(executeRequestAllDocsAfterPullingToRefresh)
+             forControlEvents:UIControlEventValueChanged];
+    
+    self.refreshControl = refreshControl;
+}
+
+- (void)executeRequestAllDocsAfterPullingToRefresh
+{
+    if (![self executeRequestAllDocs])
     {
-        _requestAllDocs.delegate = nil;
-        _requestAllDocs = nil;
+        [self.refreshControl endRefreshing];
     }
 }
 
-- (void)executeRequestAllDocs
+- (BOOL)executeRequestAllDocs
 {
-    if (self.networkManager && self.requestAllDocs)
+    if ([self isExecutingRequest])
     {
-        [self.networkManager executeRequest:self.requestAllDocs];
+        ICDLogTrace(@"There is a request ongoing. Abort");
+        
+        return NO;
     }
+    
+    if (!self.networkManager)
+    {
+        ICDLogTrace(@"No network manager. Abort");
+        
+        return NO;
+    }
+    
+    self.requestAllDocs = [[ICDRequestAllDocuments alloc] initWithDatabaseName:self.databaseName];
+    if (!self.requestAllDocs)
+    {
+        ICDLogWarning(@"Request not created with database name <%@>. Abort", self.databaseName);
+        
+        return NO;
+    }
+    
+    self.requestAllDocs.delegate = self;
+    
+    [self.networkManager executeRequest:self.requestAllDocs];
+    
+    return YES;
+}
+
+- (void)releaseRequestAllDocs
+{
+    if (self.requestAllDocs)
+    {
+        self.requestAllDocs.delegate = nil;
+        self.requestAllDocs = nil;
+    }
+}
+
+- (BOOL)isExecutingRequest
+{
+    return (self.requestAllDocs != nil);
 }
 
 - (void)prepareForSegueDocumentVC:(ICDDocumentViewController *)documentVC
