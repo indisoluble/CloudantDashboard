@@ -13,11 +13,21 @@
 
 
 
+#define ICDLogLevelOff      RKLogLevelOff
+#define ICDLogLevelCritical RKLogLevelCritical
+#define ICDLogLevelError    RKLogLevelError
+#define ICDLogLevelWarning  RKLogLevelWarning
+#define ICDLogLevelInfo     RKLogLevelInfo
+#define ICDLogLevelDebug    RKLogLevelDebug
+#define ICDLogLevelTrace    RKLogLevelTrace
+
 #define ICDLogCritical(...) RKLogCritical(__VA_ARGS__)
 #define ICDLogError(...)    RKLogError(__VA_ARGS__)
 #define ICDLogWarning(...)  RKLogWarning(__VA_ARGS__)
 #define ICDLogInfo(...)     RKLogInfo(__VA_ARGS__)
 #define ICDLogDebug(...)    RKLogDebug(__VA_ARGS__)
 #define ICDLogTrace(...)    RKLogTrace(__VA_ARGS__)
+
+#define ICDLogConfigureLevel(level) RKLogConfigureByName("App", level)
 
 #endif

@@ -14,6 +14,7 @@
 #import "ICDNetworkManager+Helper.h"
 
 #import "ICDRequestAllDatabases.h"
+#import "ICDRequestCreateDatabase.h"
 #import "ICDRequestDeleteDatabase.h"
 
 #import "ICDModelDatabase.h"
@@ -26,7 +27,11 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 
 
-@interface ICDDatabasesTableViewController () <ICDRequestAllDatabasesDelegate, ICDRequestDeleteDatabaseDelegate>
+@interface ICDDatabasesTableViewController ()
+    <UIAlertViewDelegate,
+    ICDRequestAllDatabasesDelegate,
+    ICDRequestCreateDatabaseDelegate,
+    ICDRequestDeleteDatabaseDelegate>
 {
     ICDNetworkManager *_networkManager;
 }
@@ -34,9 +39,12 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 @property (strong, nonatomic, readonly) ICDNetworkManager *networkManager;
 
 @property (strong, nonatomic) ICDRequestAllDatabases *requestAllDBs;
+@property (strong, nonatomic) ICDRequestCreateDatabase *requestCreateDB;
 @property (strong, nonatomic) ICDRequestDeleteDatabase *requestDeleteDB;
 
 @property (strong, nonatomic) NSMutableArray *allDatabases;
+
+@property (strong, nonatomic) UIAlertView *askDatabaseNameAlertView;
 
 @end
 
@@ -88,7 +96,8 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     [super viewDidLoad];
     
-    [self addRefreshControl];
+    [self customizeUI];
+    
     [self executeRequestAllDBs];
 }
 
@@ -133,6 +142,21 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 }
 
 
+#pragma mark - UIAlertViewDelegate methods
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    NSString *buttonTitle = [alertView buttonTitleAtIndex:buttonIndex];
+    if ([buttonTitle isEqualToString:NSLocalizedString(@"Create", @"Create")])
+    {
+        UITextField *textField = [alertView textFieldAtIndex:0];
+        
+        [self executeRequestCreateDBWithName:textField.text];
+    }
+    
+    [self releaseAskDatbaseNameAlertView];
+}
+
+
 #pragma mark - ICDRequestAllDatabasesDelegate methods
 - (void)requestAllDatabases:(id<ICDRequestProtocol>)request didGetDatabases:(NSArray *)databases
 {
@@ -153,15 +177,45 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     [self.refreshControl endRefreshing];
 }
 
+
+#pragma mark - ICDRequestCreateDatabaseDelegate methods
+- (void)requestCreateDatabase:(id<ICDRequestProtocol>)request didCreateDatabaseWithName:(NSString *)dbName
+{
+    [self releaseRequestCreateDB];
+    
+    ICDModelDatabase *database = [ICDModelDatabase databaseWithName:dbName];
+    [self.allDatabases addObject:database];
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:([self.allDatabases count] - 1) inSection:0];
+    [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+}
+
+- (void)requestCreateDatabase:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
+{
+    ICDLogError(@"Error: %@", error);
+    
+    [self releaseRequestCreateDB];
+}
+
+
 #pragma mark - ICDRequestDeleteDatabaseDelegate methods
 - (void)requestDeleteDatabase:(id<ICDRequestProtocol>)request didDeleteDatabaseWithName:(NSString *)dbName
 {
     [self releaseRequestDeleteDB];
     
     ICDModelDatabase *database = [ICDModelDatabase databaseWithName:dbName];
-    [self.allDatabases removeObject:database];
+    NSUInteger index = [self.allDatabases indexOfObject:database];
+    if (index == NSNotFound)
+    {
+        ICDLogError(@"Database <%@> is not in the list. Abort", dbName);
+        
+        return;
+    }
     
-    [self.tableView reloadData];
+    [self.allDatabases removeObjectAtIndex:index];
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+    [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)requestDeleteDatabase:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
@@ -173,30 +227,90 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 
 #pragma mark - Private methods
+- (void)customizeUI
+{
+    [self addAddBarButtonItem];
+    [self addRefreshControl];
+}
+
+- (void)addAddBarButtonItem
+{
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                                                          target:self
+                                                                          action:@selector(askNameBeforeCreatingDatabase)];
+    self.navigationItem.rightBarButtonItem = item;
+}
+
 - (void)addRefreshControl
 {
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-    [refreshControl addTarget:self action:@selector(executeRequestAllDBs) forControlEvents:UIControlEventValueChanged];
+    [refreshControl addTarget:self
+                       action:@selector(executeRequestAllDBsAfterPullingToRefresh)
+             forControlEvents:UIControlEventValueChanged];
     
     self.refreshControl = refreshControl;
 }
 
-- (void)executeRequestAllDBs
+- (void)executeRequestAllDBsAfterPullingToRefresh
+{
+    if (![self executeRequestAllDBs])
+    {
+        [self.refreshControl endRefreshing];
+    }
+}
+
+- (void)prepareForSegueDocumentsVC:(ICDDocumentsTableViewController *)documentVC
+                          withCell:(UITableViewCell *)cell
+{
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    ICDModelDatabase *database = (ICDModelDatabase *)self.allDatabases[indexPath.row];
+    
+    [documentVC useNetworkManager:self.networkManager databaseName:database.name];
+}
+
+- (void)askNameBeforeCreatingDatabase
+{
+    self.askDatabaseNameAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Add New Database", @"Add New Database")
+                                                               message:NSLocalizedString(@"Name of database", @"Name of database")
+                                                              delegate:self
+                                                     cancelButtonTitle:NSLocalizedString(@"Cancel", @"Cancel")
+                                                     otherButtonTitles:NSLocalizedString(@"Create", @"Create"), nil];
+    self.askDatabaseNameAlertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+    
+    [self.askDatabaseNameAlertView show];
+}
+
+- (void)releaseAskDatbaseNameAlertView
+{
+    if (self.askDatabaseNameAlertView)
+    {
+        self.askDatabaseNameAlertView.delegate = nil;
+        self.askDatabaseNameAlertView = nil;
+    }
+}
+
+- (BOOL)executeRequestAllDBs
 {
     if ([self isExecutingRequest])
     {
         ICDLogTrace(@"There is a request ongoing. Abort");
         
-        return;
+        return NO;
     }
     
-    if (self.networkManager)
+    if (!self.networkManager)
     {
-        self.requestAllDBs = [[ICDRequestAllDatabases alloc] init];
-        self.requestAllDBs.delegate = self;
+        ICDLogTrace(@"No network manager. Abort");
         
-        [self.networkManager executeRequest:self.requestAllDBs];
+        return NO;
     }
+    
+    self.requestAllDBs = [[ICDRequestAllDatabases alloc] init];
+    self.requestAllDBs.delegate = self;
+    
+    [self.networkManager executeRequest:self.requestAllDBs];
+    
+    return YES;
 }
 
 - (void)releaseRequestAllDBs
@@ -208,22 +322,75 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     }
 }
 
-- (void)executeRequestDeleteDBWithName:(NSString *)dbName
+- (BOOL)executeRequestCreateDBWithName:(NSString *)dbName
 {
     if ([self isExecutingRequest])
     {
         ICDLogTrace(@"There is a request ongoing. Abort");
         
-        return;
+        return NO;
     }
     
-    if (self.networkManager && dbName)
+    if (!self.networkManager)
     {
-        self.requestDeleteDB = [[ICDRequestDeleteDatabase alloc] initWithDatabaseName:dbName];
-        self.requestDeleteDB.delegate = self;
+        ICDLogTrace(@"No network manager. Abort");
         
-        [self.networkManager executeRequest:self.requestDeleteDB];
+        return NO;
     }
+    
+    if (!dbName)
+    {
+        ICDLogTrace(@"No name provided. Abort");
+        
+        return NO;
+    }
+    
+    self.requestCreateDB = [[ICDRequestCreateDatabase alloc] initWithDatabaseName:dbName];
+    self.requestCreateDB.delegate = self;
+    
+    [self.networkManager executeRequest:self.requestCreateDB];
+    
+    return YES;
+}
+
+- (void)releaseRequestCreateDB
+{
+    if (self.requestCreateDB)
+    {
+        self.requestCreateDB.delegate = nil;
+        self.requestCreateDB = nil;
+    }
+}
+
+- (BOOL)executeRequestDeleteDBWithName:(NSString *)dbName
+{
+    if ([self isExecutingRequest])
+    {
+        ICDLogTrace(@"There is a request ongoing. Abort");
+        
+        return NO;
+    }
+    
+    if (!self.networkManager)
+    {
+        ICDLogTrace(@"No network manager. Abort");
+        
+        return NO;
+    }
+    
+    if (!dbName)
+    {
+        ICDLogTrace(@"No name provided. Abort");
+        
+        return NO;
+    }
+    
+    self.requestDeleteDB = [[ICDRequestDeleteDatabase alloc] initWithDatabaseName:dbName];
+    self.requestDeleteDB.delegate = self;
+    
+    [self.networkManager executeRequest:self.requestDeleteDB];
+    
+    return YES;
 }
 
 - (void)releaseRequestDeleteDB
@@ -237,16 +404,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (BOOL)isExecutingRequest
 {
-    return (self.requestAllDBs || self.requestDeleteDB);
-}
-
-- (void)prepareForSegueDocumentsVC:(ICDDocumentsTableViewController *)documentVC
-                          withCell:(UITableViewCell *)cell
-{
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    ICDModelDatabase *database = (ICDModelDatabase *)self.allDatabases[indexPath.row];
-    
-    [documentVC useNetworkManager:self.networkManager databaseName:database.name];
+    return (self.requestAllDBs || self.requestCreateDB || self.requestDeleteDB);
 }
 
 @end

@@ -7,3 +7,9 @@
 */
 
 "Authorization data not found" = "Datos de autorización no encontrados";
+
+"Add New Database" = "Añadir nueva Base de Datos";
+"Name of database" = "Nombre de la Base de Datos";
+
+"Cancel" =  "Cancelar";
+"Create" = "Crear";
