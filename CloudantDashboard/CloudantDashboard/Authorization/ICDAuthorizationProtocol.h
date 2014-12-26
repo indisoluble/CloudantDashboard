@@ -16,4 +16,8 @@
                password:(NSString **)password
                   error:(NSError **)error;
 
+- (BOOL)saveUsername:(NSString *)username
+            password:(NSString *)password
+               error:(NSError **)error;
+
 @end

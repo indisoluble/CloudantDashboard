@@ -10,7 +10,7 @@
 
 #import "ICDDocumentsTableViewController.h"
 
-#import "ICDAuthorizationPlist.h"
+#import "ICDAuthorizationFactory.h"
 #import "ICDNetworkManager+Helper.h"
 
 #import "ICDRequestAllDatabases.h"
@@ -23,7 +23,19 @@
 
 
 
+typedef void (^ICDDatabasesTVCAlertViewBlockType)(void);
+
+
+
 NSString * const kICDDatabasesTVCCellID = @"databaseCell";
+
+
+
+@interface ICDDatabasesTVCAlertView : UIAlertView
+
+@property (copy, nonatomic) ICDDatabasesTVCAlertViewBlockType block;
+
+@end
 
 
 
@@ -44,6 +56,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 @property (strong, nonatomic) NSMutableArray *allDatabases;
 
+@property (strong, nonatomic) ICDDatabasesTVCAlertView *askAuthDataAlertView;
 @property (strong, nonatomic) UIAlertView *askDatabaseNameAlertView;
 
 @end
@@ -57,7 +70,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     if (!_networkManager)
     {
-        id<ICDAuthorizationProtocol> authentication = [[ICDAuthorizationPlist alloc] init];
+        id<ICDAuthorizationProtocol> authentication = [ICDAuthorizationFactory authorization];
         
         NSString *username = nil;
         NSString *password = nil;
@@ -98,7 +111,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     
     [self customizeUI];
     
-    [self executeRequestAllDBs];
+    [self authorizeUserBeforeExecutingRequestAllDBs];
 }
 
 
@@ -146,14 +159,37 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     NSString *buttonTitle = [alertView buttonTitleAtIndex:buttonIndex];
-    if ([buttonTitle isEqualToString:NSLocalizedString(@"Create", @"Create")])
+    
+    if ([alertView isKindOfClass:[ICDDatabasesTVCAlertView class]])
+    {
+        if ([buttonTitle isEqualToString:NSLocalizedString(@"Continue", @"Continue")])
+        {
+            ICDDatabasesTVCAlertView *blockAlertView = (ICDDatabasesTVCAlertView *)alertView;
+            
+            UITextField *usernameTextField = [blockAlertView textFieldAtIndex:0];
+            UITextField *passwordTextField = [blockAlertView textFieldAtIndex:1];
+            
+            NSError *thisError = nil;
+            id<ICDAuthorizationProtocol> authentication = [ICDAuthorizationFactory authorization];
+            if ([authentication saveUsername:usernameTextField.text password:passwordTextField.text error:&thisError])
+            {
+                blockAlertView.block();
+            }
+            else
+            {
+                [self showAlertViewWithTitle:NSLocalizedString(@"Error", @"Error") message:thisError.localizedDescription];
+            }
+        }
+    }
+    else if ([buttonTitle isEqualToString:NSLocalizedString(@"Create", @"Create")])
     {
         UITextField *textField = [alertView textFieldAtIndex:0];
         
-        [self executeRequestCreateDBWithName:textField.text];
+        [self authorizeUserBeforeExecutingRequestCreateDBWithName:textField.text];
     }
     
-    [self releaseAskDatbaseNameAlertView];
+    [self releaseAskAuthorizationDataAlertView];
+    [self releaseAskDatabaseNameAlertView];
 }
 
 
@@ -245,15 +281,15 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self
-                       action:@selector(executeRequestAllDBsAfterPullingToRefresh)
+                       action:@selector(refreshDatabaseListAfterPullingToRefresh)
              forControlEvents:UIControlEventValueChanged];
     
     self.refreshControl = refreshControl;
 }
 
-- (void)executeRequestAllDBsAfterPullingToRefresh
+- (void)refreshDatabaseListAfterPullingToRefresh
 {
-    if (![self executeRequestAllDBs])
+    if (![self authorizeUserBeforeExecutingRequestAllDBs])
     {
         [self.refreshControl endRefreshing];
     }
@@ -268,6 +304,28 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     [documentVC useNetworkManager:self.networkManager databaseName:database.name];
 }
 
+- (void)askAuthorizationDataBeforeExecutingBlock:(ICDDatabasesTVCAlertViewBlockType)block
+{
+    self.askAuthDataAlertView = [[ICDDatabasesTVCAlertView alloc] initWithTitle:NSLocalizedString(@"Cloudant Login", @"Cloudant Login")
+                                                                        message:NSLocalizedString(@"Type username and password", @"Type username and password")
+                                                                       delegate:self
+                                                              cancelButtonTitle:NSLocalizedString(@"Cancel", @"Cancel")
+                                                              otherButtonTitles:NSLocalizedString(@"Continue", @"Continue"), nil];
+    self.askAuthDataAlertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
+    self.askAuthDataAlertView.block = block;
+    
+    [self.askAuthDataAlertView show];
+}
+
+- (void)releaseAskAuthorizationDataAlertView
+{
+    if (self.askAuthDataAlertView)
+    {
+        self.askAuthDataAlertView.delegate = nil;
+        self.askAuthDataAlertView = nil;
+    }
+}
+
 - (void)askNameBeforeCreatingDatabase
 {
     self.askDatabaseNameAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Add New Database", @"Add New Database")
@@ -280,13 +338,42 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     [self.askDatabaseNameAlertView show];
 }
 
-- (void)releaseAskDatbaseNameAlertView
+- (void)releaseAskDatabaseNameAlertView
 {
     if (self.askDatabaseNameAlertView)
     {
         self.askDatabaseNameAlertView.delegate = nil;
         self.askDatabaseNameAlertView = nil;
     }
+}
+
+- (void)showAlertViewWithTitle:(NSString *)title message:(NSString *)message
+{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
+                                                        message:message
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"Continue", @"Continue")
+                                              otherButtonTitles:nil];
+    [alertView show];
+}
+
+- (BOOL)authorizeUserBeforeExecutingRequestAllDBs
+{
+    if (self.networkManager)
+    {
+        return [self executeRequestAllDBs];
+    }
+    
+    __weak ICDDatabasesTableViewController *weakSelf = self;
+    [self askAuthorizationDataBeforeExecutingBlock:^{
+        __strong ICDDatabasesTableViewController *strongSelf = weakSelf;
+        if (strongSelf)
+        {
+            [strongSelf executeRequestAllDBs];
+        }
+    }];
+    
+    return NO;
 }
 
 - (BOOL)executeRequestAllDBs
@@ -298,12 +385,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
         return NO;
     }
     
-    if (!self.networkManager)
-    {
-        ICDLogTrace(@"No network manager. Abort");
-        
-        return NO;
-    }
+    [self.refreshControl beginRefreshing];
     
     self.requestAllDBs = [[ICDRequestAllDatabases alloc] init];
     self.requestAllDBs.delegate = self;
@@ -322,18 +404,30 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     }
 }
 
+- (BOOL)authorizeUserBeforeExecutingRequestCreateDBWithName:(NSString *)dbName
+{
+    if (self.networkManager)
+    {
+        return [self executeRequestCreateDBWithName:dbName];
+    }
+    
+    __weak ICDDatabasesTableViewController *weakSelf = self;
+    [self askAuthorizationDataBeforeExecutingBlock:^{
+        __strong ICDDatabasesTableViewController *strongSelf = weakSelf;
+        if (strongSelf)
+        {
+            [strongSelf executeRequestCreateDBWithName:dbName];
+        }
+    }];
+    
+    return NO;
+}
+
 - (BOOL)executeRequestCreateDBWithName:(NSString *)dbName
 {
     if ([self isExecutingRequest])
     {
         ICDLogTrace(@"There is a request ongoing. Abort");
-        
-        return NO;
-    }
-    
-    if (!self.networkManager)
-    {
-        ICDLogTrace(@"No network manager. Abort");
         
         return NO;
     }
@@ -371,13 +465,6 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
         return NO;
     }
     
-    if (!self.networkManager)
-    {
-        ICDLogTrace(@"No network manager. Abort");
-        
-        return NO;
-    }
-    
     self.requestDeleteDB = [[ICDRequestDeleteDatabase alloc] initWithDatabaseName:dbName];
     if (!self.requestDeleteDB)
     {
@@ -406,5 +493,11 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     return (self.requestAllDBs || self.requestCreateDB || self.requestDeleteDB);
 }
+
+@end
+
+
+
+@implementation ICDDatabasesTVCAlertView
 
 @end

@@ -11,7 +11,9 @@
 
 
 typedef enum {
-    ICDAuthorizationErrorBuilder_errorType_authorizationDataNotFound = 0
+    ICDAuthorizationErrorBuilder_errorType_authorizationDataNotFound = 0,
+    ICDAuthorizationErrorBuilder_errorType_authorizationDataNotValid,
+    ICDAuthorizationErrorBuilder_errorType_authorizationDataNotSaved
 } ICDAuthorizationErrorBuilder_errorType;
 
 
@@ -24,6 +26,12 @@ extern NSString * const kICDAuthorizationErrorDomain;
 
 + (BOOL)isErrorAuthorizationDataNotFound:(NSError *)error;
 + (NSError *)errorAuthorizationDataNotFound;
+
++ (BOOL)isErrorAuthorizationDataNotValid:(NSError *)error;
++ (NSError *)errorAuthorizationDataNotValid;
+
++ (BOOL)isErrorAuthorizationDataNotSaved:(NSError *)error;
++ (NSError *)errorAuthorizationDataNotSaved;
 
 + (NSError *)errorWithType:(ICDAuthorizationErrorBuilder_errorType)type
       localizedDescription:(NSString *)description;

@@ -7,9 +7,16 @@
 */
 
 "Authorization data not found" = "Authorization data not found";
+"Authorization data not valid" = "Username and password provided are not valid";
+"Authorization data not saved" = "Authorization data not saved";
 
 "Add New Database" = "Add New Database";
 "Name of database" = "Name of database";
 
+"Cloudant Login" = "Cloudant Login";
+"Type username and password" = "Type username and password";
+
+"Error" = "Error";
 "Cancel" =  "Cancel";
 "Create" = "Create";
+"Continue" = "Continue";

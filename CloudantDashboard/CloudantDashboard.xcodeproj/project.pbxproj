@@ -37,8 +37,8 @@
 		FF86207C1A473A2C00AC68D2 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF86207A1A473A2C00AC68D2 /* LaunchScreen.xib */; };
 		FF8620961A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8620951A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m */; };
 		FF8620991A4746F400AC68D2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FF86209B1A4746F400AC68D2 /* Localizable.strings */; };
-		FF8620A11A474B8A00AC68D2 /* ICDAuthorizationPlist.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8620A01A474B8A00AC68D2 /* ICDAuthorizationPlist.m */; };
-		FF8620A91A475C4200AC68D2 /* cloudantAuthorization.plist in Resources */ = {isa = PBXBuildFile; fileRef = FF8620A81A475C4200AC68D2 /* cloudantAuthorization.plist */; };
+		FFA07EA41A4DD08A0092351A /* ICDAuthorizationFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA07EA31A4DD08A0092351A /* ICDAuthorizationFactory.m */; };
+		FFA07EA71A4DD33B0092351A /* ICDAuthorizationKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA07EA61A4DD33B0092351A /* ICDAuthorizationKeychain.m */; };
 		FFDC3A9E1A4CDE7A003D4271 /* ICDRequestDeleteDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDC3A9D1A4CDE7A003D4271 /* ICDRequestDeleteDocument.m */; };
 		FFDC3AA11A4CE724003D4271 /* ICDRequestDeleteDocumentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDC3AA01A4CE724003D4271 /* ICDRequestDeleteDocumentTests.m */; };
 		FFE135BE1A4C974E002F9E23 /* ICDRequestCreateDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE135BD1A4C974E002F9E23 /* ICDRequestCreateDocument.m */; };
@@ -121,10 +121,11 @@
 		FF86209A1A4746F400AC68D2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		FF86209D1A47478D00AC68D2 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		FF86209E1A47478D00AC68D2 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
-		FF86209F1A474B8A00AC68D2 /* ICDAuthorizationPlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDAuthorizationPlist.h; sourceTree = "<group>"; };
-		FF8620A01A474B8A00AC68D2 /* ICDAuthorizationPlist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDAuthorizationPlist.m; sourceTree = "<group>"; };
-		FF8620A81A475C4200AC68D2 /* cloudantAuthorization.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = cloudantAuthorization.plist; path = ../../cloudantAuthorization.plist; sourceTree = SOURCE_ROOT; };
 		FF9C0C391A479201001C4EBA /* ICDLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICDLog.h; sourceTree = "<group>"; };
+		FFA07EA21A4DD08A0092351A /* ICDAuthorizationFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDAuthorizationFactory.h; sourceTree = "<group>"; };
+		FFA07EA31A4DD08A0092351A /* ICDAuthorizationFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDAuthorizationFactory.m; sourceTree = "<group>"; };
+		FFA07EA51A4DD33B0092351A /* ICDAuthorizationKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDAuthorizationKeychain.h; sourceTree = "<group>"; };
+		FFA07EA61A4DD33B0092351A /* ICDAuthorizationKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDAuthorizationKeychain.m; sourceTree = "<group>"; };
 		FFDC3A9C1A4CDE7A003D4271 /* ICDRequestDeleteDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestDeleteDocument.h; sourceTree = "<group>"; };
 		FFDC3A9D1A4CDE7A003D4271 /* ICDRequestDeleteDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestDeleteDocument.m; sourceTree = "<group>"; };
 		FFDC3A9F1A4CDF1E003D4271 /* ICDRequestDeleteDocumentDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestDeleteDocumentDelegate.h; sourceTree = "<group>"; };
@@ -363,7 +364,6 @@
 			children = (
 				FF86206F1A473A2C00AC68D2 /* AppDelegate.h */,
 				FF8620701A473A2C00AC68D2 /* AppDelegate.m */,
-				FF8620A81A475C4200AC68D2 /* cloudantAuthorization.plist */,
 				FF86206C1A473A2C00AC68D2 /* Info.plist */,
 				FF86207A1A473A2C00AC68D2 /* LaunchScreen.xib */,
 				FF86209B1A4746F400AC68D2 /* Localizable.strings */,
@@ -395,8 +395,10 @@
 			children = (
 				FF8620941A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.h */,
 				FF8620951A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m */,
-				FF86209F1A474B8A00AC68D2 /* ICDAuthorizationPlist.h */,
-				FF8620A01A474B8A00AC68D2 /* ICDAuthorizationPlist.m */,
+				FFA07EA21A4DD08A0092351A /* ICDAuthorizationFactory.h */,
+				FFA07EA31A4DD08A0092351A /* ICDAuthorizationFactory.m */,
+				FFA07EA51A4DD33B0092351A /* ICDAuthorizationKeychain.h */,
+				FFA07EA61A4DD33B0092351A /* ICDAuthorizationKeychain.m */,
 				FF8620931A473E2D00AC68D2 /* ICDAuthorizationProtocol.h */,
 			);
 			path = Authorization;
@@ -494,7 +496,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				FF8620771A473A2C00AC68D2 /* Main.storyboard in Resources */,
-				FF8620A91A475C4200AC68D2 /* cloudantAuthorization.plist in Resources */,
 				FF8620991A4746F400AC68D2 /* Localizable.strings in Resources */,
 				FF86207C1A473A2C00AC68D2 /* LaunchScreen.xib in Resources */,
 				FF8620791A473A2C00AC68D2 /* Images.xcassets in Resources */,
@@ -548,7 +549,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FF8620A11A474B8A00AC68D2 /* ICDAuthorizationPlist.m in Sources */,
 				FF228E831A4C799F00155AA0 /* ICDRequestResponseValueDictionary.m in Sources */,
 				FF028DBF1A4876F6008D2561 /* ICDModelDatabase.m in Sources */,
 				FF6FEA431A49DEBD00988CD3 /* ICDDatabasesTableViewController.m in Sources */,
@@ -558,6 +558,7 @@
 				FF6FEA501A49F71800988CD3 /* ICDRequestDocument.m in Sources */,
 				FF8620711A473A2C00AC68D2 /* AppDelegate.m in Sources */,
 				FF6FEA3A1A49D20400988CD3 /* ICDModelDocument.m in Sources */,
+				FFA07EA71A4DD33B0092351A /* ICDAuthorizationKeychain.m in Sources */,
 				FF028DC71A488873008D2561 /* ICDRequestAllDatabases.m in Sources */,
 				FF73864F1A4B31AA008B2AA2 /* ICDRequestDeleteDatabase.m in Sources */,
 				FF86206E1A473A2C00AC68D2 /* main.m in Sources */,
@@ -569,6 +570,7 @@
 				FF6FEA561A4A094D00988CD3 /* ICDDocumentViewController.m in Sources */,
 				FF73865D1A4B700C008B2AA2 /* ICDRequestResponseValueError.m in Sources */,
 				FF4877821A4C42A600F157D5 /* ICDRequestCreateDatabase.m in Sources */,
+				FFA07EA41A4DD08A0092351A /* ICDAuthorizationFactory.m in Sources */,
 				FF6FEA441A49DEBD00988CD3 /* ICDDocumentsTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

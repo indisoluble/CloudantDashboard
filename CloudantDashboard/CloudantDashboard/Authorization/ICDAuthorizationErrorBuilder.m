@@ -36,6 +36,32 @@ NSString * const kICDAuthorizationErrorDomain = @"kICDAuthorizationErrorDomain";
                                   localizedDescription:NSLocalizedString(@"Authorization data not found", @"Authorization data not found")];
 }
 
++ (BOOL)isErrorAuthorizationDataNotValid:(NSError *)error
+{
+    return (error &&
+            [[error domain] isEqualToString:kICDAuthorizationErrorDomain] &&
+            ([error code] == ICDAuthorizationErrorBuilder_errorType_authorizationDataNotValid));
+}
+
++ (NSError *)errorAuthorizationDataNotValid
+{
+    return [ICDAuthorizationErrorBuilder errorWithType:ICDAuthorizationErrorBuilder_errorType_authorizationDataNotValid
+                                  localizedDescription:NSLocalizedString(@"Authorization data not valid", @"Authorization data not valid")];
+}
+
++ (BOOL)isErrorAuthorizationDataNotSaved:(NSError *)error
+{
+    return (error &&
+            [[error domain] isEqualToString:kICDAuthorizationErrorDomain] &&
+            ([error code] == ICDAuthorizationErrorBuilder_errorType_authorizationDataNotSaved));
+}
+
++ (NSError *)errorAuthorizationDataNotSaved
+{
+    return [ICDAuthorizationErrorBuilder errorWithType:ICDAuthorizationErrorBuilder_errorType_authorizationDataNotSaved
+                                  localizedDescription:NSLocalizedString(@"Authorization data not saved", @"Authorization data not saved")];
+}
+
 + (NSError *)errorWithType:(ICDAuthorizationErrorBuilder_errorType)type
       localizedDescription:(NSString *)description
 {
