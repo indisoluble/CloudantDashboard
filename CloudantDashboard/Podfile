@@ -6,3 +6,6 @@ pod 'RestKit/Testing', '~> 0.24.0'
 
 # JSONSyntaxHighlight
 pod 'JSONSyntaxHighlight'
+
+# UICKeyChainStore
+pod 'UICKeyChainStore'

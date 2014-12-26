@@ -27,11 +27,13 @@ PODS:
   - RKValueTransformers (1.1.1)
   - SOCKit (1.1)
   - TransitionKit (2.1.0)
+  - UICKeyChainStore (1.1.0)
 
 DEPENDENCIES:
   - JSONSyntaxHighlight
   - RestKit (~> 0.24.0)
   - RestKit/Testing (~> 0.24.0)
+  - UICKeyChainStore
 
 SPEC CHECKSUMS:
   AFNetworking: 80c4e0652b08eb34e25b9c0ff3c82556fe5967b4
@@ -41,5 +43,6 @@ SPEC CHECKSUMS:
   RKValueTransformers: 67b4ea3eb6a1c1a0b8c3c37eb4e4c05e4febeba2
   SOCKit: d8d0dd3688ae1026c12367570da8fa8e1a6980fb
   TransitionKit: 6a6f3ddda38ae758778aa889dcb930e4f8d64edc
+  UICKeyChainStore: 257d869d42527b9853ebb11d6dc3ac377b270e72
 
 COCOAPODS: 0.35.0
