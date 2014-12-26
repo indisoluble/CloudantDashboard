@@ -12,12 +12,14 @@
 
 @protocol ICDAuthorizationProtocol <NSObject>
 
-- (BOOL)resolveUsername:(NSString **)username
-               password:(NSString **)password
-                  error:(NSError **)error;
+- (BOOL)retrieveUsername:(NSString **)username
+                password:(NSString **)password
+                   error:(NSError **)error;
 
 - (BOOL)saveUsername:(NSString *)username
             password:(NSString *)password
                error:(NSError **)error;
+
+- (BOOL)removeUsernamePasswordError:(NSError **)error;
 
 @end

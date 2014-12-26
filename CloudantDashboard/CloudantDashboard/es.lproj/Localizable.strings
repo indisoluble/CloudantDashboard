@@ -9,6 +9,7 @@
 "Authorization data not found" = "Datos de autorización no encontrados";
 "Authorization data not valid" = "Nombre de usuario y contraseña proporcionados no son válidos";
 "Authorization data not saved" = "Datos de autorización no salvados";
+"Authorization data not deleted" = "Nombre de usuario y contraseña no fueron borrados";
 
 "Add New Database" = "Añadir nueva Base de Datos";
 "Name of database" = "Nombre de la Base de Datos";
@@ -16,7 +17,12 @@
 "Cloudant Login" = "Cloudant Login";
 "Type username and password" = "Escriba nombre de usuario y contraseña";
 
+"Login required" = "Login obligatorio";
+"You have to login first" = "En primer lugar tienes que logearte";
+
 "Error" = "Error";
 "Cancel" =  "Cancelar";
 "Create" = "Crear";
 "Continue" = "Continuar";
+"Login" = "Login";
+"Logout" = "Logout";

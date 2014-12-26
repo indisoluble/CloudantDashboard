@@ -30,9 +30,9 @@ NSString * const kICDAuthorizationKeychainKeyPassword = @"password";
 @implementation ICDAuthorizationKeychain
 
 #pragma mark - ICDAuthorizationProtocol methods
-- (BOOL)resolveUsername:(NSString **)username
-               password:(NSString **)password
-                  error:(NSError **)error
+- (BOOL)retrieveUsername:(NSString **)username
+                password:(NSString **)password
+                   error:(NSError **)error
 {
     NSError *thisError = nil;
     
@@ -93,20 +93,39 @@ NSString * const kICDAuthorizationKeychainKeyPassword = @"password";
     {
         ICDLogError(@"Auth data not saved. Username: %@. Password: %@", usernameError, passwordError);
         
-        if (![UICKeyChainStore removeItemForKey:kICDAuthorizationKeychainKeyUsername error:&usernameError])
-        {
-            ICDLogError(@"Username not deleted: %@", usernameError);
-        }
-        
-        if (![UICKeyChainStore removeItemForKey:kICDAuthorizationKeychainKeyPassword error:&passwordError])
-        {
-            ICDLogError(@"Password not deleted: %@", passwordError);
-        }
+        [self removeUsernamePasswordError:nil];
         
         if (error)
         {
             *error = [ICDAuthorizationErrorBuilder errorAuthorizationDataNotSaved];
         }
+    }
+    
+    return success;
+}
+
+- (BOOL)removeUsernamePasswordError:(NSError **)error
+{
+    BOOL success = YES;
+    
+    NSError *thisError = nil;
+    if (![UICKeyChainStore removeItemForKey:kICDAuthorizationKeychainKeyUsername error:&thisError])
+    {
+        ICDLogError(@"Username not deleted: %@", thisError);
+        
+        success = NO;
+    }
+    
+    if (![UICKeyChainStore removeItemForKey:kICDAuthorizationKeychainKeyPassword error:&thisError])
+    {
+        ICDLogError(@"Password not deleted: %@", thisError);
+        
+        success = NO;
+    }
+    
+    if (!success && error)
+    {
+        *error = [ICDAuthorizationErrorBuilder errorAuthorizationDataNotDeleted];
     }
     
     return success;

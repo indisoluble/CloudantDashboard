@@ -62,6 +62,19 @@ NSString * const kICDAuthorizationErrorDomain = @"kICDAuthorizationErrorDomain";
                                   localizedDescription:NSLocalizedString(@"Authorization data not saved", @"Authorization data not saved")];
 }
 
++ (BOOL)isErrorAuthorizationDataNotDeleted:(NSError *)error
+{
+    return (error &&
+            [[error domain] isEqualToString:kICDAuthorizationErrorDomain] &&
+            ([error code] == ICDAuthorizationErrorBuilder_errorType_authorizationDataNotDeleted));
+}
+
++ (NSError *)errorAuthorizationDataNotDeleted
+{
+    return [ICDAuthorizationErrorBuilder errorWithType:ICDAuthorizationErrorBuilder_errorType_authorizationDataNotDeleted
+                                  localizedDescription:NSLocalizedString(@"Authorization data not deleted", @"Authorization data not deleted")];
+}
+
 + (NSError *)errorWithType:(ICDAuthorizationErrorBuilder_errorType)type
       localizedDescription:(NSString *)description
 {

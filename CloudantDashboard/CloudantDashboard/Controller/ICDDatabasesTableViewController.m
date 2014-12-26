@@ -74,7 +74,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
         
         NSString *username = nil;
         NSString *password = nil;
-        [authentication resolveUsername:&username password:&password error:nil];
+        [authentication retrieveUsername:&username password:&password error:nil];
         
         _networkManager = [ICDNetworkManager networkManagerWithUsername:username password:password];
     }
@@ -173,6 +173,8 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
             id<ICDAuthorizationProtocol> authentication = [ICDAuthorizationFactory authorization];
             if ([authentication saveUsername:usernameTextField.text password:passwordTextField.text error:&thisError])
             {
+                [self addLoginLogoutBarButtonItem];
+                
                 blockAlertView.block();
             }
             else
@@ -197,6 +199,13 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 #pragma mark - ICDRequestAllDatabasesDelegate methods
 - (void)requestAllDatabases:(id<ICDRequestProtocol>)request didGetDatabases:(NSArray *)databases
 {
+    if (request != self.requestAllDBs)
+    {
+        ICDLogDebug(@"Received databases from unexpected request. Ignore");
+        
+        return;
+    }
+    
     [self releaseRequestAllDBs];
     
     self.allDatabases = [NSMutableArray arrayWithArray:databases];
@@ -207,6 +216,13 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (void)requestAllDatabases:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
+    if (request != self.requestAllDBs)
+    {
+        ICDLogDebug(@"Received error from unexpected request. Ignore");
+        
+        return;
+    }
+    
     ICDLogError(@"Error: %@", error);
     
     [self releaseRequestAllDBs];
@@ -218,6 +234,13 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 #pragma mark - ICDRequestCreateDatabaseDelegate methods
 - (void)requestCreateDatabase:(id<ICDRequestProtocol>)request didCreateDatabaseWithName:(NSString *)dbName
 {
+    if (request != self.requestCreateDB)
+    {
+        ICDLogDebug(@"Received database from unexpected request. Ignore");
+        
+        return;
+    }
+    
     [self releaseRequestCreateDB];
     
     ICDModelDatabase *database = [ICDModelDatabase databaseWithName:dbName];
@@ -229,6 +252,13 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (void)requestCreateDatabase:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
+    if (request != self.requestCreateDB)
+    {
+        ICDLogDebug(@"Received error from unexpected request. Ignore");
+        
+        return;
+    }
+    
     ICDLogError(@"Error: %@", error);
     
     [self releaseRequestCreateDB];
@@ -238,6 +268,13 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 #pragma mark - ICDRequestDeleteDatabaseDelegate methods
 - (void)requestDeleteDatabase:(id<ICDRequestProtocol>)request didDeleteDatabaseWithName:(NSString *)dbName
 {
+    if (request != self.requestDeleteDB)
+    {
+        ICDLogDebug(@"Received database from unexpected request. Ignore");
+        
+        return;
+    }
+    
     [self releaseRequestDeleteDB];
     
     ICDModelDatabase *database = [ICDModelDatabase databaseWithName:dbName];
@@ -257,6 +294,13 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (void)requestDeleteDatabase:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
+    if (request != self.requestDeleteDB)
+    {
+        ICDLogDebug(@"Received error from unexpected request. Ignore");
+        
+        return;
+    }
+    
     ICDLogError(@"Error: %@", error);
     
     [self releaseRequestDeleteDB];
@@ -267,6 +311,8 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 - (void)customizeUI
 {
     [self addAddBarButtonItem];
+    [self addLoginLogoutBarButtonItem];
+    
     [self addRefreshControl];
 }
 
@@ -274,8 +320,37 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                                                           target:self
-                                                                          action:@selector(authorizeUserBeforeAskingDatabaseName)];
+                                                                          action:@selector(checkAuthorizationBeforeAskingDatabaseName)];
     self.navigationItem.rightBarButtonItem = item;
+}
+
+- (void)addLoginLogoutBarButtonItem
+{
+    if (self.networkManager)
+    {
+        [self addLogoutBarButtonItem];
+    }
+    else
+    {
+        [self addLoginBarButtonItem];
+    }
+}
+- (void)addLoginBarButtonItem
+{
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Login", @"Login")
+                                                             style:UIBarButtonItemStylePlain
+                                                            target:self
+                                                            action:@selector(authorizeUserBeforeExecutingRequestAllDBs)];
+    self.navigationItem.leftBarButtonItem = item;
+}
+
+- (void)addLogoutBarButtonItem
+{
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Logout", @"Logout")
+                                                             style:UIBarButtonItemStylePlain
+                                                            target:self
+                                                            action:@selector(logoutUser)];
+    self.navigationItem.leftBarButtonItem = item;
 }
 
 - (void)addRefreshControl
@@ -290,7 +365,18 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (void)refreshDatabaseListAfterPullingToRefresh
 {
-    if (![self authorizeUserBeforeExecutingRequestAllDBs])
+    BOOL endRefreshingAnimation = YES;
+    
+    if (self.networkManager)
+    {
+        endRefreshingAnimation = ![self executeRequestAllDBs];
+    }
+    else
+    {
+        [self showLoginRequiredAlertView];
+    }
+    
+    if (endRefreshingAnimation)
     {
         [self.refreshControl endRefreshing];
     }
@@ -348,6 +434,12 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     }
 }
 
+- (void)showLoginRequiredAlertView
+{
+    [self showAlertViewWithTitle:NSLocalizedString(@"Login required", @"Login required")
+                         message:NSLocalizedString(@"You have to login first", @"You have to login first")];
+}
+
 - (void)showAlertViewWithTitle:(NSString *)title message:(NSString *)message
 {
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
@@ -356,6 +448,33 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
                                               cancelButtonTitle:NSLocalizedString(@"Continue", @"Continue")
                                               otherButtonTitles:nil];
     [alertView show];
+}
+
+- (void)logoutUser
+{
+    id<ICDAuthorizationProtocol> authentication = [ICDAuthorizationFactory authorization];
+    [authentication removeUsernamePasswordError:nil];
+    
+    [self releaseNetworkManager];
+    
+    [self releaseRequestAllDBs];
+    [self releaseRequestCreateDB];
+    [self releaseRequestDeleteDB];
+    
+    self.allDatabases = [NSMutableArray array];
+    
+    [self.refreshControl endRefreshing];
+    [self.tableView reloadData];
+    
+    [self addLoginLogoutBarButtonItem];
+}
+
+- (void)releaseNetworkManager
+{
+    if (_networkManager)
+    {
+        _networkManager = nil;
+    }
 }
 
 - (BOOL)authorizeUserBeforeExecutingRequestAllDBs
@@ -405,23 +524,16 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     }
 }
 
-- (void)authorizeUserBeforeAskingDatabaseName
+- (void)checkAuthorizationBeforeAskingDatabaseName
 {
     if (self.networkManager)
     {
         [self askNameBeforeCreatingDatabase];
-        
-        return;
     }
-    
-    __weak ICDDatabasesTableViewController *weakSelf = self;
-    [self askAuthorizationDataBeforeExecutingBlock:^{
-        __strong ICDDatabasesTableViewController *strongSelf = weakSelf;
-        if (strongSelf)
-        {
-            [strongSelf askNameBeforeCreatingDatabase];
-        }
-    }];
+    else
+    {
+        [self showLoginRequiredAlertView];
+    }
 }
 
 - (BOOL)executeRequestCreateDBWithName:(NSString *)dbName
