@@ -20,4 +20,6 @@
 @property (strong, nonatomic) NSString *documentId;
 @property (strong, nonatomic) NSString *documentRev;
 
++ (instancetype)documentWithId:(NSString *)documentId rev:(NSString *)documentRev;
+
 @end

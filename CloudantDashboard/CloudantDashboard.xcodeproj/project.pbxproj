@@ -39,6 +39,8 @@
 		FF8620991A4746F400AC68D2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FF86209B1A4746F400AC68D2 /* Localizable.strings */; };
 		FF8620A11A474B8A00AC68D2 /* ICDAuthorizationPlist.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8620A01A474B8A00AC68D2 /* ICDAuthorizationPlist.m */; };
 		FF8620A91A475C4200AC68D2 /* cloudantAuthorization.plist in Resources */ = {isa = PBXBuildFile; fileRef = FF8620A81A475C4200AC68D2 /* cloudantAuthorization.plist */; };
+		FFDC3A9E1A4CDE7A003D4271 /* ICDRequestDeleteDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDC3A9D1A4CDE7A003D4271 /* ICDRequestDeleteDocument.m */; };
+		FFDC3AA11A4CE724003D4271 /* ICDRequestDeleteDocumentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDC3AA01A4CE724003D4271 /* ICDRequestDeleteDocumentTests.m */; };
 		FFE135BE1A4C974E002F9E23 /* ICDRequestCreateDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE135BD1A4C974E002F9E23 /* ICDRequestCreateDocument.m */; };
 		FFE135C11A4C9EE1002F9E23 /* ICDRequestCreateDocumentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE135C01A4C9EE1002F9E23 /* ICDRequestCreateDocumentTests.m */; };
 /* End PBXBuildFile section */
@@ -123,6 +125,10 @@
 		FF8620A01A474B8A00AC68D2 /* ICDAuthorizationPlist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDAuthorizationPlist.m; sourceTree = "<group>"; };
 		FF8620A81A475C4200AC68D2 /* cloudantAuthorization.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = cloudantAuthorization.plist; path = ../../cloudantAuthorization.plist; sourceTree = SOURCE_ROOT; };
 		FF9C0C391A479201001C4EBA /* ICDLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICDLog.h; sourceTree = "<group>"; };
+		FFDC3A9C1A4CDE7A003D4271 /* ICDRequestDeleteDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestDeleteDocument.h; sourceTree = "<group>"; };
+		FFDC3A9D1A4CDE7A003D4271 /* ICDRequestDeleteDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestDeleteDocument.m; sourceTree = "<group>"; };
+		FFDC3A9F1A4CDF1E003D4271 /* ICDRequestDeleteDocumentDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestDeleteDocumentDelegate.h; sourceTree = "<group>"; };
+		FFDC3AA01A4CE724003D4271 /* ICDRequestDeleteDocumentTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestDeleteDocumentTests.m; sourceTree = "<group>"; };
 		FFE135BC1A4C974E002F9E23 /* ICDRequestCreateDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestCreateDocument.h; sourceTree = "<group>"; };
 		FFE135BD1A4C974E002F9E23 /* ICDRequestCreateDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestCreateDocument.m; sourceTree = "<group>"; };
 		FFE135BF1A4C985B002F9E23 /* ICDRequestCreateDocumentDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestCreateDocumentDelegate.h; sourceTree = "<group>"; };
@@ -216,6 +222,9 @@
 				FF73864D1A4B31AA008B2AA2 /* ICDRequestDeleteDatabase.h */,
 				FF73864E1A4B31AA008B2AA2 /* ICDRequestDeleteDatabase.m */,
 				FF7386561A4B3E38008B2AA2 /* ICDRequestDeleteDatabaseDelegate.h */,
+				FFDC3A9C1A4CDE7A003D4271 /* ICDRequestDeleteDocument.h */,
+				FFDC3A9D1A4CDE7A003D4271 /* ICDRequestDeleteDocument.m */,
+				FFDC3A9F1A4CDF1E003D4271 /* ICDRequestDeleteDocumentDelegate.h */,
 				FF6FEA4E1A49F71800988CD3 /* ICDRequestDocument.h */,
 				FF6FEA4F1A49F71800988CD3 /* ICDRequestDocument.m */,
 				FF6FEA531A4A071300988CD3 /* ICDRequestDocumentDelegate.h */,
@@ -287,6 +296,7 @@
 				FF4877841A4C469500F157D5 /* ICDRequestCreateDatabaseTests.m */,
 				FFE135C01A4C9EE1002F9E23 /* ICDRequestCreateDocumentTests.m */,
 				FF7386501A4B351E008B2AA2 /* ICDRequestDeleteDatabaseTests.m */,
+				FFDC3AA01A4CE724003D4271 /* ICDRequestDeleteDocumentTests.m */,
 				FF6FEA511A49FA6200988CD3 /* ICDRequestDocumentTests.m */,
 			);
 			path = Request;
@@ -552,6 +562,7 @@
 				FF73864F1A4B31AA008B2AA2 /* ICDRequestDeleteDatabase.m in Sources */,
 				FF86206E1A473A2C00AC68D2 /* main.m in Sources */,
 				FF73865A1A4B6956008B2AA2 /* RKObjectManager+Helper.m in Sources */,
+				FFDC3A9E1A4CDE7A003D4271 /* ICDRequestDeleteDocument.m in Sources */,
 				FFE135BE1A4C974E002F9E23 /* ICDRequestCreateDocument.m in Sources */,
 				FF8620961A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m in Sources */,
 				FF028DE41A48B7FF008D2561 /* ICDNetworkManager+Helper.m in Sources */,
@@ -566,6 +577,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FFDC3AA11A4CE724003D4271 /* ICDRequestDeleteDocumentTests.m in Sources */,
 				FF028DDA1A489691008D2561 /* ICDMockRequest.m in Sources */,
 				FF4877851A4C469500F157D5 /* ICDRequestCreateDatabaseTests.m in Sources */,
 				FFE135C11A4C9EE1002F9E23 /* ICDRequestCreateDocumentTests.m in Sources */,

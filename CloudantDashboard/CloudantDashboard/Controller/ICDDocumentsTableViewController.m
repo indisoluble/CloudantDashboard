@@ -12,6 +12,7 @@
 
 #import "ICDRequestAllDocuments.h"
 #import "ICDRequestCreateDocument.h"
+#import "ICDRequestDeleteDocument.h"
 
 #import "ICDModelDocument.h"
 
@@ -25,12 +26,14 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 @interface ICDDocumentsTableViewController ()
     <ICDRequestAllDocumentsDelegate,
-    ICDRequestCreateDocumentDelegate>
+    ICDRequestCreateDocumentDelegate,
+    ICDRequestDeleteDocumentDelegate>
 
 @property (strong, nonatomic) ICDNetworkManager *networkManager;
 
 @property (strong, nonatomic) ICDRequestAllDocuments *requestAllDocs;
 @property (strong, nonatomic) ICDRequestCreateDocument *requestCreateDoc;
+@property (strong, nonatomic) ICDRequestDeleteDocument *requestDeleteDoc;
 
 @property (strong, nonatomic) NSString *databaseName;
 
@@ -101,6 +104,18 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     return cell;
 }
 
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    ICDModelDocument *document = (ICDModelDocument *)self.allDocuments[indexPath.row];
+    
+    [self executeRequestDeleteDocWithData:document];
+}
+
 
 #pragma mark - ICDRequestAllDocumentsForADatabaseDelegate methods
 - (void)requestAllDocuments:(id<ICDRequestProtocol>)request didGetDocuments:(NSArray *)documents
@@ -157,11 +172,8 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     [self.allDocuments addObject:document];
     
-    if ([self isViewLoaded])
-    {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:([self.allDocuments count] - 1) inSection:0];
-        [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-    }
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:([self.allDocuments count] - 1) inSection:0];
+    [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)requestCreateDocument:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
@@ -179,6 +191,51 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 }
 
 
+#pragma mark - ICDRequestDeleteDocumentDelegate methods
+- (void)requestDeleteDocument:(id<ICDRequestProtocol>)request
+      didDeleteDocumentWithId:(NSString *)docId
+                     revision:(NSString *)docRev
+{
+    if (request != self.requestDeleteDoc)
+    {
+        ICDLogDebug(@"Received deleted document from unexpected request. Ignore");
+        
+        return;
+    }
+    
+    [self releaseRequestDeleteDoc];
+    
+    ICDModelDocument *document = [ICDModelDocument documentWithId:docId rev:docRev];
+    NSUInteger index = [self.allDocuments indexOfObject:document];
+    if (index == NSNotFound)
+    {
+        ICDLogError(@"Document <%@> is not in the list. Abort", document);
+        
+        return;
+    }
+    
+    [self.allDocuments removeObjectAtIndex:index];
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+    [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+}
+
+- (void)requestDeleteDocument:(id<ICDRequestProtocol>)request
+             didFailWithError:(NSError *)error
+{
+    if (request != self.requestDeleteDoc)
+    {
+        ICDLogDebug(@"Received error from unexpected request. Ignore");
+        
+        return;
+    }
+    
+    ICDLogError(@"Error: %@", error);
+    
+    [self releaseRequestDeleteDoc];
+}
+
+
 #pragma mark - Public methods
 - (void)useNetworkManager:(ICDNetworkManager *)networkManager
              databaseName:(NSString *)databaseName
@@ -187,6 +244,8 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     self.databaseName = databaseName;
     
     [self releaseRequestAllDocs];
+    [self releaseRequestCreateDoc];
+    [self releaseRequestDeleteDoc];
     
     [self executeRequestAllDocs];
 }
@@ -305,9 +364,51 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     }
 }
 
+- (BOOL)executeRequestDeleteDocWithData:(ICDModelDocument *)document
+{
+    if ([self isExecutingRequest])
+    {
+        ICDLogTrace(@"There is a request ongoing. Abort");
+        
+        return NO;
+    }
+    
+    if (!self.networkManager)
+    {
+        ICDLogTrace(@"No network manager. Abort");
+        
+        return NO;
+    }
+    
+    self.requestDeleteDoc = [[ICDRequestDeleteDocument alloc] initWithDatabaseName:self.databaseName
+                                                                        documentId:document.documentId
+                                                                       documentRev:document.documentRev];
+    if (!self.requestDeleteDoc)
+    {
+        ICDLogWarning(@"Request not created with database name <%@> and document <%@>. Abort", self.databaseName, document);
+        
+        return NO;
+    }
+    
+    self.requestDeleteDoc.delegate = self;
+    
+    [self.networkManager executeRequest:self.requestDeleteDoc];
+    
+    return YES;
+}
+
+- (void)releaseRequestDeleteDoc
+{
+    if (self.requestDeleteDoc)
+    {
+        self.requestDeleteDoc.delegate = nil;
+        self.requestDeleteDoc = nil;
+    }
+}
+
 - (BOOL)isExecutingRequest
 {
-    return (self.requestAllDocs || self.requestCreateDoc);
+    return (self.requestAllDocs || self.requestCreateDoc || self.requestDeleteDoc);
 }
 
 - (void)prepareForSegueDocumentVC:(ICDDocumentViewController *)documentVC
