@@ -180,16 +180,17 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
                 [self showAlertViewWithTitle:NSLocalizedString(@"Error", @"Error") message:thisError.localizedDescription];
             }
         }
+        
+        [self releaseAskAuthorizationDataAlertView];
     }
     else if ([buttonTitle isEqualToString:NSLocalizedString(@"Create", @"Create")])
     {
         UITextField *textField = [alertView textFieldAtIndex:0];
         
-        [self authorizeUserBeforeExecutingRequestCreateDBWithName:textField.text];
+        [self executeRequestCreateDBWithName:textField.text];
+        
+        [self releaseAskDatabaseNameAlertView];
     }
-    
-    [self releaseAskAuthorizationDataAlertView];
-    [self releaseAskDatabaseNameAlertView];
 }
 
 
@@ -273,7 +274,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                                                           target:self
-                                                                          action:@selector(askNameBeforeCreatingDatabase)];
+                                                                          action:@selector(authorizeUserBeforeAskingDatabaseName)];
     self.navigationItem.rightBarButtonItem = item;
 }
 
@@ -404,11 +405,13 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     }
 }
 
-- (BOOL)authorizeUserBeforeExecutingRequestCreateDBWithName:(NSString *)dbName
+- (void)authorizeUserBeforeAskingDatabaseName
 {
     if (self.networkManager)
     {
-        return [self executeRequestCreateDBWithName:dbName];
+        [self askNameBeforeCreatingDatabase];
+        
+        return;
     }
     
     __weak ICDDatabasesTableViewController *weakSelf = self;
@@ -416,11 +419,9 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
         __strong ICDDatabasesTableViewController *strongSelf = weakSelf;
         if (strongSelf)
         {
-            [strongSelf executeRequestCreateDBWithName:dbName];
+            [strongSelf askNameBeforeCreatingDatabase];
         }
     }];
-    
-    return NO;
 }
 
 - (BOOL)executeRequestCreateDBWithName:(NSString *)dbName
