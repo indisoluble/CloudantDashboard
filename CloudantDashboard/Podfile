@@ -9,3 +9,6 @@ pod 'JSONSyntaxHighlight'
 
 # UICKeyChainStore
 pod 'UICKeyChainStore'
+
+# UIAlertView-Blocks
+pod 'UIAlertView-Blocks', '~> 1.0'
