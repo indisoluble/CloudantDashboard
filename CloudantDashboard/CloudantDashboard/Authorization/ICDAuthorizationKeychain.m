@@ -75,7 +75,11 @@ NSString * const kICDAuthorizationKeychainKeyPassword = @"password";
             password:(NSString *)password
                error:(NSError **)error
 {
-    if (!username || !password || ([username length] == 0) || ([password length] == 0))
+    NSString *trimmedUsername = (username ?
+                                 [username stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] :
+                                 nil);
+    
+    if (!trimmedUsername || !password || ([trimmedUsername length] == 0) || ([password length] == 0))
     {
         if (error)
         {
@@ -87,7 +91,7 @@ NSString * const kICDAuthorizationKeychainKeyPassword = @"password";
     
     NSError *usernameError = nil;
     NSError *passwordError = nil;
-    BOOL success = ([UICKeyChainStore setString:username forKey:kICDAuthorizationKeychainKeyUsername error:&usernameError] &&
+    BOOL success = ([UICKeyChainStore setString:trimmedUsername forKey:kICDAuthorizationKeychainKeyUsername error:&usernameError] &&
                     [UICKeyChainStore setString:password forKey:kICDAuthorizationKeychainKeyPassword error:&passwordError]);
     if (!success)
     {
