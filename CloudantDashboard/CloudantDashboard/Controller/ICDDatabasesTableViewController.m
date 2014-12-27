@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Enrique de la Torre. All rights reserved.
 //
 
+#import <UIAlertView-Blocks/UIAlertView+Blocks.h>
+
 #import "ICDDatabasesTableViewController.h"
 
 #import "ICDDocumentsTableViewController.h"
@@ -23,25 +25,12 @@
 
 
 
-typedef void (^ICDDatabasesTVCAlertViewBlockType)(void);
-
-
-
 NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 
 
-@interface ICDDatabasesTVCAlertView : UIAlertView
-
-@property (copy, nonatomic) ICDDatabasesTVCAlertViewBlockType block;
-
-@end
-
-
-
 @interface ICDDatabasesTableViewController ()
-    <UIAlertViewDelegate,
-    ICDRequestAllDatabasesDelegate,
+    <ICDRequestAllDatabasesDelegate,
     ICDRequestCreateDatabaseDelegate,
     ICDRequestDeleteDatabaseDelegate>
 {
@@ -55,9 +44,6 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 @property (strong, nonatomic) ICDRequestDeleteDatabase *requestDeleteDB;
 
 @property (strong, nonatomic) NSMutableArray *allDatabases;
-
-@property (strong, nonatomic) ICDDatabasesTVCAlertView *askAuthDataAlertView;
-@property (strong, nonatomic) UIAlertView *askDatabaseNameAlertView;
 
 @end
 
@@ -111,7 +97,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     
     [self customizeUI];
     
-    [self authorizeUserBeforeExecutingRequestAllDBs];
+    [self checkAuthorizationBeforeExecutingRequestAllDBs];
 }
 
 
@@ -152,47 +138,6 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     ICDModelDatabase *database = (ICDModelDatabase *)self.allDatabases[indexPath.row];
     
     [self executeRequestDeleteDBWithName:database.name];
-}
-
-
-#pragma mark - UIAlertViewDelegate methods
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    NSString *buttonTitle = [alertView buttonTitleAtIndex:buttonIndex];
-    
-    if ([alertView isKindOfClass:[ICDDatabasesTVCAlertView class]])
-    {
-        if ([buttonTitle isEqualToString:NSLocalizedString(@"Continue", @"Continue")])
-        {
-            ICDDatabasesTVCAlertView *blockAlertView = (ICDDatabasesTVCAlertView *)alertView;
-            
-            UITextField *usernameTextField = [blockAlertView textFieldAtIndex:0];
-            UITextField *passwordTextField = [blockAlertView textFieldAtIndex:1];
-            
-            NSError *thisError = nil;
-            id<ICDAuthorizationProtocol> authentication = [ICDAuthorizationFactory authorization];
-            if ([authentication saveUsername:usernameTextField.text password:passwordTextField.text error:&thisError])
-            {
-                [self addLoginLogoutBarButtonItem];
-                
-                blockAlertView.block();
-            }
-            else
-            {
-                [self showAlertViewWithTitle:NSLocalizedString(@"Error", @"Error") message:thisError.localizedDescription];
-            }
-        }
-        
-        [self releaseAskAuthorizationDataAlertView];
-    }
-    else if ([buttonTitle isEqualToString:NSLocalizedString(@"Create", @"Create")])
-    {
-        UITextField *textField = [alertView textFieldAtIndex:0];
-        
-        [self executeRequestCreateDBWithName:textField.text];
-        
-        [self releaseAskDatabaseNameAlertView];
-    }
 }
 
 
@@ -335,6 +280,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
         [self addLoginBarButtonItem];
     }
 }
+
 - (void)addLoginBarButtonItem
 {
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Login", @"Login")
@@ -391,47 +337,74 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     [documentVC useNetworkManager:self.networkManager databaseName:database.name];
 }
 
-- (void)askAuthorizationDataBeforeExecutingBlock:(ICDDatabasesTVCAlertViewBlockType)block
+- (void)authorizeUserBeforeExecutingRequestAllDBs
 {
-    self.askAuthDataAlertView = [[ICDDatabasesTVCAlertView alloc] initWithTitle:NSLocalizedString(@"Cloudant Login", @"Cloudant Login")
-                                                                        message:NSLocalizedString(@"Type username and password", @"Type username and password")
-                                                                       delegate:self
-                                                              cancelButtonTitle:NSLocalizedString(@"Cancel", @"Cancel")
-                                                              otherButtonTitles:NSLocalizedString(@"Continue", @"Continue"), nil];
-    self.askAuthDataAlertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
-    self.askAuthDataAlertView.block = block;
+    __block UIAlertView *alertView = nil;
+    __weak ICDDatabasesTableViewController *weakSelf = self;
     
-    [self.askAuthDataAlertView show];
-}
-
-- (void)releaseAskAuthorizationDataAlertView
-{
-    if (self.askAuthDataAlertView)
+    void (^continueAction)(void) = ^(void)
     {
-        self.askAuthDataAlertView.delegate = nil;
-        self.askAuthDataAlertView = nil;
-    }
+        __strong ICDDatabasesTableViewController *strongSelf = weakSelf;
+        if (!strongSelf)
+        {
+            return;
+        }
+        
+        UITextField *usernameTextField = [alertView textFieldAtIndex:0];
+        UITextField *passwordTextField = [alertView textFieldAtIndex:1];
+        
+        NSError *thisError = nil;
+        id<ICDAuthorizationProtocol> authentication = [ICDAuthorizationFactory authorization];
+        if ([authentication saveUsername:usernameTextField.text password:passwordTextField.text error:&thisError])
+        {
+            [strongSelf addLoginLogoutBarButtonItem];
+            
+            [strongSelf executeRequestAllDBs];
+        }
+        else
+        {
+            [strongSelf showAlertViewWithTitle:NSLocalizedString(@"Error", @"Error") message:thisError.localizedDescription];
+        }
+    };
+    
+    RIButtonItem *continueItem = [RIButtonItem itemWithLabel:NSLocalizedString(@"Continue", @"Continue") action:continueAction];
+    RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:NSLocalizedString(@"Cancel", @"Cancel")];
+    
+    alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Cloudant Login", @"Cloudant Login")
+                                           message:NSLocalizedString(@"Type username and password", @"Type username and password")
+                                  cancelButtonItem:cancelItem
+                                  otherButtonItems:continueItem, nil];
+    alertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
+    
+    [alertView show];
 }
 
 - (void)askNameBeforeCreatingDatabase
 {
-    self.askDatabaseNameAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Add New Database", @"Add New Database")
-                                                               message:NSLocalizedString(@"Name of database", @"Name of database")
-                                                              delegate:self
-                                                     cancelButtonTitle:NSLocalizedString(@"Cancel", @"Cancel")
-                                                     otherButtonTitles:NSLocalizedString(@"Create", @"Create"), nil];
-    self.askDatabaseNameAlertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+    __block UIAlertView *alertView = nil;
+    __weak ICDDatabasesTableViewController *weakSelf = self;
     
-    [self.askDatabaseNameAlertView show];
-}
-
-- (void)releaseAskDatabaseNameAlertView
-{
-    if (self.askDatabaseNameAlertView)
+    void (^createAction)(void) = ^(void)
     {
-        self.askDatabaseNameAlertView.delegate = nil;
-        self.askDatabaseNameAlertView = nil;
-    }
+        __strong ICDDatabasesTableViewController *strongSelf = weakSelf;
+        if (strongSelf)
+        {
+            UITextField *textField = [alertView textFieldAtIndex:0];
+            
+            [strongSelf executeRequestCreateDBWithName:textField.text];
+        }
+    };
+    
+    RIButtonItem *createItem = [RIButtonItem itemWithLabel:NSLocalizedString(@"Create", @"Create") action:createAction];
+    RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:NSLocalizedString(@"Cancel", @"Cancel")];
+    
+    alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Add New Database", @"Add New Database")
+                                           message:NSLocalizedString(@"Name of database", @"Name of database")
+                                  cancelButtonItem:cancelItem
+                                  otherButtonItems:createItem, nil];
+    alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+    
+    [alertView show];
 }
 
 - (void)showLoginRequiredAlertView
@@ -477,23 +450,20 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     }
 }
 
-- (BOOL)authorizeUserBeforeExecutingRequestAllDBs
+- (BOOL)checkAuthorizationBeforeExecutingRequestAllDBs
 {
+    BOOL result = NO;
+    
     if (self.networkManager)
     {
-        return [self executeRequestAllDBs];
+        result = [self executeRequestAllDBs];
+    }
+    else
+    {
+        [self authorizeUserBeforeExecutingRequestAllDBs];
     }
     
-    __weak ICDDatabasesTableViewController *weakSelf = self;
-    [self askAuthorizationDataBeforeExecutingBlock:^{
-        __strong ICDDatabasesTableViewController *strongSelf = weakSelf;
-        if (strongSelf)
-        {
-            [strongSelf executeRequestAllDBs];
-        }
-    }];
-    
-    return NO;
+    return result;
 }
 
 - (BOOL)executeRequestAllDBs
@@ -606,11 +576,5 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     return (self.requestAllDBs || self.requestCreateDB || self.requestDeleteDB);
 }
-
-@end
-
-
-
-@implementation ICDDatabasesTVCAlertView
 
 @end
