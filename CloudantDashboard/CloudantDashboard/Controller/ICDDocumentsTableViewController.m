@@ -17,6 +17,7 @@
 #import "ICDModelDocument.h"
 
 #import "ICDLog.h"
+#import "ICDCommonAnimationDuration.h"
 
 
 
@@ -73,6 +74,11 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     [super viewDidLoad];
     
     [self customizeUI];
+    
+    if (self.requestAllDocs)
+    {
+        [self forceShowRefreshControlAnimation];
+    }
 }
 
 
@@ -134,7 +140,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     if ([self isViewLoaded])
     {
         [self.refreshControl endRefreshing];
-        [self.tableView reloadData];
+        [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:ICDCOMMONANIMATIONDURATION_REFRESHCONTROL];
     }
 }
 
@@ -284,6 +290,12 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     }
 }
 
+- (void)forceShowRefreshControlAnimation
+{
+    [self.refreshControl beginRefreshing];
+    self.tableView.contentOffset = CGPointMake(0, -self.refreshControl.frame.size.height);
+}
+
 - (BOOL)executeRequestAllDocs
 {
     if ([self isExecutingRequest])
@@ -309,6 +321,11 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     }
     
     self.requestAllDocs.delegate = self;
+    
+    if ([self isViewLoaded])
+    {
+        [self forceShowRefreshControlAnimation];
+    }
     
     [self.networkManager executeRequest:self.requestAllDocs];
     

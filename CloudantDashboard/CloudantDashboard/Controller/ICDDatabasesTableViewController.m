@@ -22,6 +22,7 @@
 #import "ICDModelDatabase.h"
 
 #import "ICDLog.h"
+#import "ICDCommonAnimationDuration.h"
 
 
 
@@ -156,7 +157,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     self.allDatabases = [NSMutableArray arrayWithArray:databases];
     
     [self.refreshControl endRefreshing];
-    [self.tableView reloadData];
+    [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:ICDCOMMONANIMATIONDURATION_REFRESHCONTROL];
 }
 
 - (void)requestAllDatabases:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
@@ -436,10 +437,10 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     
     self.allDatabases = [NSMutableArray array];
     
-    [self.refreshControl endRefreshing];
-    [self.tableView reloadData];
-    
     [self addLoginLogoutBarButtonItem];
+    
+    [self.refreshControl endRefreshing];
+    [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:ICDCOMMONANIMATIONDURATION_REFRESHCONTROL];
 }
 
 - (void)releaseNetworkManager

@@ -78,6 +78,7 @@
 		FF4877811A4C42A600F157D5 /* ICDRequestCreateDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestCreateDatabase.m; sourceTree = "<group>"; };
 		FF4877831A4C442400F157D5 /* ICDRequestCreateDatabaseDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestCreateDatabaseDelegate.h; sourceTree = "<group>"; };
 		FF4877841A4C469500F157D5 /* ICDRequestCreateDatabaseTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestCreateDatabaseTests.m; sourceTree = "<group>"; };
+		FF658C861A4F86C500E209EE /* ICDCommonAnimationDuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDCommonAnimationDuration.h; sourceTree = "<group>"; };
 		FF6FEA381A49D20400988CD3 /* ICDModelDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDModelDocument.h; sourceTree = "<group>"; };
 		FF6FEA391A49D20400988CD3 /* ICDModelDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDModelDocument.m; sourceTree = "<group>"; };
 		FF6FEA3F1A49DEBD00988CD3 /* ICDDatabasesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDDatabasesTableViewController.h; sourceTree = "<group>"; };
@@ -279,6 +280,7 @@
 		FF2D023A1A48F66B00E03C6E /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				FF658C851A4F85E500E209EE /* Common */,
 				FF6FEA3F1A49DEBD00988CD3 /* ICDDatabasesTableViewController.h */,
 				FF6FEA401A49DEBD00988CD3 /* ICDDatabasesTableViewController.m */,
 				FF6FEA411A49DEBD00988CD3 /* ICDDocumentsTableViewController.h */,
@@ -288,6 +290,14 @@
 				FF8620751A473A2C00AC68D2 /* Main.storyboard */,
 			);
 			path = Controller;
+			sourceTree = "<group>";
+		};
+		FF658C851A4F85E500E209EE /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				FF658C861A4F86C500E209EE /* ICDCommonAnimationDuration.h */,
+			);
+			path = Common;
 			sourceTree = "<group>";
 		};
 		FF6FEA3B1A49D85000988CD3 /* Request */ = {
