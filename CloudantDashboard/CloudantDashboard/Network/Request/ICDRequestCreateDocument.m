@@ -101,7 +101,7 @@
         
         // Notify
         __strong ICDRequestCreateDocument *strongSelf = weakSelf;
-        if (strongSelf)
+        if (strongSelf && strongSelf.delegate)
         {
             [strongSelf.delegate requestCreateDocument:strongSelf didFailWithError:err];
         }

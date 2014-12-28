@@ -98,7 +98,7 @@
         
         // Notify
         __strong ICDRequestDeleteDatabase *strongSelf = weakSelf;
-        if (strongSelf)
+        if (strongSelf && strongSelf.delegate)
         {
             [strongSelf.delegate requestDeleteDatabase:strongSelf didFailWithError:err];
         }

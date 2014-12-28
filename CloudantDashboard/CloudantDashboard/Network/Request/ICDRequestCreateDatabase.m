@@ -100,7 +100,7 @@
         
         // Notify
         __strong ICDRequestCreateDatabase *strongSelf = weakSelf;
-        if (strongSelf)
+        if (strongSelf && strongSelf.delegate)
         {
             [strongSelf.delegate requestCreateDatabase:strongSelf didFailWithError:err];
         }

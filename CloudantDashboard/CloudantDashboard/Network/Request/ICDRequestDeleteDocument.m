@@ -117,7 +117,7 @@
         
         // Notify
         __strong ICDRequestDeleteDocument *strongSelf = weakSelf;
-        if (strongSelf)
+        if (strongSelf && strongSelf.delegate)
         {
             [strongSelf.delegate requestDeleteDocument:strongSelf didFailWithError:err];
         }
