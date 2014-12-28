@@ -10,6 +10,8 @@
 
 #import "ICDRequestDocument.h"
 
+#import "ICDJSONHighlightFactory.h"
+
 #import "ICDLog.h"
 
 
@@ -76,7 +78,7 @@
 
 
 #pragma mark - ICDRequestDocumentDelegate methods
-- (void)requestDocument:(id<ICDRequestProtocol>)request didGetDocument:(NSAttributedString *)document
+- (void)requestDocument:(id<ICDRequestProtocol>)request didGetDocument:(NSDictionary *)document
 {
     if (request != self.requestDocument)
     {
@@ -85,7 +87,7 @@
         return;
     }
     
-    self.document = document;
+    self.document = [[ICDJSONHighlightFactory jsonHighlight] highlightDictionary:document];
     
     self.title = self.documentId;
     

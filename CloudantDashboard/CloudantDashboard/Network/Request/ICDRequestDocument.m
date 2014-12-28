@@ -7,10 +7,11 @@
 //
 
 #import <RestKit/RestKit.h>
-#import <JSONSyntaxHighlight/JSONSyntaxHighlight.h>
 
 #import "ICDRequestDocument.h"
 #import "ICDRequestResponseValueDictionary.h"
+
+#import "ICDJSONHighlightFactory.h"
 
 
 
@@ -109,10 +110,7 @@
 {
     if (self.delegate)
     {
-        JSONSyntaxHighlight *jsh = [[JSONSyntaxHighlight alloc] initWithJSON:docDictionary.dictionary];
-        NSAttributedString *highlightJSON = [jsh highlightJSON];
-        
-        [self.delegate requestDocument:self didGetDocument:highlightJSON];
+        [self.delegate requestDocument:self didGetDocument:docDictionary.dictionary];
     }
 }
 

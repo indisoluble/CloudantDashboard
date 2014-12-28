@@ -16,7 +16,7 @@
 
 @protocol ICDRequestDocumentDelegate <NSObject>
 
-- (void)requestDocument:(id<ICDRequestProtocol>)request didGetDocument:(NSAttributedString *)document;
+- (void)requestDocument:(id<ICDRequestProtocol>)request didGetDocument:(NSDictionary *)document;
 - (void)requestDocument:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error;
 
 @end
