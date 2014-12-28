@@ -20,6 +20,8 @@
 "Login required" = "Login required";
 "You have to login first" = "You have to login first";
 
+"Downloading ..." = "Downloading ...";
+
 "Error" = "Error";
 "Cancel" =  "Cancel";
 "Create" = "Create";

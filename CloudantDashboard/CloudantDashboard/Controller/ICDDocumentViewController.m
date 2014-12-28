@@ -87,6 +87,8 @@
     
     self.document = document;
     
+    self.title = self.documentId;
+    
     if ([self isViewLoaded])
     {
         [self presentDocument];
@@ -111,6 +113,11 @@
              databaseName:(NSString *)databaseName
                documentId:(NSString *)documentId
 {
+    if (documentId)
+    {
+        self.title = documentId;
+    }
+    
     self.networkManager = networkManager;
     self.databaseName = databaseName;
     self.documentId = documentId;
@@ -135,6 +142,8 @@
 {
     if (self.networkManager && self.requestDocument)
     {
+        self.title = [NSString stringWithFormat:NSLocalizedString(@"Downloading ...", @"Downloading ..")];
+        
         [self.networkManager executeRequest:self.requestDocument];
     }
 }

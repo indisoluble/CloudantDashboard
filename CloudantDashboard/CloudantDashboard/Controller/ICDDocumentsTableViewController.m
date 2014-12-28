@@ -246,6 +246,11 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 - (void)useNetworkManager:(ICDNetworkManager *)networkManager
              databaseName:(NSString *)databaseName
 {
+    if (databaseName)
+    {
+        self.title = databaseName;
+    }
+    
     self.networkManager = networkManager;
     self.databaseName = databaseName;
     
