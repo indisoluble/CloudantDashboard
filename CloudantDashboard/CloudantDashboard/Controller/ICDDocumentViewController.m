@@ -9,55 +9,37 @@
 #import "ICDDocumentViewController.h"
 
 #import "ICDRequestDocument.h"
+#import "ICDRequestAddRevision.h"
 
 #import "ICDJSONHighlightFactory.h"
 
 #import "ICDLog.h"
 
+#import "NSDictionary+CloudantSpecialKeys.h"
 
 
-@interface ICDDocumentViewController () <ICDRequestDocumentDelegate>
-{
-    ICDRequestDocument *_requestDocument;
-}
+
+@interface ICDDocumentViewController () <ICDRequestDocumentDelegate, ICDRequestAddRevisionDelegate>
 
 @property (weak, nonatomic) IBOutlet UITextView *textView;
 
-@property (strong, nonatomic, readonly) ICDRequestDocument *requestDocument;
-
 @property (strong, nonatomic) ICDNetworkManager *networkManager;
 
-@property (strong, nonatomic) NSString *databaseName;
-@property (strong, nonatomic) NSString *documentId;
+@property (strong, nonatomic) ICDRequestDocument *requestDocument;
+@property (strong, nonatomic) ICDRequestAddRevision *requestAddRevision;
 
-@property (strong, nonatomic) NSAttributedString *document;
+@property (strong, nonatomic) NSString *databaseName;
+@property (strong, nonatomic) ICDModelDocument *currentDocument;
+@property (strong, nonatomic) NSDictionary *currentDocumentData;
+@property (strong, nonatomic) NSDictionary *nextDocumentData;
+
+@property (strong, nonatomic) NSAttributedString *highlightedJSON;
 
 @end
 
 
 
 @implementation ICDDocumentViewController
-
-#pragma mark - Synthesize properties
-- (ICDRequestDocument *)requestDocument
-{
-    if (!_requestDocument && self.databaseName && self.documentId)
-    {
-        _requestDocument = [[ICDRequestDocument alloc] initWithDatabaseName:self.databaseName
-                                                                 documentId:self.documentId];
-        if (_requestDocument)
-        {
-            _requestDocument.delegate = self;
-        }
-        else
-        {
-            ICDLogWarning(@"Request not created with dbName <%@> and docId <%@>", self.databaseName, self.documentId);
-        }
-    }
-    
-    return _requestDocument;
-}
-
 
 #pragma mark - Memory management
 - (void)didReceiveMemoryWarning
@@ -73,7 +55,7 @@
 {
     [super viewDidLoad];
     
-    [self presentDocument];
+    [self updateUIWithHighlightedJSON];
 }
 
 
@@ -87,14 +69,13 @@
         return;
     }
     
-    self.document = [[ICDJSONHighlightFactory jsonHighlight] highlightDictionary:document];
+    [self releaseRequestDocument];
     
-    self.title = self.documentId;
+    self.currentDocumentData = document;
     
-    if ([self isViewLoaded])
-    {
-        [self presentDocument];
-    }
+    self.title = self.currentDocument.documentId;
+    
+    [self updateUIWithCurrentDocumentData];
 }
 
 - (void)requestDocument:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
@@ -106,6 +87,57 @@
         return;
     }
     
+    [self releaseRequestDocument];
+    
+    self.title = self.currentDocument.documentId;
+    
+    ICDLogError(@"Error: %@", error);
+}
+
+
+#pragma mark - ICDRequestAddRevisionDelegate methods
+- (void)requestAddRevision:(id<ICDRequestProtocol>)request didAddRevision:(ICDModelDocument *)revision
+{
+    if (request != self.requestAddRevision)
+    {
+        ICDLogDebug(@"Received edited document from unexpected request. Ignore");
+        
+        return;
+    }
+    
+    [self releaseRequestAddRevision];
+    
+    self.currentDocument = revision;
+    self.currentDocumentData = self.nextDocumentData;
+    self.nextDocumentData = nil;
+    
+    self.title = self.currentDocument.documentId;
+    
+    [self updateUIWithCurrentDocumentData];
+    
+    if (self.delegate)
+    {
+        [self.delegate icdDocumentVC:self didAddRevision:self.currentDocument];
+    }
+}
+
+- (void)requestAddRevision:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
+{
+    if (request != self.requestAddRevision)
+    {
+        ICDLogDebug(@"Received error from unexpected request. Ignore");
+        
+        return;
+    }
+    
+    [self releaseRequestAddRevision];
+    
+    self.nextDocumentData = nil;
+    
+    self.title = self.currentDocument.documentId;
+    
+    self.textView.editable = YES;
+    
     ICDLogError(@"Error: %@", error);
 }
 
@@ -113,51 +145,224 @@
 #pragma mark - Public methods
 - (void)useNetworkManager:(ICDNetworkManager *)networkManager
              databaseName:(NSString *)databaseName
-               documentId:(NSString *)documentId
+                 document:(ICDModelDocument *)document
 {
-    if (documentId)
+    if (document && document.documentId)
     {
-        self.title = documentId;
+        self.title = document.documentId;
+    }
+    
+    self.highlightedJSON = nil;
+    if ([self isViewLoaded])
+    {
+        [self clearUI];
     }
     
     self.networkManager = networkManager;
+    
     self.databaseName = databaseName;
-    self.documentId = documentId;
+    self.currentDocument = document;
+    self.currentDocumentData = nil;
+    self.nextDocumentData = nil;
     
     [self releaseRequestDocument];
+    [self releaseRequestAddRevision];
     
     [self executeRequestDocument];
 }
 
 
 #pragma mark - Private methods
-- (void)releaseRequestDocument
+- (void)clearUI
 {
-    if (_requestDocument)
+    [self removeBarButtomItem];
+    
+    self.textView.attributedText = [[NSAttributedString alloc] initWithString:@""];
+}
+
+- (void)updateUIWithCurrentDocumentData
+{
+    self.highlightedJSON = [[ICDJSONHighlightFactory jsonHighlight] highlightDictionary:self.currentDocumentData];
+    if ([self isViewLoaded])
     {
-        _requestDocument.delegate = nil;
-        _requestDocument = nil;
+        [self updateUIWithHighlightedJSON];
     }
+}
+
+- (void)updateUIWithHighlightedJSON
+{
+    if (self.highlightedJSON)
+    {
+        [self addEditBarButtonItem];
+        
+        self.textView.attributedText = self.highlightedJSON;
+        
+        self.highlightedJSON = nil;
+    }
+}
+
+- (void)removeBarButtomItem
+{
+    self.navigationItem.rightBarButtonItem = nil;
+}
+
+- (void)addEditBarButtonItem
+{
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit
+                                                                          target:self
+                                                                          action:@selector(prepareTextViewForEditingJSON)];
+    self.navigationItem.rightBarButtonItem = item;
+}
+
+- (void)prepareTextViewForEditingJSON
+{
+    [self addSaveBarButtonItem];
+    
+    NSMutableDictionary *dictionary = [self.currentDocumentData dictionaryWithoutCloudantSpecialKeys];
+    self.textView.attributedText = [[ICDJSONHighlightFactory jsonHighlight] highlightDictionary:dictionary];
+    
+    self.textView.editable = YES;
+}
+
+- (void)addSaveBarButtonItem
+{
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
+                                                                          target:self
+                                                                          action:@selector(checkJSONBeforeExecutingRequestAddRev)];
+    self.navigationItem.rightBarButtonItem = item;
+}
+
+- (void)checkJSONBeforeExecutingRequestAddRev
+{
+    NSString *text = self.textView.text;
+    NSData *data = [text dataUsingEncoding:NSUTF8StringEncoding];
+    
+    NSError *error = nil;
+    id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    if (!jsonObject)
+    {
+        [self showAlertViewWithTitle:NSLocalizedString(@"Error", @"Error")
+                             message:[error localizedDescription]];
+        
+        return;
+    }
+    
+    if (![jsonObject isKindOfClass:[NSDictionary class]])
+    {
+        [self showAlertViewWithTitle:NSLocalizedString(@"Error", @"Error")
+                             message:NSLocalizedString(@"Document is not a dictionary", @"Document is not a dictionary")];
+        
+        return;
+    }
+    
+    self.textView.editable = NO;
+    self.textView.selectable = NO;
+    
+    self.nextDocumentData = (NSDictionary *)jsonObject;
+    
+    [self executeRequestAddRevision];
+}
+
+- (void)showAlertViewWithTitle:(NSString *)title message:(NSString *)message
+{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
+                                                        message:message
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"Continue", @"Continue")
+                                              otherButtonTitles:nil];
+    [alertView show];
 }
 
 - (void)executeRequestDocument
 {
-    if (self.networkManager && self.requestDocument)
+    if ([self isExecutingRequest])
     {
-        self.title = [NSString stringWithFormat:NSLocalizedString(@"Downloading ...", @"Downloading ..")];
+        ICDLogTrace(@"There is a request ongoing. Abort");
         
-        [self.networkManager executeRequest:self.requestDocument];
+        return;
+    }
+    
+    if (!self.networkManager)
+    {
+        ICDLogTrace(@"No network manager. Abort");
+        
+        return;
+    }
+    
+    NSString *documentId = (self.currentDocument ? self.currentDocument.documentId : nil );
+    self.requestDocument = [[ICDRequestDocument alloc] initWithDatabaseName:self.databaseName documentId:documentId];
+    if (!self.requestDocument)
+    {
+        ICDLogWarning(@"Request not created with dbName <%@> and docId <%@>", self.databaseName, documentId);
+        
+        return;
+    }
+    
+    self.requestDocument.delegate = self;
+
+    self.title = NSLocalizedString(@"Downloading ...", @"Downloading ..");
+    
+    [self.networkManager executeRequest:self.requestDocument];
+}
+
+- (void)releaseRequestDocument
+{
+    if (self.requestDocument)
+    {
+        self.requestDocument.delegate = nil;
+        self.requestDocument = nil;
     }
 }
 
-- (void)presentDocument
+- (void)executeRequestAddRevision
 {
-    if (self.document)
+    if ([self isExecutingRequest])
     {
-        self.textView.attributedText = self.document;
+        ICDLogTrace(@"There is a request ongoing. Abort");
         
-        self.document = nil;
+        return;
     }
+    
+    if (!self.networkManager)
+    {
+        ICDLogTrace(@"No network manager. Abort");
+        
+        return;
+    }
+    
+    NSString *documentId = (self.currentDocument ? self.currentDocument.documentId : nil );
+    NSString *documentRev = (self.currentDocument ? self.currentDocument.documentRev : nil);
+    self.requestAddRevision = [[ICDRequestAddRevision alloc] initWithDatabaseName:self.databaseName
+                                                                       documentId:documentId
+                                                                      documentRev:documentRev
+                                                                     documentData:self.nextDocumentData];
+    if (!self.requestAddRevision)
+    {
+        ICDLogWarning(@"Request not created with dbName <%@>, document %@ and data <%@>",
+                      self.databaseName, self.currentDocument, self.nextDocumentData);
+        
+        return;
+    }
+    
+    self.requestAddRevision.delegate = self;
+    
+    self.title = NSLocalizedString(@"Saving ...", @"Saving ...");
+    
+    [self.networkManager executeRequest:self.requestAddRevision];
+}
+
+- (void)releaseRequestAddRevision
+{
+    if (self.requestAddRevision)
+    {
+        self.requestAddRevision.delegate = nil;
+        self.requestAddRevision = nil;
+    }
+}
+
+- (BOOL)isExecutingRequest
+{
+    return (self.requestDocument || self.requestAddRevision);
 }
 
 @end

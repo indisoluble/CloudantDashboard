@@ -20,7 +20,10 @@
 "Login required" = "Login required";
 "You have to login first" = "You have to login first";
 
+"Document is not a dictionary" = "Document is not a dictionary";
+
 "Downloading ..." = "Downloading ...";
+"Saving ..." = "Saving ...";
 
 "Error" = "Error";
 "Cancel" =  "Cancel";

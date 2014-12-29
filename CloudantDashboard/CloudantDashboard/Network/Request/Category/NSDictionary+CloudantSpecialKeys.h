@@ -19,4 +19,6 @@ extern NSString * const kNSDictionaryCloudantSpecialKeysDocumentRev;
 
 - (BOOL)containAnyCloudantSpecialKeys;
 
+- (NSMutableDictionary *)dictionaryWithoutCloudantSpecialKeys;
+
 @end

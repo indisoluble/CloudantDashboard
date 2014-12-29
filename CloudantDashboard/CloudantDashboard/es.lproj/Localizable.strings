@@ -20,7 +20,10 @@
 "Login required" = "Login obligatorio";
 "You have to login first" = "En primer lugar tienes que logearte";
 
+"Document is not a dictionary" = "Este documento no es un diccionario";
+
 "Downloading ..." = "Descargando ...";
+"Saving ..." = "Guardando ...";
 
 "Error" = "Error";
 "Cancel" =  "Cancelar";

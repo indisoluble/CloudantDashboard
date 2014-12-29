@@ -24,4 +24,13 @@ NSString * const kNSDictionaryCloudantSpecialKeysDocumentRev = @"_rev";
             [self objectForKey:kNSDictionaryCloudantSpecialKeysDocumentRev]);
 }
 
+- (NSMutableDictionary *)dictionaryWithoutCloudantSpecialKeys
+{
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self];
+    [dictionary removeObjectForKey:kNSDictionaryCloudantSpecialKeysDocumentId];
+    [dictionary removeObjectForKey:kNSDictionaryCloudantSpecialKeysDocumentRev];
+    
+    return dictionary;
+}
+
 @end
