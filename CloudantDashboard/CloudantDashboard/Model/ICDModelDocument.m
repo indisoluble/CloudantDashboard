@@ -72,6 +72,19 @@
 }
 
 
+#pragma mark - Public methods
+- (NSComparisonResult)compare:(ICDModelDocument *)otherDocument
+{
+    NSComparisonResult result = [self.documentId compare:otherDocument.documentId];
+    if (result == NSOrderedSame)
+    {
+        result = [self.documentRev compare:otherDocument.documentRev];
+    }
+    
+    return result;
+}
+
+
 #pragma mark - Public class methods
 + (instancetype)documentWithId:(NSString *)documentId rev:(NSString *)documentRev
 {

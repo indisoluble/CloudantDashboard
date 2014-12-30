@@ -46,6 +46,8 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 @property (strong, nonatomic) NSMutableArray *allDatabases;
 
+@property (assign, nonatomic) BOOL isViewVisible;
+
 @end
 
 
@@ -77,6 +79,8 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     if (self)
     {
         _allDatabases = [NSMutableArray array];
+        
+        _isViewVisible = NO;
     }
     
     return self;
@@ -96,9 +100,25 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     [super viewDidLoad];
     
+    self.clearsSelectionOnViewWillAppear = NO;
+    
     [self customizeUI];
     
     [self checkAuthorizationBeforeExecutingRequestAllDBs];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    self.isViewVisible = YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    self.isViewVisible = NO;
 }
 
 
@@ -155,6 +175,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     [self releaseRequestAllDBs];
     
     self.allDatabases = [NSMutableArray arrayWithArray:databases];
+    [self.allDatabases sortUsingSelector:@selector(compare:)];
     
     [self.refreshControl endRefreshing];
     [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:ICDCOMMONANIMATIONDURATION_REFRESHCONTROL];
@@ -190,10 +211,21 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     [self releaseRequestCreateDB];
     
     ICDModelDatabase *database = [ICDModelDatabase databaseWithName:dbName];
-    [self.allDatabases addObject:database];
+    NSUInteger index = [self.allDatabases indexOfObject:database
+                                          inSortedRange:NSMakeRange(0, [self.allDatabases count])
+                                                options:NSBinarySearchingInsertionIndex
+                                        usingComparator:^NSComparisonResult(id obj1, id obj2) {
+                                            return [(ICDModelDatabase *)obj1 compare:(ICDModelDatabase *)obj2];
+                                        }];
+    [self.allDatabases insertObject:database atIndex:index];
     
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:([self.allDatabases count] - 1) inSection:0];
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    
+    if (self.isViewVisible)
+    {
+        [self.tableView selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionTop];
+    }
 }
 
 - (void)requestCreateDatabase:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error

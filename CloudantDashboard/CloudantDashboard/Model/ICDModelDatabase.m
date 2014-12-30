@@ -65,6 +65,13 @@
 }
 
 
+#pragma mark - Public methods
+- (NSComparisonResult)compare:(ICDModelDatabase *)otherDatabase
+{
+    return [self.name compare:otherDatabase.name];
+}
+
+
 #pragma mark - Public class methods
 + (instancetype)databaseWithName:(NSString *)name
 {

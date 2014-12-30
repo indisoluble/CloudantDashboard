@@ -41,6 +41,8 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 @property (strong, nonatomic) NSMutableArray *allDocuments;
 
+@property (assign, nonatomic) BOOL isViewVisible;
+
 @end
 
 
@@ -54,6 +56,8 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     if (self)
     {
         _allDocuments = [NSMutableArray array];
+        
+        _isViewVisible = NO;
     }
     
     return self;
@@ -74,12 +78,28 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 {
     [super viewDidLoad];
     
+    self.clearsSelectionOnViewWillAppear = NO;
+    
     [self customizeUI];
     
     if (self.requestAllDocs)
     {
         [self forceShowRefreshControlAnimation];
     }
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    self.isViewVisible = YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    self.isViewVisible = NO;
 }
 
 
@@ -137,6 +157,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     [self releaseRequestAllDocs];
     
     self.allDocuments = [NSMutableArray arrayWithArray:documents];
+    [self.allDocuments sortUsingSelector:@selector(compare:)];
     
     if ([self isViewLoaded])
     {
@@ -177,10 +198,21 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     [self releaseRequestCreateDoc];
     
-    [self.allDocuments addObject:document];
+    NSUInteger index = [self.allDocuments indexOfObject:document
+                                          inSortedRange:NSMakeRange(0, [self.allDocuments count])
+                                                options:NSBinarySearchingInsertionIndex
+                                        usingComparator:^NSComparisonResult(id obj1, id obj2) {
+                                            return [(ICDModelDocument *)obj1 compare:(ICDModelDocument *)obj2];
+                                        }];
+    [self.allDocuments insertObject:document atIndex:index];
     
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:([self.allDocuments count] - 1) inSection:0];
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    
+    if (self.isViewVisible)
+    {
+        [self.tableView selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionTop];
+    }
 }
 
 - (void)requestCreateDocument:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
@@ -262,8 +294,15 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     {
         [self.allDocuments replaceObjectAtIndex:index withObject:revision];
         
+        NSIndexPath *indexPathForSelectedRow = [self.tableView indexPathForSelectedRow];
+        
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
         [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+        
+        if ([indexPath isEqual:indexPathForSelectedRow])
+        {
+            [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+        }
     }
 }
 

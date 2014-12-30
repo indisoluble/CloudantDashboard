@@ -20,6 +20,8 @@
 @property (strong, nonatomic) NSString *documentId;
 @property (strong, nonatomic) NSString *documentRev;
 
+- (NSComparisonResult)compare:(ICDModelDocument *)otherDocument;
+
 + (instancetype)documentWithId:(NSString *)documentId rev:(NSString *)documentRev;
 
 @end

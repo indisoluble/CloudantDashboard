@@ -18,6 +18,8 @@
 
 @property (strong, nonatomic) NSString *name;
 
+- (NSComparisonResult)compare:(ICDModelDatabase *)otherDatabase;
+
 + (instancetype)databaseWithName:(NSString *)name;
 
 @end
