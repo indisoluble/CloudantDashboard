@@ -49,6 +49,15 @@
                documentRev:(NSString *)docRev
               documentData:(NSDictionary *)docData
 {
+    return [self initWithDatabaseName:dbName documentId:docId documentRev:docRev documentData:docData notification:nil];
+}
+
+- (id)initWithDatabaseName:(NSString *)dbName
+                documentId:(NSString *)docId
+               documentRev:(NSString *)docRev
+              documentData:(NSDictionary *)docData
+              notification:(ICDRequestAddRevisionNotification *)notificationOrNil
+{
     self = [super init];
     if (self)
     {
@@ -74,6 +83,8 @@
             [_parameters setObject:trimmedDocRev forKey:kNSDictionaryCloudantSpecialKeysDocumentRev];
             
             _responseDescriptor = [ICDRequestAddRevision responseDescriptorForSuccessWithPath:_path];
+            
+            _notification = (notificationOrNil ? notificationOrNil : [[ICDRequestAddRevisionNotification alloc] init]);
         }
     }
     
@@ -100,9 +111,9 @@
         
         // Notify
         __strong ICDRequestAddRevision *strongSelf = weakSelf;
-        if (strongSelf && strongSelf.delegate)
+        if (strongSelf)
         {
-            [strongSelf.delegate requestAddRevision:strongSelf didAddRevision:[mapResult firstObject]];
+            [strongSelf notifySuccessWithRevision:[mapResult firstObject]];
         }
     };
     
@@ -113,9 +124,9 @@
         
         // Notify
         __strong ICDRequestAddRevision *strongSelf = weakSelf;
-        if (strongSelf && strongSelf.delegate)
+        if (strongSelf)
         {
-            [strongSelf.delegate requestAddRevision:strongSelf didFailWithError:err];
+            [strongSelf notifyFailureWithError:err];
         }
     };
     
@@ -123,10 +134,31 @@
 }
 
 
+#pragma mark - Private methods
+- (void)notifySuccessWithRevision:(ICDModelDocument *)revision
+{
+    if (self.delegate)
+    {
+        [self.delegate requestAddRevision:self didAddRevision:revision];
+    }
+    
+    [self.notification postDidAddRevisionNotificationWithSender:self revision:revision];
+}
+
+- (void)notifyFailureWithError:(NSError *)err
+{
+    if (self.delegate)
+    {
+        [self.delegate requestAddRevision:self didFailWithError:err];
+    }
+    
+    [self.notification postDidFailNotificationWithSender:self error:err];
+}
+
+
 #pragma mark - Private class methods
 + (RKResponseDescriptor *)responseDescriptorForSuccessWithPath:(NSString *)path
 {
-    // Mapping
     // Mapping
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[ICDModelDocument class]];
     [mapping addAttributeMappingsFromDictionary:@{ICDREQUESTADDREVISION_JSON_KEY_ID: ICDMODELDOCUMENT_PROPERTY_KEY_ID,

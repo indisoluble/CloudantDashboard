@@ -42,6 +42,9 @@
 		FF86207C1A473A2C00AC68D2 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF86207A1A473A2C00AC68D2 /* LaunchScreen.xib */; };
 		FF8620961A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8620951A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m */; };
 		FF8620991A4746F400AC68D2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FF86209B1A4746F400AC68D2 /* Localizable.strings */; };
+		FF8A4F061A547340003B29BA /* ICDMockRKObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8A4F051A547340003B29BA /* ICDMockRKObjectManager.m */; };
+		FF8A4F0A1A547564003B29BA /* ICDMockRKMappingResult.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8A4F091A547564003B29BA /* ICDMockRKMappingResult.m */; };
+		FF8A4F0D1A548E42003B29BA /* ICDRequestAddRevisionNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8A4F0C1A548E42003B29BA /* ICDRequestAddRevisionNotification.m */; };
 		FFA07EA41A4DD08A0092351A /* ICDAuthorizationFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA07EA31A4DD08A0092351A /* ICDAuthorizationFactory.m */; };
 		FFA07EA71A4DD33B0092351A /* ICDAuthorizationKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA07EA61A4DD33B0092351A /* ICDAuthorizationKeychain.m */; };
 		FFDC3A9E1A4CDE7A003D4271 /* ICDRequestDeleteDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDC3A9D1A4CDE7A003D4271 /* ICDRequestDeleteDocument.m */; };
@@ -138,6 +141,12 @@
 		FF86209A1A4746F400AC68D2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		FF86209D1A47478D00AC68D2 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		FF86209E1A47478D00AC68D2 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		FF8A4F041A547340003B29BA /* ICDMockRKObjectManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDMockRKObjectManager.h; sourceTree = "<group>"; };
+		FF8A4F051A547340003B29BA /* ICDMockRKObjectManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDMockRKObjectManager.m; sourceTree = "<group>"; };
+		FF8A4F081A547564003B29BA /* ICDMockRKMappingResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDMockRKMappingResult.h; sourceTree = "<group>"; };
+		FF8A4F091A547564003B29BA /* ICDMockRKMappingResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDMockRKMappingResult.m; sourceTree = "<group>"; };
+		FF8A4F0B1A548E42003B29BA /* ICDRequestAddRevisionNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestAddRevisionNotification.h; sourceTree = "<group>"; };
+		FF8A4F0C1A548E42003B29BA /* ICDRequestAddRevisionNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestAddRevisionNotification.m; sourceTree = "<group>"; };
 		FF9C0C391A479201001C4EBA /* ICDLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICDLog.h; sourceTree = "<group>"; };
 		FFA07EA21A4DD08A0092351A /* ICDAuthorizationFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDAuthorizationFactory.h; sourceTree = "<group>"; };
 		FFA07EA31A4DD08A0092351A /* ICDAuthorizationFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDAuthorizationFactory.m; sourceTree = "<group>"; };
@@ -228,6 +237,8 @@
 				FF0CBEC11A507EA300E29E4D /* ICDRequestAddRevision.h */,
 				FF0CBEC21A507EA300E29E4D /* ICDRequestAddRevision.m */,
 				FF0CBEC41A507F8800E29E4D /* ICDRequestAddRevisionDelegate.h */,
+				FF8A4F0B1A548E42003B29BA /* ICDRequestAddRevisionNotification.h */,
+				FF8A4F0C1A548E42003B29BA /* ICDRequestAddRevisionNotification.m */,
 				FF028DC41A488873008D2561 /* ICDRequestAllDatabases.h */,
 				FF028DC51A488873008D2561 /* ICDRequestAllDatabases.m */,
 				FF2D02281A48DFBF00E03C6E /* ICDRequestAllDatabasesDelegate.h */,
@@ -275,6 +286,7 @@
 			isa = PBXGroup;
 			children = (
 				FF028DD61A489654008D2561 /* Network */,
+				FF8A4F011A5472B5003B29BA /* Pods */,
 			);
 			path = Mock;
 			sourceTree = "<group>";
@@ -449,6 +461,41 @@
 			path = Authorization;
 			sourceTree = "<group>";
 		};
+		FF8A4F011A5472B5003B29BA /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				FF8A4F021A5472E0003B29BA /* RestKit */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		FF8A4F021A5472E0003B29BA /* RestKit */ = {
+			isa = PBXGroup;
+			children = (
+				FF8A4F071A547438003B29BA /* ObjectMapping */,
+				FF8A4F031A547306003B29BA /* Network */,
+			);
+			path = RestKit;
+			sourceTree = "<group>";
+		};
+		FF8A4F031A547306003B29BA /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				FF8A4F041A547340003B29BA /* ICDMockRKObjectManager.h */,
+				FF8A4F051A547340003B29BA /* ICDMockRKObjectManager.m */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		FF8A4F071A547438003B29BA /* ObjectMapping */ = {
+			isa = PBXGroup;
+			children = (
+				FF8A4F081A547564003B29BA /* ICDMockRKMappingResult.h */,
+				FF8A4F091A547564003B29BA /* ICDMockRKMappingResult.m */,
+			);
+			path = ObjectMapping;
+			sourceTree = "<group>";
+		};
 		FF9C0C381A47919E001C4EBA /* Log */ = {
 			isa = PBXGroup;
 			children = (
@@ -612,6 +659,7 @@
 				FF86206E1A473A2C00AC68D2 /* main.m in Sources */,
 				FF73865A1A4B6956008B2AA2 /* RKObjectManager+Helper.m in Sources */,
 				FFDC3A9E1A4CDE7A003D4271 /* ICDRequestDeleteDocument.m in Sources */,
+				FF8A4F0D1A548E42003B29BA /* ICDRequestAddRevisionNotification.m in Sources */,
 				FFE135BE1A4C974E002F9E23 /* ICDRequestCreateDocument.m in Sources */,
 				FF8620961A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m in Sources */,
 				FF028DE41A48B7FF008D2561 /* ICDNetworkManager+Helper.m in Sources */,
@@ -628,6 +676,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF8A4F061A547340003B29BA /* ICDMockRKObjectManager.m in Sources */,
+				FF8A4F0A1A547564003B29BA /* ICDMockRKMappingResult.m in Sources */,
 				FFDC3AA11A4CE724003D4271 /* ICDRequestDeleteDocumentTests.m in Sources */,
 				FF028DDA1A489691008D2561 /* ICDMockRequest.m in Sources */,
 				FF4877851A4C469500F157D5 /* ICDRequestCreateDatabaseTests.m in Sources */,

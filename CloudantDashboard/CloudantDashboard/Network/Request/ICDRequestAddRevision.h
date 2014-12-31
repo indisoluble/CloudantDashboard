@@ -10,10 +10,13 @@
 
 #import "ICDRequestProtocol.h"
 #import "ICDRequestAddRevisionDelegate.h"
+#import "ICDRequestAddRevisionNotification.h"
 
 
 
 @interface ICDRequestAddRevision : NSObject <ICDRequestProtocol>
+
+@property (strong, nonatomic, readonly) ICDRequestAddRevisionNotification *notification;
 
 @property (weak, nonatomic) id<ICDRequestAddRevisionDelegate> delegate;
 
@@ -21,5 +24,11 @@
                 documentId:(NSString *)docId
                documentRev:(NSString *)docRev
               documentData:(NSDictionary *)docData;
+
+- (id)initWithDatabaseName:(NSString *)dbName
+                documentId:(NSString *)docId
+               documentRev:(NSString *)docRev
+              documentData:(NSDictionary *)docData
+              notification:(ICDRequestAddRevisionNotification *)notificationOrNil;
 
 @end
