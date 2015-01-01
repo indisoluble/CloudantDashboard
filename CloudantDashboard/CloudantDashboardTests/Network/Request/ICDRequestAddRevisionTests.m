@@ -131,10 +131,14 @@
     [super setUp];
     
     // Put setup code here. This method is called before the invocation of each test method in the class.
+    NSNotificationCenter *notificationCenter = [[NSNotificationCenter alloc] init];
+    ICDRequestAddRevisionNotification *notification = [[ICDRequestAddRevisionNotification alloc] initWithNotificationCenter:notificationCenter];
+    
     self.addRevisionRequest = [[ICDRequestAddRevision alloc] initWithDatabaseName:ICDREQUESTADDREVISIONTESTS_DBNAME
                                                                        documentId:ICDREQUESTADDREVISIONTESTS_DOCID
                                                                       documentRev:ICDREQUESTADDREVISIONTESTS_DOCREV
-                                                                     documentData:@{}];
+                                                                     documentData:@{}
+                                                                     notification:notification];
     
     self.addRevisionRequestDelegate = [[ICDRequestAddRevisionTestsDelegateImplementation alloc] init];
     self.addRevisionRequest.delegate = self.addRevisionRequestDelegate;

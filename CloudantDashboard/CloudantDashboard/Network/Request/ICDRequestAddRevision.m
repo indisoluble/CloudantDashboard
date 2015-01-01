@@ -90,7 +90,7 @@
             
             _responseDescriptor = [ICDRequestAddRevision responseDescriptorForSuccessWithPath:_path];
             
-            _notification = (notificationOrNil ? notificationOrNil : [[ICDRequestAddRevisionNotification alloc] init]);
+            _notification = (notificationOrNil ? notificationOrNil : [ICDRequestAddRevisionNotification sharedInstance]);
         }
     }
     

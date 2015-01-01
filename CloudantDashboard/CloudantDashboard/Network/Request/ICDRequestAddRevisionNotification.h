@@ -40,4 +40,6 @@ extern NSString * const kICDRequestAddRevisionNotificationDidFailUserInfoKeyErro
                                documentId:(NSString *)documentId
                                     error:(NSError *)error;
 
++ (instancetype)sharedInstance;
+
 @end
