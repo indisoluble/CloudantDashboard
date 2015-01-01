@@ -11,9 +11,12 @@
 
 
 NSString * const kICDRequestAddRevisionNotificationDidAddRevision = @"kICDRequestAddRevisionNotificationDidAddRevision";
+NSString * const kICDRequestAddRevisionNotificationDidAddRevisionUserInfoKeyDatabaseName = @"kICDRequestAddRevisionNotificationDidAddRevisionUserInfoKeyDatabaseName";
 NSString * const kICDRequestAddRevisionNotificationDidAddRevisionUserInfoKeyRevision = @"kICDRequestAddRevisionNotificationDidAddRevisionUserInfoKeyRevision";
 
 NSString * const kICDRequestAddRevisionNotificationDidFail = @"kICDRequestAddRevisionNotificationDidFail";
+NSString * const kICDRequestAddRevisionNotificationDidFailUserInfoKeyDatabaseName = @"kICDRequestAddRevisionNotificationDidFailUserInfoKeyDatabaseName";
+NSString * const kICDRequestAddRevisionNotificationDidFailUserInfoKeyDocumentId = @"kICDRequestAddRevisionNotificationDidFailUserInfoKeyDocumentId";
 NSString * const kICDRequestAddRevisionNotificationDidFailUserInfoKeyError = @"kICDRequestAddRevisionNotificationDidFailUserInfoKeyError";
 
 
@@ -62,11 +65,14 @@ NSString * const kICDRequestAddRevisionNotificationDidFailUserInfoKeyError = @"k
                                      object:sender];
 }
 
-- (void)postDidAddRevisionNotificationWithSender:(id)sender revision:(ICDModelDocument *)revision
+- (void)postDidAddRevisionNotificationWithSender:(id)sender
+                                    databaseName:(NSString *)dbName
+                                        revision:(ICDModelDocument *)revision
 {
     [self.notificationCenter postNotificationName:kICDRequestAddRevisionNotificationDidAddRevision
                                            object:sender
-                                         userInfo:@{kICDRequestAddRevisionNotificationDidAddRevisionUserInfoKeyRevision: revision}];
+                                         userInfo:@{kICDRequestAddRevisionNotificationDidAddRevisionUserInfoKeyDatabaseName: dbName,
+                                                    kICDRequestAddRevisionNotificationDidAddRevisionUserInfoKeyRevision: revision}];
 }
 
 - (void)addDidFailNotificationObserver:(id)observer selector:(SEL)aSelector sender:(id)sender
@@ -84,11 +90,16 @@ NSString * const kICDRequestAddRevisionNotificationDidFailUserInfoKeyError = @"k
                                      object:sender];
 }
 
-- (void)postDidFailNotificationWithSender:(id)sender error:(NSError *)error
+- (void)postDidFailNotificationWithSender:(id)sender
+                             databaseName:(NSString *)dbName
+                               documentId:(NSString *)documentId
+                                    error:(NSError *)error
 {
     [self.notificationCenter postNotificationName:kICDRequestAddRevisionNotificationDidFail
                                            object:sender
-                                         userInfo:@{kICDRequestAddRevisionNotificationDidFailUserInfoKeyError: error}];
+                                         userInfo:@{kICDRequestAddRevisionNotificationDidFailUserInfoKeyDatabaseName: dbName,
+                                                    kICDRequestAddRevisionNotificationDidFailUserInfoKeyDocumentId: documentId,
+                                                    kICDRequestAddRevisionNotificationDidFailUserInfoKeyError: error}];
 }
 
 @end

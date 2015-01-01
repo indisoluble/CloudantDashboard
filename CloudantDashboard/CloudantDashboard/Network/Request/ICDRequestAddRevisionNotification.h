@@ -13,9 +13,12 @@
 
 
 extern NSString * const kICDRequestAddRevisionNotificationDidAddRevision;
+extern NSString * const kICDRequestAddRevisionNotificationDidAddRevisionUserInfoKeyDatabaseName;
 extern NSString * const kICDRequestAddRevisionNotificationDidAddRevisionUserInfoKeyRevision;
 
 extern NSString * const kICDRequestAddRevisionNotificationDidFail;
+extern NSString * const kICDRequestAddRevisionNotificationDidFailUserInfoKeyDatabaseName;
+extern NSString * const kICDRequestAddRevisionNotificationDidFailUserInfoKeyDocumentId;
 extern NSString * const kICDRequestAddRevisionNotificationDidFailUserInfoKeyError;
 
 
@@ -26,10 +29,15 @@ extern NSString * const kICDRequestAddRevisionNotificationDidFailUserInfoKeyErro
 
 - (void)addDidAddRevisionNotificationObserver:(id)observer selector:(SEL)aSelector sender:(id)sender;
 - (void)removeDidAddRevisionNotificationObserver:(id)observer sender:(id)sender;
-- (void)postDidAddRevisionNotificationWithSender:(id)sender revision:(ICDModelDocument *)revision;
+- (void)postDidAddRevisionNotificationWithSender:(id)sender
+                                    databaseName:(NSString *)dbName
+                                        revision:(ICDModelDocument *)revision;
 
 - (void)addDidFailNotificationObserver:(id)observer selector:(SEL)aSelector sender:(id)sender;
 - (void)removeDidFailNotificationObserver:(id)observer sender:(id)sender;
-- (void)postDidFailNotificationWithSender:(id)sender error:(NSError *)error;
+- (void)postDidFailNotificationWithSender:(id)sender
+                             databaseName:(NSString *)dbName
+                               documentId:(NSString *)documentId
+                                    error:(NSError *)error;
 
 @end

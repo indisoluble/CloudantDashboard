@@ -28,6 +28,9 @@
 
 @interface ICDRequestAddRevision ()
 
+@property (strong, nonatomic) NSString *dbName;
+@property (strong, nonatomic) NSString *docId;
+
 @property (strong, nonatomic) NSString *path;
 @property (strong, nonatomic) NSMutableDictionary *parameters;
 @property (strong, nonatomic) RKResponseDescriptor *responseDescriptor;
@@ -76,10 +79,13 @@
         }
         else
         {
-            _path = [NSString stringWithFormat:ICDREQUESTADDREVISION_PATH_FORMAT, trimmedDBName];
+            _dbName = trimmedDBName;
+            _docId = trimmedDocId;
+            
+            _path = [NSString stringWithFormat:ICDREQUESTADDREVISION_PATH_FORMAT, _dbName];
             
             _parameters = [NSMutableDictionary dictionaryWithDictionary:docData];
-            [_parameters setObject:trimmedDocId forKey:kNSDictionaryCloudantSpecialKeysDocumentId];
+            [_parameters setObject:_docId forKey:kNSDictionaryCloudantSpecialKeysDocumentId];
             [_parameters setObject:trimmedDocRev forKey:kNSDictionaryCloudantSpecialKeysDocumentRev];
             
             _responseDescriptor = [ICDRequestAddRevision responseDescriptorForSuccessWithPath:_path];
@@ -142,7 +148,9 @@
         [self.delegate requestAddRevision:self didAddRevision:revision];
     }
     
-    [self.notification postDidAddRevisionNotificationWithSender:self revision:revision];
+    [self.notification postDidAddRevisionNotificationWithSender:self
+                                                   databaseName:self.dbName
+                                                       revision:revision];
 }
 
 - (void)notifyFailureWithError:(NSError *)err
@@ -152,7 +160,10 @@
         [self.delegate requestAddRevision:self didFailWithError:err];
     }
     
-    [self.notification postDidFailNotificationWithSender:self error:err];
+    [self.notification postDidFailNotificationWithSender:self
+                                            databaseName:self.dbName
+                                              documentId:self.docId
+                                                   error:err];
 }
 
 
