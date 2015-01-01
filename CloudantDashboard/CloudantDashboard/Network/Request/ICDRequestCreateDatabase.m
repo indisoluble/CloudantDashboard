@@ -13,6 +13,8 @@
 #import "ICDRequestResponseValueOk.h"
 #import "ICDRequestResponseValueError.h"
 
+#import "ICDLog.h"
+
 #import "RKObjectManager+Helper.h"
 
 
@@ -75,6 +77,8 @@
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
     NSArray *thisResponseDescriptors = self.responseDescriptors;
     
+    NSString *thisDBName = self.dbName;
+    
     // Add configuration
     [thisObjectManager addResponseDescriptorsFromArray:thisResponseDescriptors];
     
@@ -87,10 +91,12 @@
         [thisObjectManager removeResponseDescriptorsFromArray:thisResponseDescriptors];
         
         // Notify
+        ICDLogTrace(@"Created database with name %@", thisDBName);
+        
         __strong ICDRequestCreateDatabase *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)
         {
-            [strongSelf.delegate requestCreateDatabase:strongSelf didCreateDatabaseWithName:strongSelf.dbName];
+            [strongSelf.delegate requestCreateDatabase:strongSelf didCreateDatabaseWithName:thisDBName];
         }
         
         // Finish execution

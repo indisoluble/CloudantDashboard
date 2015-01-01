@@ -12,6 +12,8 @@
 
 #import "ICDModelDocument.h"
 
+#import "ICDLog.h"
+
 #import "NSDictionary+CloudantSpecialKeys.h"
 
 
@@ -124,6 +126,7 @@
         
         // Notify
         ICDModelDocument *revision = (ICDModelDocument *)[mapResult firstObject];
+        ICDLogTrace(@"Revision added: %@", revision);
         
         __strong ICDRequestAddRevision *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)

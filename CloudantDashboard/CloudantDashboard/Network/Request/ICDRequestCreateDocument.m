@@ -12,6 +12,8 @@
 
 #import "ICDModelDocument.h"
 
+#import "ICDLog.h"
+
 
 
 #define ICDREQUESTCREATEDOCUMENT_PATH_FORMAT    @"/%@"
@@ -87,10 +89,13 @@
         [thisObjectManager removeResponseDescriptor:thisResponseDescriptor];
         
         // Notify
+        ICDModelDocument *document = [mapResult firstObject];
+        ICDLogTrace(@"Created document %@", document);
+        
         __strong ICDRequestCreateDocument *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)
         {
-            [strongSelf.delegate requestCreateDocument:strongSelf didCreateDocument:[mapResult firstObject]];
+            [strongSelf.delegate requestCreateDocument:strongSelf didCreateDocument:document];
         }
         
         // Finish execution

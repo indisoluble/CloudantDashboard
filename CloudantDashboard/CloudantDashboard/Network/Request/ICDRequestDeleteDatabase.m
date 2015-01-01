@@ -13,6 +13,8 @@
 #import "ICDRequestResponseValueOk.h"
 #import "ICDRequestResponseValueError.h"
 
+#import "ICDLog.h"
+
 #import "RKObjectManager+Helper.h"
 
 
@@ -73,6 +75,8 @@
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
     NSArray *thisResponseDescriptors = self.responseDescriptors;
     
+    NSString *thisDBName = self.dbName;
+    
     // Add configuration
     [thisObjectManager addResponseDescriptorsFromArray:thisResponseDescriptors];
     
@@ -85,10 +89,12 @@
         [thisObjectManager removeResponseDescriptorsFromArray:thisResponseDescriptors];
         
         // Notify
+        ICDLogTrace(@"Deleted database %@", thisDBName);
+        
         __strong ICDRequestDeleteDatabase *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)
         {
-            [strongSelf.delegate requestDeleteDatabase:strongSelf didDeleteDatabaseWithName:strongSelf.dbName];
+            [strongSelf.delegate requestDeleteDatabase:strongSelf didDeleteDatabaseWithName:thisDBName];
         }
         
         // Finish execution

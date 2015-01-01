@@ -63,13 +63,13 @@
     XCTAssertTrue([self.manager asyncExecuteRequest:self.mockRequest], @"If the previous request is completed, the next one should be executed straight away");
 }
 
-- (void)testAsyncExecuteRequestFailsIfThereIsAnotherRequestOnGoing
+- (void)testAsyncExecuteRequestSuccessIfThereIsAnotherRequestOnGoing
 {
     self.mockRequest.doExecuteCompletionHandler = NO;
     
     [self.manager asyncExecuteRequest:self.mockRequest];
     
-    XCTAssertFalse([self.manager asyncExecuteRequest:self.mockRequest], @"It should fail because the previous request did not finish yet");
+    XCTAssertTrue([self.manager asyncExecuteRequest:self.mockRequest], @"If there is another request on going, the new one is scheduled");
 }
 
 @end

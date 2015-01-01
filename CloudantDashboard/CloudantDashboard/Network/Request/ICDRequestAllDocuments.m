@@ -12,6 +12,8 @@
 
 #import "ICDModelDocument.h"
 
+#import "ICDLog.h"
+
 
 
 #define ICDREQUESTALLDOCUMENTS_JSON_DOCUMENT_KEY_ID     @"id"
@@ -23,6 +25,8 @@
 
 
 @interface ICDRequestAllDocuments ()
+
+@property (strong, nonatomic) NSString *dbName;
 
 @property (strong, nonatomic) NSString *path;
 @property (strong, nonatomic) RKResponseDescriptor *responseDescriptor;
@@ -53,7 +57,9 @@
         }
         else
         {
-            _path = [NSString stringWithFormat:ICDREQUESTALLDOCUMENTS_PATH_FORMAT, trimmedDBName];
+            _dbName = trimmedDBName;
+            
+            _path = [NSString stringWithFormat:ICDREQUESTALLDOCUMENTS_PATH_FORMAT, _dbName];
             _responseDescriptor = [ICDRequestAllDocuments responseDescriptorForPath:_path];
         }
     }
@@ -69,6 +75,8 @@
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
     RKResponseDescriptor *thisResponseDescriptor = self.responseDescriptor;
     
+    NSString *thisDBName = self.dbName;
+    
     // Add configuration
     [thisObjectManager addResponseDescriptor:thisResponseDescriptor];
     
@@ -81,6 +89,8 @@
         [thisObjectManager removeResponseDescriptor:thisResponseDescriptor];
         
         // Notify
+        ICDLogTrace(@"Found %lu documents in %@", (unsigned long)[mapResult.array count], thisDBName);
+        
         __strong ICDRequestAllDocuments *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)
         {

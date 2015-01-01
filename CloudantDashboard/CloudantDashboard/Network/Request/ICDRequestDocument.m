@@ -11,7 +11,7 @@
 #import "ICDRequestDocument.h"
 #import "ICDRequestResponseValueDictionary.h"
 
-#import "ICDJSONHighlightFactory.h"
+#import "ICDLog.h"
 
 
 
@@ -20,6 +20,9 @@
 
 
 @interface ICDRequestDocument ()
+
+@property (strong, nonatomic) NSString *dbName;
+@property (strong, nonatomic) NSString *documentId;
 
 @property (strong, nonatomic) NSString *path;
 @property (strong, nonatomic) RKResponseDescriptor *responseDescriptor;
@@ -52,7 +55,10 @@
         }
         else
         {
-            _path = [NSString stringWithFormat:ICDREQUESTDOCUMENT_PATH_FORMAT, trimmedDBName, trimmedDocId];
+            _dbName = trimmedDBName;
+            _documentId = trimmedDocId;
+            
+            _path = [NSString stringWithFormat:ICDREQUESTDOCUMENT_PATH_FORMAT, _dbName, _documentId];
             _responseDescriptor = [ICDRequestDocument responseDescriptorForPath:_path];
         }
     }
@@ -68,6 +74,9 @@
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
     RKResponseDescriptor *thisResponseDescriptor = self.responseDescriptor;
     
+    NSString *thisDBName = self.dbName;
+    NSString *thisDocumentId = self.documentId;
+    
     // Add configuration
     [thisObjectManager addResponseDescriptor:thisResponseDescriptor];
     
@@ -80,6 +89,8 @@
         [thisObjectManager removeResponseDescriptor:thisResponseDescriptor];
         
         // Notify
+        ICDLogTrace(@"Found document %@ in %@", thisDocumentId, thisDBName);
+        
         __strong ICDRequestDocument *strongSelf = weakSelf;
         if (strongSelf)
         {

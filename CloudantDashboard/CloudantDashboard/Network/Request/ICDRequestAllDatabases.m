@@ -12,6 +12,8 @@
 
 #import "ICDModelDatabase.h"
 
+#import "ICDLog.h"
+
 
 
 #define ICDREQUESTALLDATABASES_PATH @"/_all_dbs"
@@ -59,6 +61,8 @@
         [thisObjectManager removeResponseDescriptor:thisResponseDescriptor];
         
         // Notify
+        ICDLogTrace(@"Found %lu databases", (unsigned long)[mapResult.array count]);
+        
         __strong ICDRequestAllDatabases *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)
         {

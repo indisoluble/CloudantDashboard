@@ -13,6 +13,8 @@
 #import "ICDModelDocument.h"
 #import "ICDRequestResponseValueError.h"
 
+#import "ICDLog.h"
+
 #import "RKObjectManager+Helper.h"
 
 
@@ -90,6 +92,9 @@
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
     NSArray *thisResponseDescriptors = self.responseDescriptors;
     
+    NSString *thisDocumentId = self.documentId;
+    NSString *thisDocumentRev = self.documentRev;
+    
     // Add configuration
     [thisObjectManager addResponseDescriptorsFromArray:thisResponseDescriptors];
     
@@ -102,12 +107,14 @@
         [thisObjectManager removeResponseDescriptorsFromArray:thisResponseDescriptors];
         
         // Notify
+        ICDLogTrace(@"Deleted document <%@, %@>", thisDocumentId, thisDocumentRev);
+        
         __strong ICDRequestDeleteDocument *strongSelf = weakSelf;
         if (strongSelf && strongSelf.delegate)
         {
             [strongSelf.delegate requestDeleteDocument:strongSelf
-                               didDeleteDocumentWithId:strongSelf.documentId
-                                              revision:strongSelf.documentRev];
+                               didDeleteDocumentWithId:thisDocumentId
+                                              revision:thisDocumentRev];
         }
         
         // Finish execution

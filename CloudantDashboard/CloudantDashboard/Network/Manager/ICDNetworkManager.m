@@ -8,13 +8,16 @@
 
 #import "ICDNetworkManager.h"
 
+#import "ICDLog.h"
+
 
 
 @interface ICDNetworkManager ()
 
 @property (strong, nonatomic) id objectManager;
 
-@property (assign, nonatomic) BOOL isExecutingRequest;
+@property (strong, nonatomic) NSMutableArray *requestStack;
+@property (assign, nonatomic) NSUInteger requestCounter;
 
 @end
 
@@ -41,7 +44,8 @@
         {
             _objectManager = objectManager;
             
-            _isExecutingRequest = NO;
+            _requestStack = [NSMutableArray array];
+            _requestCounter = 0;
         }
     }
     
@@ -52,23 +56,67 @@
 #pragma mark - Public methods
 - (BOOL)asyncExecuteRequest:(id<ICDRequestProtocol>)request
 {
-    if (self.isExecutingRequest)
+    if ([self isStackEmpty])
     {
-        return NO;
+        [self addRequest:request];
+        
+        [self asyncExecuteFirstRequest];
+    }
+    else
+    {
+        [self addRequest:request];
     }
     
-    self.isExecutingRequest = YES;
+    return YES;
+}
+
+
+#pragma mark - Private methods
+- (void)asyncExecuteFirstRequest
+{
+    id<ICDRequestProtocol> firstRequest = [self firstRequest];
+    if (!firstRequest)
+    {
+        ICDLogTrace(@"No more requests");
+        
+        return;
+    }
     
     __weak ICDNetworkManager *wealSelf = self;
-    [request asynExecuteRequestWithObjectManager:self.objectManager completionHandler:^{
-         __strong ICDNetworkManager *strongSelf = wealSelf;
-         if (strongSelf)
-         {
-             strongSelf.isExecutingRequest = NO;
-         }
-     }];
-    
-    return YES;
+    [firstRequest asynExecuteRequestWithObjectManager:self.objectManager completionHandler:^{
+        __strong ICDNetworkManager *strongSelf = wealSelf;
+        if (strongSelf)
+        {
+            ICDLogTrace(@"%lu requests completed", ++self.requestCounter);
+            
+            [strongSelf removeFirstRequest];
+            
+            [strongSelf asyncExecuteFirstRequest];
+        }
+    }];
+}
+
+- (BOOL)isStackEmpty
+{
+    return ([self.requestStack count] == 0);
+}
+
+- (void)addRequest:(id<ICDRequestProtocol>)request
+{
+    [self.requestStack addObject:request];
+}
+
+- (id<ICDRequestProtocol>)firstRequest
+{
+    return [self.requestStack firstObject];
+}
+
+- (void)removeFirstRequest
+{
+    if (![self isStackEmpty])
+    {
+        [self.requestStack removeObjectAtIndex:0];
+    }
 }
 
 @end
