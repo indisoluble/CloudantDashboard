@@ -87,7 +87,7 @@
         __strong ICDNetworkManager *strongSelf = wealSelf;
         if (strongSelf)
         {
-            ICDLogTrace(@"%lu requests completed", ++self.requestCounter);
+            ICDLogTrace(@"%lu requests completed", ++strongSelf.requestCounter);
             
             [strongSelf removeFirstRequest];
             
