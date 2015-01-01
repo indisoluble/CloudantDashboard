@@ -270,13 +270,6 @@
 
 - (void)executeRequestDocument
 {
-    if ([self isExecutingRequest])
-    {
-        ICDLogTrace(@"There is a request ongoing. Abort");
-        
-        return;
-    }
-    
     if (!self.networkManager)
     {
         ICDLogTrace(@"No network manager. Abort");
@@ -294,10 +287,15 @@
     }
     
     self.requestDocument.delegate = self;
-
-    self.title = NSLocalizedString(@"Downloading ...", @"Downloading ..");
     
-    [self.networkManager executeRequest:self.requestDocument];
+    if ([self.networkManager asyncExecuteRequest:self.requestDocument])
+    {
+        self.title = NSLocalizedString(@"Downloading ...", @"Downloading ..");
+    }
+    else
+    {
+        [self releaseRequestDocument];
+    }
 }
 
 - (void)releaseRequestDocument
@@ -311,13 +309,6 @@
 
 - (void)executeRequestAddRevision
 {
-    if ([self isExecutingRequest])
-    {
-        ICDLogTrace(@"There is a request ongoing. Abort");
-        
-        return;
-    }
-    
     if (!self.networkManager)
     {
         ICDLogTrace(@"No network manager. Abort");
@@ -341,9 +332,14 @@
     
     self.requestAddRevision.delegate = self;
     
-    self.title = NSLocalizedString(@"Saving ...", @"Saving ...");
-    
-    [self.networkManager executeRequest:self.requestAddRevision];
+    if ([self.networkManager asyncExecuteRequest:self.requestAddRevision])
+    {
+        self.title = NSLocalizedString(@"Saving ...", @"Saving ...");
+    }
+    else
+    {
+        [self releaseRequestAddRevision];
+    }
 }
 
 - (void)releaseRequestAddRevision
@@ -353,11 +349,6 @@
         self.requestAddRevision.delegate = nil;
         self.requestAddRevision = nil;
     }
-}
-
-- (BOOL)isExecutingRequest
-{
-    return (self.requestDocument || self.requestAddRevision);
 }
 
 @end

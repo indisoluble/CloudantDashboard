@@ -11,9 +11,22 @@
 
 #import "ICDRequestDeleteDocument.h"
 
+#import "ICDMockRKObjectManager.h"
+
+
+
+#define ICDREQUESTDELETEDOCUMENTTESTS_DBNAME    @"databaseName"
+#define ICDREQUESTDELETEDOCUMENTTESTS_DOCID     @"documentId"
+#define ICDREQUESTDELETEDOCUMENTTESTS_DOCREV    @"documentRev"
+
 
 
 @interface ICDRequestDeleteDocumentTests : XCTestCase
+
+@property (strong, nonatomic) ICDRequestDeleteDocument *deleteDocumentRequest;
+
+@property (strong, nonatomic) ICDMockRKObjectManager *mockObjectManager;
+@property (strong, nonatomic) ICDMockRKMappingResult *mockMappingResult;
 
 @end
 
@@ -26,11 +39,22 @@
     [super setUp];
     
     // Put setup code here. This method is called before the invocation of each test method in the class.
+    self.deleteDocumentRequest = [[ICDRequestDeleteDocument alloc] initWithDatabaseName:ICDREQUESTDELETEDOCUMENTTESTS_DBNAME
+                                                                             documentId:ICDREQUESTDELETEDOCUMENTTESTS_DOCID
+                                                                            documentRev:ICDREQUESTDELETEDOCUMENTTESTS_DOCREV];
+    
+    self.mockObjectManager = [[ICDMockRKObjectManager alloc] init];
+    
+    self.mockMappingResult = [[ICDMockRKMappingResult alloc] init];
 }
 
 - (void)tearDown
 {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
+    self.mockMappingResult = nil;
+    self.mockObjectManager = nil;
+    
+    self.deleteDocumentRequest = nil;
     
     [super tearDown];
 }
@@ -43,56 +67,98 @@
 
 - (void)testInitWithoutADatabaseNameFails
 {
-    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:nil documentId:@"documentId" documentRev:@"documentRev"],
+    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:nil
+                                                             documentId:ICDREQUESTDELETEDOCUMENTTESTS_DOCID
+                                                            documentRev:ICDREQUESTDELETEDOCUMENTTESTS_DOCREV],
                  @"Witbout a database, we do not know where to look for the document");
 }
 
 - (void)testInitWithoutADocumentIdFails
 {
-    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:@"databaseName" documentId:nil documentRev:@"documentRev"],
+    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:ICDREQUESTDELETEDOCUMENTTESTS_DBNAME
+                                                             documentId:nil
+                                                            documentRev:ICDREQUESTDELETEDOCUMENTTESTS_DOCREV],
                  @"A document can not be found without an id");
 }
 
 - (void)testInitWithoutADocumentRevFails
 {
-    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:@"databaseName" documentId:@"documentId" documentRev:nil],
+    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:ICDREQUESTDELETEDOCUMENTTESTS_DBNAME
+                                                             documentId:ICDREQUESTDELETEDOCUMENTTESTS_DOCID
+                                                            documentRev:nil],
                  @"A document can not be found without an id");
 }
 
 - (void)testInitWithEmptyDatabaseNameFails
 {
-    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:@"" documentId:@"documentId" documentRev:@"documentRev"],
+    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:@""
+                                                             documentId:ICDREQUESTDELETEDOCUMENTTESTS_DOCID
+                                                            documentRev:ICDREQUESTDELETEDOCUMENTTESTS_DOCREV],
                  @"Witbout a database, we do not know where to look for the document");
 }
 
 - (void)testInitWithEmptyDocumentIdFails
 {
-    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:@"databaseName" documentId:@"" documentRev:@"documentRev"],
+    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:ICDREQUESTDELETEDOCUMENTTESTS_DBNAME
+                                                             documentId:@""
+                                                            documentRev:ICDREQUESTDELETEDOCUMENTTESTS_DOCREV],
                  @"A document can not be found without an id");
 }
 
 - (void)testInitWithEmptyDocumentRevFails
 {
-    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:@"databaseName" documentId:@"documentId" documentRev:@""],
+    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:ICDREQUESTDELETEDOCUMENTTESTS_DBNAME
+                                                             documentId:ICDREQUESTDELETEDOCUMENTTESTS_DOCID
+                                                            documentRev:@""],
                  @"A document can not be found without an id");
 }
 
 - (void)testInitWithDatabaseNameEqualToSpacesFails
 {
-    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:@"  " documentId:@"documentId" documentRev:@"documentRev"],
+    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:@"  "
+                                                             documentId:ICDREQUESTDELETEDOCUMENTTESTS_DOCID
+                                                            documentRev:ICDREQUESTDELETEDOCUMENTTESTS_DOCREV],
                  @"Witbout a database, we do not know where to look for the document");
 }
 
 - (void)testInitWithDocumentIdToSpacesFails
 {
-    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:@"databaseName" documentId:@"  " documentRev:@"documentRev"],
+    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:ICDREQUESTDELETEDOCUMENTTESTS_DBNAME
+                                                             documentId:@"  "
+                                                            documentRev:ICDREQUESTDELETEDOCUMENTTESTS_DOCREV],
                  @"A document can not be found without an id");
 }
 
 - (void)testInitWithDocumentRevToSpacesFails
 {
-    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:@"databaseName" documentId:@"documentId" documentRev:@"  "],
+    XCTAssertNil([[ICDRequestDeleteDocument alloc] initWithDatabaseName:ICDREQUESTDELETEDOCUMENTTESTS_DBNAME
+                                                             documentId:ICDREQUESTDELETEDOCUMENTTESTS_DOCID
+                                                            documentRev:@"  "],
                  @"A document can not be found without an id");
+}
+
+- (void)testExecuteRequestCallCompletionHandlerIfItSucceeds
+{
+    self.mockObjectManager.successResult = self.mockMappingResult;
+    
+    __block BOOL wasCompletionHandlerExecuted = NO;
+    [self.deleteDocumentRequest asynExecuteRequestWithObjectManager:self.mockObjectManager completionHandler:^{
+        wasCompletionHandlerExecuted = YES;
+    }];
+    
+    XCTAssertTrue(wasCompletionHandlerExecuted, @"CompletionHandler must be executed by the request always");
+}
+
+- (void)testExecuteRequestCallCompletionHandlerIfItFails
+{
+    self.mockObjectManager.failureResult = (NSError *)@"error";
+    
+    __block BOOL wasCompletionHandlerExecuted = NO;
+    [self.deleteDocumentRequest asynExecuteRequestWithObjectManager:self.mockObjectManager completionHandler:^{
+        wasCompletionHandlerExecuted = YES;
+    }];
+    
+    XCTAssertTrue(wasCompletionHandlerExecuted, @"CompletionHandler must be executed by the request always");
 }
 
 @end

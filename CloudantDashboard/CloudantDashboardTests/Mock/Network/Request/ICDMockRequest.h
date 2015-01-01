@@ -16,4 +16,6 @@
 
 @property (assign, nonatomic, readonly) NSUInteger executeRequestCounter;
 
+@property (assign, nonatomic) BOOL doExecuteCompletionHandler;
+
 @end

@@ -501,21 +501,20 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (BOOL)executeRequestAllDBs
 {
-    if ([self isExecutingRequest])
-    {
-        ICDLogTrace(@"There is a request ongoing. Abort");
-        
-        return NO;
-    }
-    
-    [self.refreshControl beginRefreshing];
-    
     self.requestAllDBs = [[ICDRequestAllDatabases alloc] init];
     self.requestAllDBs.delegate = self;
     
-    [self.networkManager executeRequest:self.requestAllDBs];
+    BOOL success = [self.networkManager asyncExecuteRequest:self.requestAllDBs];
+    if (success)
+    {
+        [self.refreshControl beginRefreshing];
+    }
+    else
+    {
+        [self releaseRequestAllDBs];
+    }
     
-    return YES;
+    return success;
 }
 
 - (void)releaseRequestAllDBs
@@ -541,13 +540,6 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (BOOL)executeRequestCreateDBWithName:(NSString *)dbName
 {
-    if ([self isExecutingRequest])
-    {
-        ICDLogTrace(@"There is a request ongoing. Abort");
-        
-        return NO;
-    }
-    
     self.requestCreateDB = [[ICDRequestCreateDatabase alloc] initWithDatabaseName:dbName];
     if (!self.requestCreateDB)
     {
@@ -558,9 +550,13 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     
     self.requestCreateDB.delegate = self;
     
-    [self.networkManager executeRequest:self.requestCreateDB];
+    BOOL success = [self.networkManager asyncExecuteRequest:self.requestCreateDB];
+    if (!success)
+    {
+        [self releaseRequestCreateDB];
+    }
     
-    return YES;
+    return success;
 }
 
 - (void)releaseRequestCreateDB
@@ -574,13 +570,6 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (BOOL)executeRequestDeleteDBWithName:(NSString *)dbName
 {
-    if ([self isExecutingRequest])
-    {
-        ICDLogTrace(@"There is a request ongoing. Abort");
-        
-        return NO;
-    }
-    
     self.requestDeleteDB = [[ICDRequestDeleteDatabase alloc] initWithDatabaseName:dbName];
     if (!self.requestDeleteDB)
     {
@@ -591,7 +580,11 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     
     self.requestDeleteDB.delegate = self;
     
-    [self.networkManager executeRequest:self.requestDeleteDB];
+    BOOL success = [self.networkManager asyncExecuteRequest:self.requestDeleteDB];
+    if (!success)
+    {
+        [self releaseRequestDeleteDB];
+    }
     
     return YES;
 }
@@ -603,11 +596,6 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
         self.requestDeleteDB.delegate = nil;
         self.requestDeleteDB = nil;
     }
-}
-
-- (BOOL)isExecutingRequest
-{
-    return (self.requestAllDBs || self.requestCreateDB || self.requestDeleteDB);
 }
 
 @end

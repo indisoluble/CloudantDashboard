@@ -32,9 +32,15 @@
 
 
 #pragma mark - ICDRequestProtocol methods
-- (void)executeRequestWithObjectManager:(id)objectManager
+- (void)asynExecuteRequestWithObjectManager:(id)objectManager
+                          completionHandler:(ICDRequestProtocolCompletionHandlerBlockType)completionHandler
 {
     _executeRequestCounter++;
+    
+    if (completionHandler && self.doExecuteCompletionHandler)
+    {
+        completionHandler();
+    }
 }
 
 @end

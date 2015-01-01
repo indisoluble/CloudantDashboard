@@ -14,16 +14,40 @@
 
 @interface ICDMockRKObjectManager : NSObject
 
-@property (strong, nonatomic) ICDMockRKMappingResult  *postObjectSuccessResult;
-@property (strong, nonatomic) NSError *postObjectFailureResult;
+@property (strong, nonatomic) ICDMockRKMappingResult  *successResult;
+@property (strong, nonatomic) NSError *failureResult;
+
+- (void)addRequestDescriptor:(id)requestDescriptor;
+- (void)removeRequestDescriptor:(id)requestDescriptor;
 
 - (void)addResponseDescriptor:(id)responseDescriptor;
+- (void)addResponseDescriptorsFromArray:(NSArray *)responseDescriptors;
 - (void)removeResponseDescriptor:(id)responseDescriptor;
+- (void)removeResponseDescriptorsFromArray:(NSArray *)responseDescriptors;
 
+- (void)getObject:(id)object
+             path:(NSString *)path
+       parameters:(NSDictionary *)parameters
+          success:(void (^)(id operation, ICDMockRKMappingResult *mappingResult))success
+          failure:(void (^)(id operation, NSError *error))failure;
+- (void)getObjectsAtPath:(NSString *)path
+              parameters:(NSDictionary *)parameters
+                 success:(void (^)(id operation, ICDMockRKMappingResult *mappingResult))success
+                 failure:(void (^)(id operation, NSError *error))failure;
 - (void)postObject:(id)object
               path:(NSString *)path
         parameters:(NSDictionary *)parameters
            success:(void (^)(id operation, ICDMockRKMappingResult *mappingResult))success
            failure:(void (^)(id *operation, NSError *error))failure;
+- (void)putObject:(id)object
+             path:(NSString *)path
+       parameters:(NSDictionary *)parameters
+          success:(void (^)(id operation, ICDMockRKMappingResult *mappingResult))success
+          failure:(void (^)(id operation, NSError *error))failure;
+- (void)deleteObject:(id)object
+                path:(NSString *)path
+          parameters:(NSDictionary *)parameters
+             success:(void (^)(id operation, ICDMockRKMappingResult *mappingResult))success
+             failure:(void (^)(id operation, NSError *error))failure;
 
 @end

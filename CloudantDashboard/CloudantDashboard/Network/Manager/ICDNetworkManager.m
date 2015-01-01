@@ -14,6 +14,8 @@
 
 @property (strong, nonatomic) id objectManager;
 
+@property (assign, nonatomic) BOOL isExecutingRequest;
+
 @end
 
 
@@ -38,6 +40,8 @@
         else
         {
             _objectManager = objectManager;
+            
+            _isExecutingRequest = NO;
         }
     }
     
@@ -46,9 +50,25 @@
 
 
 #pragma mark - Public methods
-- (void)executeRequest:(id<ICDRequestProtocol>)request
+- (BOOL)asyncExecuteRequest:(id<ICDRequestProtocol>)request
 {
-    [request executeRequestWithObjectManager:self.objectManager];
+    if (self.isExecutingRequest)
+    {
+        return NO;
+    }
+    
+    self.isExecutingRequest = YES;
+    
+    __weak ICDNetworkManager *wealSelf = self;
+    [request asynExecuteRequestWithObjectManager:self.objectManager completionHandler:^{
+         __strong ICDNetworkManager *strongSelf = wealSelf;
+         if (strongSelf)
+         {
+             strongSelf.isExecutingRequest = NO;
+         }
+     }];
+    
+    return YES;
 }
 
 @end

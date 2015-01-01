@@ -13,7 +13,9 @@
 @interface ICDMockRKMappingResult : NSObject
 
 @property (strong, nonatomic) id firstObjectResult;
+@property (strong, nonatomic) NSArray *arrayResult;
 
 - (id)firstObject;
+- (NSArray *)array;
 
 @end

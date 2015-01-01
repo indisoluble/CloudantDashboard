@@ -101,7 +101,8 @@
 
 
 #pragma mark - ICDRequestProtocol methods
-- (void)executeRequestWithObjectManager:(id)objectManager
+- (void)asynExecuteRequestWithObjectManager:(id)objectManager
+                          completionHandler:(ICDRequestProtocolCompletionHandlerBlockType)completionHandler
 {
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
     RKResponseDescriptor *thisResponseDescriptor = self.responseDescriptor;
@@ -131,6 +132,12 @@
         }
         
         [thisNotification postDidAddRevisionNotificationWithDatabaseName:thisDBName revision:revision];
+        
+        // Finish execution
+        if (completionHandler)
+        {
+            completionHandler();
+        }
     };
     
     void (^failureBlock)(RKObjectRequestOperation *op, NSError *err) = ^(RKObjectRequestOperation *op, NSError *err)
@@ -146,6 +153,12 @@
         }
         
         [thisNotification postDidFailNotificationWithDatabaseName:thisDBName documentId:thisDocId error:err];
+        
+        // Finish execution
+        if (completionHandler)
+        {
+            completionHandler();
+        }
     };
     
     [thisObjectManager postObject:nil path:self.path parameters:self.parameters success:successBlock failure:failureBlock];

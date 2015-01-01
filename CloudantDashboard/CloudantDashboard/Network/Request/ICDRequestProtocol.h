@@ -10,8 +10,13 @@
 
 
 
+typedef void (^ICDRequestProtocolCompletionHandlerBlockType)(void);
+
+
+
 @protocol ICDRequestProtocol <NSObject>
 
-- (void)executeRequestWithObjectManager:(id)objectManager;
+- (void)asynExecuteRequestWithObjectManager:(id)objectManager
+                          completionHandler:(ICDRequestProtocolCompletionHandlerBlockType)completionHandler;
 
 @end

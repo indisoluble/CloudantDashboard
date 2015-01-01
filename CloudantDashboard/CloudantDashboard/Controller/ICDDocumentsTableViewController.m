@@ -428,13 +428,6 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 - (BOOL)executeRequestAllDocsForceShowAnimation:(BOOL)forceShowAnimation
 {
-    if ([self isExecutingRequest])
-    {
-        ICDLogTrace(@"There is a request ongoing. Abort");
-        
-        return NO;
-    }
-    
     if (!self.networkManager)
     {
         ICDLogTrace(@"No network manager. Abort");
@@ -452,14 +445,17 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     self.requestAllDocs.delegate = self;
     
-    if (forceShowAnimation && [self isViewLoaded])
+    BOOL success = [self.networkManager asyncExecuteRequest:self.requestAllDocs];
+    if (!success)
+    {
+        [self releaseRequestAllDocs];
+    }
+    else if (forceShowAnimation && [self isViewLoaded])
     {
         [self forceShowRefreshControlAnimation];
     }
     
-    [self.networkManager executeRequest:self.requestAllDocs];
-    
-    return YES;
+    return success;
 }
 
 - (void)releaseRequestAllDocs
@@ -473,13 +469,6 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 - (BOOL)executeRequestCreateDoc
 {
-    if ([self isExecutingRequest])
-    {
-        ICDLogTrace(@"There is a request ongoing. Abort");
-        
-        return NO;
-    }
-    
     if (!self.networkManager)
     {
         ICDLogTrace(@"No network manager. Abort");
@@ -497,9 +486,13 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     self.requestCreateDoc.delegate = self;
     
-    [self.networkManager executeRequest:self.requestCreateDoc];
+    BOOL success = [self.networkManager asyncExecuteRequest:self.requestCreateDoc];
+    if (!success)
+    {
+        [self releaseRequestCreateDoc];
+    }
     
-    return YES;
+    return success;
 }
 
 - (void)releaseRequestCreateDoc
@@ -513,13 +506,6 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 - (BOOL)executeRequestDeleteDocWithData:(ICDModelDocument *)document
 {
-    if ([self isExecutingRequest])
-    {
-        ICDLogTrace(@"There is a request ongoing. Abort");
-        
-        return NO;
-    }
-    
     if (!self.networkManager)
     {
         ICDLogTrace(@"No network manager. Abort");
@@ -539,7 +525,11 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     self.requestDeleteDoc.delegate = self;
     
-    [self.networkManager executeRequest:self.requestDeleteDoc];
+    BOOL success = [self.networkManager asyncExecuteRequest:self.requestDeleteDoc];
+    if (!success)
+    {
+        [self releaseRequestDeleteDoc];
+    }
     
     return YES;
 }
@@ -551,11 +541,6 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
         self.requestDeleteDoc.delegate = nil;
         self.requestDeleteDoc = nil;
     }
-}
-
-- (BOOL)isExecutingRequest
-{
-    return (self.requestAllDocs || self.requestCreateDoc || self.requestDeleteDoc);
 }
 
 - (void)prepareForSegueDocumentVC:(ICDDocumentViewController *)documentVC

@@ -15,6 +15,6 @@
 
 - (id)initWithObjectManager:(id)objectManager;
 
-- (void)executeRequest:(id<ICDRequestProtocol>)request;
+- (BOOL)asyncExecuteRequest:(id<ICDRequestProtocol>)request;
 
 @end

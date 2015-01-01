@@ -265,9 +265,9 @@
 
 - (void)testExecuteRequestInformsSuccessToDelegate
 {
-    self.mockObjectManager.postObjectSuccessResult = self.mockMappingResult;
+    self.mockObjectManager.successResult = self.mockMappingResult;
     
-    [self.addRevisionRequest executeRequestWithObjectManager:self.mockObjectManager];
+    [self.addRevisionRequest asynExecuteRequestWithObjectManager:self.mockObjectManager completionHandler:nil];
     
     XCTAssertTrue((self.addRevisionRequestDelegate.lastRevisionNotifiedCounter == 1) &&
                   [self.mockMappingResult.firstObjectResult isEqual:self.addRevisionRequestDelegate.lastRevisionNotified] &&
@@ -281,26 +281,26 @@
 
 - (void)testExecuteRequestInformsFailureToDelegate
 {
-    self.mockObjectManager.postObjectFailureResult = (NSError *)@"error";
+    self.mockObjectManager.failureResult = (NSError *)@"error";
     
-    [self.addRevisionRequest executeRequestWithObjectManager:self.mockObjectManager];
+    [self.addRevisionRequest asynExecuteRequestWithObjectManager:self.mockObjectManager completionHandler:nil];
     
     XCTAssertTrue((self.addRevisionRequestDelegate.lastErrorNotifiedCounter == 1) &&
-                  [self.mockObjectManager.postObjectFailureResult isEqual:self.addRevisionRequestDelegate.lastErrorNotified] &&
+                  [self.mockObjectManager.failureResult isEqual:self.addRevisionRequestDelegate.lastErrorNotified] &&
                   (self.addRevisionRequestDelegate.lastRevisionNotifiedCounter == 0),
                   @"Failure counter: %lu. Success counter: %lu. Expected: %@. Received: %@",
                   (unsigned long)self.addRevisionRequestDelegate.lastErrorNotifiedCounter,
                   (unsigned long)self.addRevisionRequestDelegate.lastRevisionNotifiedCounter,
-                  self.mockObjectManager.postObjectFailureResult,
+                  self.mockObjectManager.failureResult,
                   self.addRevisionRequestDelegate.lastErrorNotified);
                   
 }
 
 - (void)testExecuteRequestInformsSuccessToObserver
 {
-    self.mockObjectManager.postObjectSuccessResult = self.mockMappingResult;
+    self.mockObjectManager.successResult = self.mockMappingResult;
     
-    [self.addRevisionRequest executeRequestWithObjectManager:self.mockObjectManager];
+    [self.addRevisionRequest asynExecuteRequestWithObjectManager:self.mockObjectManager completionHandler:nil];
     
     XCTAssertTrue((self.addRevisionRequestObserver.lastRevisionNotifiedCounter == 1) &&
                   [ICDREQUESTADDREVISIONTESTS_DBNAME isEqualToString:self.addRevisionRequestObserver.lastRevisionDBNameNotified] &&
@@ -317,25 +317,48 @@
 
 - (void)testExecuteRequestInformsFailureToObserver
 {
-    self.mockObjectManager.postObjectFailureResult = (NSError *)@"error";
+    self.mockObjectManager.failureResult = (NSError *)@"error";
     
-    [self.addRevisionRequest executeRequestWithObjectManager:self.mockObjectManager];
+    [self.addRevisionRequest asynExecuteRequestWithObjectManager:self.mockObjectManager completionHandler:nil];
     
     XCTAssertTrue((self.addRevisionRequestObserver.lastErrorNotifiedCounter == 1) &&
                   [ICDREQUESTADDREVISIONTESTS_DBNAME isEqualToString:self.addRevisionRequestObserver.lastErrorDBNameNotified] &&
                   [ICDREQUESTADDREVISIONTESTS_DOCID isEqualToString:self.addRevisionRequestObserver.lastErrorDocIdNotified] &&
-                  [self.mockObjectManager.postObjectFailureResult isEqual:self.addRevisionRequestObserver.lastErrorNotified] &&
+                  [self.mockObjectManager.failureResult isEqual:self.addRevisionRequestObserver.lastErrorNotified] &&
                   (self.addRevisionRequestObserver.lastRevisionNotifiedCounter == 0),
                   @"Failure counter: %lu. Success counter: %lu. Expected: (%@, %@, %@). Received: (%@, %@, %@)",
                   (unsigned long)self.addRevisionRequestObserver.lastErrorNotifiedCounter,
                   (unsigned long)self.addRevisionRequestObserver.lastRevisionNotifiedCounter,
                   ICDREQUESTADDREVISIONTESTS_DBNAME,
                   ICDREQUESTADDREVISIONTESTS_DOCID,
-                  self.mockObjectManager.postObjectFailureResult,
+                  self.mockObjectManager.failureResult,
                   self.addRevisionRequestObserver.lastErrorDBNameNotified,
                   self.addRevisionRequestObserver.lastErrorDocIdNotified,
                   self.addRevisionRequestObserver.lastErrorNotified);
+}
+
+- (void)testExecuteRequestCallCompletionHandlerIfItSucceeds
+{
+    self.mockObjectManager.successResult = self.mockMappingResult;
     
+    __block BOOL wasCompletionHandlerExecuted = NO;
+    [self.addRevisionRequest asynExecuteRequestWithObjectManager:self.mockObjectManager completionHandler:^{
+        wasCompletionHandlerExecuted = YES;
+    }];
+    
+    XCTAssertTrue(wasCompletionHandlerExecuted, @"CompletionHandler must be executed by the request always");
+}
+
+- (void)testExecuteRequestCallCompletionHandlerIfItFails
+{
+    self.mockObjectManager.failureResult = (NSError *)@"error";
+    
+    __block BOOL wasCompletionHandlerExecuted = NO;
+    [self.addRevisionRequest asynExecuteRequestWithObjectManager:self.mockObjectManager completionHandler:^{
+        wasCompletionHandlerExecuted = YES;
+    }];
+    
+    XCTAssertTrue(wasCompletionHandlerExecuted, @"CompletionHandler must be executed by the request always");
 }
 
 @end

@@ -66,7 +66,8 @@
 
 
 #pragma mark - ICDRequestProtocol methods
-- (void)executeRequestWithObjectManager:(id)objectManager
+- (void)asynExecuteRequestWithObjectManager:(id)objectManager
+                          completionHandler:(ICDRequestProtocolCompletionHandlerBlockType)completionHandler
 {
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
     RKRequestDescriptor *thisRequestDescriptor = self.requestDescriptor;
@@ -91,6 +92,12 @@
         {
             [strongSelf.delegate requestCreateDocument:strongSelf didCreateDocument:[mapResult firstObject]];
         }
+        
+        // Finish execution
+        if (completionHandler)
+        {
+            completionHandler();
+        }
     };
     
     void (^failureBlock)(RKObjectRequestOperation *op, NSError *err) = ^(RKObjectRequestOperation *op, NSError *err)
@@ -104,6 +111,12 @@
         if (strongSelf && strongSelf.delegate)
         {
             [strongSelf.delegate requestCreateDocument:strongSelf didFailWithError:err];
+        }
+        
+        // Finish execution
+        if (completionHandler)
+        {
+            completionHandler();
         }
     };
     

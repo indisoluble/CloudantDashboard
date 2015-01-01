@@ -24,4 +24,9 @@
     return self.firstObjectResult;
 }
 
+- (NSArray *)array
+{
+    return self.arrayResult;
+}
+
 @end

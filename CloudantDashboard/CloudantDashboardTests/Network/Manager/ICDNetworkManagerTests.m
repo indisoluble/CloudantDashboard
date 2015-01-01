@@ -11,9 +11,15 @@
 
 #import "ICDNetworkManager.h"
 
+#import "ICDMockRequest.h"
+
 
 
 @interface ICDNetworkManagerTests : XCTestCase
+
+@property (strong, nonatomic) ICDNetworkManager *manager;
+
+@property (strong, nonatomic) ICDMockRequest *mockRequest;
 
 @end
 
@@ -26,6 +32,9 @@
     [super setUp];
     
     // Put setup code here. This method is called before the invocation of each test method in the class.
+    self.manager = [[ICDNetworkManager alloc] initWithObjectManager:@"manager"];
+    
+    self.mockRequest = [[ICDMockRequest alloc] init];
 }
 
 - (void)tearDown
@@ -43,6 +52,24 @@
 - (void)testInitWithoutManagerReturnNil
 {
     XCTAssertNil([[ICDNetworkManager alloc] initWithObjectManager:nil], @"No request can be executed if there is not a manager");
+}
+
+- (void)testAsyncExecuteRequestSucceedsIfPreviousRequestIsCompleted
+{
+    self.mockRequest.doExecuteCompletionHandler = YES;
+    
+    [self.manager asyncExecuteRequest:self.mockRequest];
+    
+    XCTAssertTrue([self.manager asyncExecuteRequest:self.mockRequest], @"If the previous request is completed, the next one should be executed straight away");
+}
+
+- (void)testAsyncExecuteRequestFailsIfThereIsAnotherRequestOnGoing
+{
+    self.mockRequest.doExecuteCompletionHandler = NO;
+    
+    [self.manager asyncExecuteRequest:self.mockRequest];
+    
+    XCTAssertFalse([self.manager asyncExecuteRequest:self.mockRequest], @"It should fail because the previous request did not finish yet");
 }
 
 @end

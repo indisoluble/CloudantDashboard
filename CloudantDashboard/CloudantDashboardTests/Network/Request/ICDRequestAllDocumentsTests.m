@@ -11,9 +11,16 @@
 
 #import "ICDRequestAllDocuments.h"
 
+#import "ICDMockRKObjectManager.h"
+
 
 
 @interface ICDRequestAllDocumentsTests : XCTestCase
+
+@property (strong, nonatomic) ICDRequestAllDocuments *allDocumentsRequest;
+
+@property (strong, nonatomic) ICDMockRKObjectManager *mockObjectManager;
+@property (strong, nonatomic) ICDMockRKMappingResult *mockMappingResult;
 
 @end
 
@@ -26,11 +33,21 @@
     [super setUp];
     
     // Put setup code here. This method is called before the invocation of each test method in the class.
+    self.allDocumentsRequest = [[ICDRequestAllDocuments alloc] initWithDatabaseName:@"dbName"];
+    
+    self.mockObjectManager = [[ICDMockRKObjectManager alloc] init];
+    
+    self.mockMappingResult = [[ICDMockRKMappingResult alloc] init];
+    self.mockMappingResult.arrayResult = @[];
 }
 
 - (void)tearDown
 {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
+    self.mockMappingResult = nil;
+    self.mockObjectManager = nil;
+    
+    self.allDocumentsRequest = nil;
     
     [super tearDown];
 }
@@ -57,6 +74,30 @@
 {
     XCTAssertNil([[ICDRequestAllDocuments alloc] initWithDatabaseName:@"  "],
                  @"Only spaces is equal to an empty database name");
+}
+
+- (void)testExecuteRequestCallCompletionHandlerIfItSucceeds
+{
+    self.mockObjectManager.successResult = self.mockMappingResult;
+    
+    __block BOOL wasCompletionHandlerExecuted = NO;
+    [self.allDocumentsRequest asynExecuteRequestWithObjectManager:self.mockObjectManager completionHandler:^{
+        wasCompletionHandlerExecuted = YES;
+    }];
+    
+    XCTAssertTrue(wasCompletionHandlerExecuted, @"CompletionHandler must be executed by the request always");
+}
+
+- (void)testExecuteRequestCallCompletionHandlerIfItFails
+{
+    self.mockObjectManager.failureResult = (NSError *)@"error";
+    
+    __block BOOL wasCompletionHandlerExecuted = NO;
+    [self.allDocumentsRequest asynExecuteRequestWithObjectManager:self.mockObjectManager completionHandler:^{
+        wasCompletionHandlerExecuted = YES;
+    }];
+    
+    XCTAssertTrue(wasCompletionHandlerExecuted, @"CompletionHandler must be executed by the request always");
 }
 
 @end
