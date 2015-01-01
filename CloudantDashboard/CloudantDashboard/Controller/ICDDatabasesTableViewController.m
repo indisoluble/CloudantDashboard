@@ -501,6 +501,13 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (BOOL)executeRequestAllDBs
 {
+    if (self.requestAllDBs)
+    {
+        ICDLogTrace(@"Already executing this request");
+        
+        return NO;
+    }
+    
     self.requestAllDBs = [[ICDRequestAllDatabases alloc] init];
     self.requestAllDBs.delegate = self;
     
@@ -540,6 +547,13 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (BOOL)executeRequestCreateDBWithName:(NSString *)dbName
 {
+    if (self.requestCreateDB)
+    {
+        ICDLogTrace(@"Already executing this request");
+        
+        return NO;
+    }
+    
     self.requestCreateDB = [[ICDRequestCreateDatabase alloc] initWithDatabaseName:dbName];
     if (!self.requestCreateDB)
     {
@@ -570,6 +584,13 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (BOOL)executeRequestDeleteDBWithName:(NSString *)dbName
 {
+    if (self.requestDeleteDB)
+    {
+        ICDLogTrace(@"Already executing this request");
+        
+        return NO;
+    }
+    
     self.requestDeleteDB = [[ICDRequestDeleteDatabase alloc] initWithDatabaseName:dbName];
     if (!self.requestDeleteDB)
     {

@@ -435,6 +435,13 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
         return NO;
     }
     
+    if (self.requestAllDocs)
+    {
+        ICDLogTrace(@"Already executing this request");
+        
+        return NO;
+    }
+    
     self.requestAllDocs = [[ICDRequestAllDocuments alloc] initWithDatabaseName:self.databaseName];
     if (!self.requestAllDocs)
     {
@@ -476,6 +483,13 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
         return NO;
     }
     
+    if (self.requestCreateDoc)
+    {
+        ICDLogTrace(@"Already executing this request");
+        
+        return NO;
+    }
+    
     self.requestCreateDoc = [[ICDRequestCreateDocument alloc] initWithDatabaseName:self.databaseName];
     if (!self.requestCreateDoc)
     {
@@ -509,6 +523,13 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     if (!self.networkManager)
     {
         ICDLogTrace(@"No network manager. Abort");
+        
+        return NO;
+    }
+    
+    if (self.requestDeleteDoc)
+    {
+        ICDLogTrace(@"Already executing this request");
         
         return NO;
     }

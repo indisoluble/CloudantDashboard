@@ -277,6 +277,13 @@
         return;
     }
     
+    if (self.requestDocument)
+    {
+        ICDLogTrace(@"Already executing this request");
+        
+        return;
+    }
+    
     NSString *documentId = (self.currentDocument ? self.currentDocument.documentId : nil );
     self.requestDocument = [[ICDRequestDocument alloc] initWithDatabaseName:self.databaseName documentId:documentId];
     if (!self.requestDocument)
@@ -312,6 +319,13 @@
     if (!self.networkManager)
     {
         ICDLogTrace(@"No network manager. Abort");
+        
+        return;
+    }
+    
+    if (self.requestAddRevision)
+    {
+        ICDLogTrace(@"Already executing this request");
         
         return;
     }
