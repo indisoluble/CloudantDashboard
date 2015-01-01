@@ -14,23 +14,9 @@
 
 
 
-@protocol ICDDocumentViewControllerDelegate;
-
-
-
 @interface ICDDocumentViewController : UIViewController
-
-@property (weak, nonatomic) id<ICDDocumentViewControllerDelegate> delegate;
 
 - (void)useNetworkManager:(ICDNetworkManager *)networkManager
              databaseName:(NSString *)databaseName
                  document:(ICDModelDocument *)document;
-@end
-
-
-
-@protocol ICDDocumentViewControllerDelegate <NSObject>
-
-- (void)icdDocumentVC:(ICDDocumentViewController *)vc didAddRevision:(ICDModelDocument *)revision;
-
 @end

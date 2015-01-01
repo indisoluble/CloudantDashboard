@@ -28,6 +28,8 @@
 
 @interface ICDRequestAddRevision ()
 
+@property (strong, nonatomic, readonly) ICDRequestAddRevisionNotification *notification;
+
 @property (strong, nonatomic) NSString *dbName;
 @property (strong, nonatomic) NSString *docId;
 
@@ -104,6 +106,10 @@
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
     RKResponseDescriptor *thisResponseDescriptor = self.responseDescriptor;
     
+    NSString *thisDBName = self.dbName;
+    NSString *thisDocId = self.docId;
+    ICDRequestAddRevisionNotification *thisNotification = self.notification;
+    
     // Add configuration
     [thisObjectManager addResponseDescriptor:thisResponseDescriptor];
     
@@ -116,11 +122,15 @@
         [thisObjectManager removeResponseDescriptor:thisResponseDescriptor];
         
         // Notify
+        ICDModelDocument *revision = (ICDModelDocument *)[mapResult firstObject];
+        
         __strong ICDRequestAddRevision *strongSelf = weakSelf;
-        if (strongSelf)
+        if (strongSelf && strongSelf.delegate)
         {
-            [strongSelf notifySuccessWithRevision:[mapResult firstObject]];
+            [strongSelf.delegate requestAddRevision:strongSelf didAddRevision:revision];
         }
+        
+        [thisNotification postDidAddRevisionNotificationWithDatabaseName:thisDBName revision:revision];
     };
     
     void (^failureBlock)(RKObjectRequestOperation *op, NSError *err) = ^(RKObjectRequestOperation *op, NSError *err)
@@ -130,40 +140,15 @@
         
         // Notify
         __strong ICDRequestAddRevision *strongSelf = weakSelf;
-        if (strongSelf)
+        if (strongSelf && strongSelf.delegate)
         {
-            [strongSelf notifyFailureWithError:err];
+            [strongSelf.delegate requestAddRevision:strongSelf didFailWithError:err];
         }
+        
+        [thisNotification postDidFailNotificationWithDatabaseName:thisDBName documentId:thisDocId error:err];
     };
     
     [thisObjectManager postObject:nil path:self.path parameters:self.parameters success:successBlock failure:failureBlock];
-}
-
-
-#pragma mark - Private methods
-- (void)notifySuccessWithRevision:(ICDModelDocument *)revision
-{
-    if (self.delegate)
-    {
-        [self.delegate requestAddRevision:self didAddRevision:revision];
-    }
-    
-    [self.notification postDidAddRevisionNotificationWithSender:self
-                                                   databaseName:self.dbName
-                                                       revision:revision];
-}
-
-- (void)notifyFailureWithError:(NSError *)err
-{
-    if (self.delegate)
-    {
-        [self.delegate requestAddRevision:self didFailWithError:err];
-    }
-    
-    [self.notification postDidFailNotificationWithSender:self
-                                            databaseName:self.dbName
-                                              documentId:self.docId
-                                                   error:err];
 }
 
 

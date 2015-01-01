@@ -311,8 +311,8 @@
 		FF2D023A1A48F66B00E03C6E /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				FF658C871A4F94A100E209EE /* JSONHighlight */,
 				FF658C851A4F85E500E209EE /* Common */,
+				FF658C871A4F94A100E209EE /* JSONHighlight */,
 				FF6FEA3F1A49DEBD00988CD3 /* ICDDatabasesTableViewController.h */,
 				FF6FEA401A49DEBD00988CD3 /* ICDDatabasesTableViewController.m */,
 				FF6FEA411A49DEBD00988CD3 /* ICDDocumentsTableViewController.h */,

@@ -114,11 +114,6 @@
     self.title = self.currentDocument.documentId;
     
     [self updateUIWithCurrentDocumentData];
-    
-    if (self.delegate)
-    {
-        [self.delegate icdDocumentVC:self didAddRevision:self.currentDocument];
-    }
 }
 
 - (void)requestAddRevision:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error

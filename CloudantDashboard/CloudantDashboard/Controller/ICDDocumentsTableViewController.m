@@ -13,6 +13,7 @@
 #import "ICDRequestAllDocuments.h"
 #import "ICDRequestCreateDocument.h"
 #import "ICDRequestDeleteDocument.h"
+#import "ICDRequestAddRevisionNotification.h"
 
 #import "ICDModelDocument.h"
 
@@ -28,8 +29,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 @interface ICDDocumentsTableViewController ()
     <ICDRequestAllDocumentsDelegate,
     ICDRequestCreateDocumentDelegate,
-    ICDRequestDeleteDocumentDelegate,
-    ICDDocumentViewControllerDelegate>
+    ICDRequestDeleteDocumentDelegate>
 
 @property (strong, nonatomic) ICDNetworkManager *networkManager;
 
@@ -82,6 +82,8 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     [self customizeUI];
     
+    [self addAllObservers];
+    
     if (self.requestAllDocs)
     {
         [self forceShowRefreshControlAnimation];
@@ -100,6 +102,11 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     [super viewWillDisappear:animated];
     
     self.isViewVisible = NO;
+    
+    if ([self isMovingFromParentViewController])
+    {
+        [self removeAllObservers];
+    }
 }
 
 
@@ -156,9 +163,11 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     [self releaseRequestAllDocs];
     
+    // Update data
     self.allDocuments = [NSMutableArray arrayWithArray:documents];
     [self.allDocuments sortUsingSelector:@selector(compare:)];
     
+    // Refresh UI
     if ([self isViewLoaded])
     {
         [self.refreshControl endRefreshing];
@@ -198,6 +207,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     [self releaseRequestCreateDoc];
     
+    // Update data
     NSUInteger index = [self.allDocuments indexOfObject:document
                                           inSortedRange:NSMakeRange(0, [self.allDocuments count])
                                                 options:NSBinarySearchingInsertionIndex
@@ -206,6 +216,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
                                         }];
     [self.allDocuments insertObject:document atIndex:index];
     
+    // Refresh UI
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
     
@@ -244,6 +255,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     [self releaseRequestDeleteDoc];
     
+    // Update data
     ICDModelDocument *document = [ICDModelDocument documentWithId:docId rev:docRev];
     NSUInteger index = [self.allDocuments indexOfObject:document];
     if (index == NSNotFound)
@@ -255,6 +267,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     [self.allDocuments removeObjectAtIndex:index];
     
+    // Refresh UI
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
     [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
 }
@@ -272,38 +285,6 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     ICDLogError(@"Error: %@", error);
     
     [self releaseRequestDeleteDoc];
-}
-
-
-#pragma mark - ICDDocumentViewControllerDelegate methods
-- (void)icdDocumentVC:(ICDDocumentViewController *)vc didAddRevision:(ICDModelDocument *)revision
-{
-    NSUInteger index = [self.allDocuments indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        ICDModelDocument *otherDocument = (ICDModelDocument *)obj;
-        if ([otherDocument.documentId isEqualToString:revision.documentId])
-        {
-            *stop = YES;
-            
-            return YES;
-        }
-        
-        return NO;
-    }];
-    
-    if (index != NSNotFound)
-    {
-        [self.allDocuments replaceObjectAtIndex:index withObject:revision];
-        
-        NSIndexPath *indexPathForSelectedRow = [self.tableView indexPathForSelectedRow];
-        
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-        
-        if ([indexPath isEqual:indexPathForSelectedRow])
-        {
-            [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-        }
-    }
 }
 
 
@@ -382,6 +363,66 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
                          animations:animationBlock
                          completion:nil];
         
+    }
+}
+
+- (void)removeAllObservers
+{
+    [[ICDRequestAddRevisionNotification sharedInstance] removeDidAddRevisionNotificationObserver:self];
+}
+
+- (void)addAllObservers
+{
+    [[ICDRequestAddRevisionNotification sharedInstance] addDidAddRevisionNotificationObserver:self
+                                                                                     selector:@selector(didReceiveDidAddRevisionNotification:)];
+}
+
+- (void)didReceiveDidAddRevisionNotification:(NSNotification *)notification
+{
+    ICDLogDebug(@"didAddRevision Notification: %@", notification);
+    
+    // Validate
+    NSString *dbName = notification.userInfo[kICDRequestAddRevisionNotificationDidAddRevisionUserInfoKeyDatabaseName];
+    if (![self.databaseName isEqualToString:dbName])
+    {
+        ICDLogDebug(@"Revision added to a document in another database. Ignore");
+        
+        return;
+    }
+    
+    ICDModelDocument *revision = notification.userInfo[kICDRequestAddRevisionNotificationDidAddRevisionUserInfoKeyRevision];
+    
+    NSUInteger index = [self.allDocuments indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        ICDModelDocument *otherDocument = (ICDModelDocument *)obj;
+        if ([otherDocument.documentId isEqualToString:revision.documentId])
+        {
+            *stop = YES;
+            
+            return YES;
+        }
+        
+        return NO;
+    }];
+    
+    if (index == NSNotFound)
+    {
+        ICDLogWarning(@"No document for this revision: %@", revision);
+        
+        return;
+    }
+    
+    // Update data
+    [self.allDocuments replaceObjectAtIndex:index withObject:revision];
+    
+    // Refresh UI
+    NSIndexPath *indexPathForSelectedRow = [self.tableView indexPathForSelectedRow];
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    
+    if ([indexPath isEqual:indexPathForSelectedRow])
+    {
+        [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
     }
 }
 
@@ -523,7 +564,6 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     ICDModelDocument *document = (ICDModelDocument *)self.allDocuments[indexPath.row];
     
-    documentVC.delegate = self;
     [documentVC useNetworkManager:self.networkManager
                      databaseName:self.databaseName
                          document:document];

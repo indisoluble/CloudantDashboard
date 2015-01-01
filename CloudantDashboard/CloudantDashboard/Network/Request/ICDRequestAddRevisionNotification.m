@@ -50,53 +50,48 @@ NSString * const kICDRequestAddRevisionNotificationDidFailUserInfoKeyError = @"k
 
 
 #pragma mark - Public methods
-- (void)addDidAddRevisionNotificationObserver:(id)observer selector:(SEL)aSelector sender:(id)sender
+- (void)addDidAddRevisionNotificationObserver:(id)observer selector:(SEL)aSelector
 {
     [self.notificationCenter addObserver:observer
                                 selector:aSelector
                                     name:kICDRequestAddRevisionNotificationDidAddRevision
-                                  object:sender];
+                                  object:nil];
 }
 
-- (void)removeDidAddRevisionNotificationObserver:(id)observer sender:(id)sender
+- (void)removeDidAddRevisionNotificationObserver:(id)observer
 {
     [self.notificationCenter removeObserver:observer
                                        name:kICDRequestAddRevisionNotificationDidAddRevision
-                                     object:sender];
+                                     object:nil];
 }
 
-- (void)postDidAddRevisionNotificationWithSender:(id)sender
-                                    databaseName:(NSString *)dbName
-                                        revision:(ICDModelDocument *)revision
+- (void)postDidAddRevisionNotificationWithDatabaseName:(NSString *)dbName revision:(ICDModelDocument *)revision
 {
     [self.notificationCenter postNotificationName:kICDRequestAddRevisionNotificationDidAddRevision
-                                           object:sender
+                                           object:nil
                                          userInfo:@{kICDRequestAddRevisionNotificationDidAddRevisionUserInfoKeyDatabaseName: dbName,
                                                     kICDRequestAddRevisionNotificationDidAddRevisionUserInfoKeyRevision: revision}];
 }
 
-- (void)addDidFailNotificationObserver:(id)observer selector:(SEL)aSelector sender:(id)sender
+- (void)addDidFailNotificationObserver:(id)observer selector:(SEL)aSelector
 {
     [self.notificationCenter addObserver:observer
                                 selector:aSelector
                                     name:kICDRequestAddRevisionNotificationDidFail
-                                  object:sender];
+                                  object:nil];
 }
 
-- (void)removeDidFailNotificationObserver:(id)observer sender:(id)sender
+- (void)removeDidFailNotificationObserver:(id)observer
 {
     [self.notificationCenter removeObserver:observer
                                        name:kICDRequestAddRevisionNotificationDidFail
-                                     object:sender];
+                                     object:nil];
 }
 
-- (void)postDidFailNotificationWithSender:(id)sender
-                             databaseName:(NSString *)dbName
-                               documentId:(NSString *)documentId
-                                    error:(NSError *)error
+- (void)postDidFailNotificationWithDatabaseName:(NSString *)dbName documentId:(NSString *)documentId error:(NSError *)error
 {
     [self.notificationCenter postNotificationName:kICDRequestAddRevisionNotificationDidFail
-                                           object:sender
+                                           object:nil
                                          userInfo:@{kICDRequestAddRevisionNotificationDidFailUserInfoKeyDatabaseName: dbName,
                                                     kICDRequestAddRevisionNotificationDidFailUserInfoKeyDocumentId: documentId,
                                                     kICDRequestAddRevisionNotificationDidFailUserInfoKeyError: error}];

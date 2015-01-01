@@ -115,6 +115,7 @@
 
 @property (strong, nonatomic) ICDRequestAddRevision *addRevisionRequest;
 @property (strong, nonatomic) ICDRequestAddRevisionTestsDelegateImplementation *addRevisionRequestDelegate;
+@property (strong, nonatomic) ICDRequestAddRevisionNotification *addRevisionRequestNotification;
 @property (strong, nonatomic) ICDRequestAddRevisionTestsObserver *addRevisionRequestObserver;
 
 @property (strong, nonatomic) ICDMockRKObjectManager *mockObjectManager;
@@ -132,24 +133,22 @@
     
     // Put setup code here. This method is called before the invocation of each test method in the class.
     NSNotificationCenter *notificationCenter = [[NSNotificationCenter alloc] init];
-    ICDRequestAddRevisionNotification *notification = [[ICDRequestAddRevisionNotification alloc] initWithNotificationCenter:notificationCenter];
+    self.addRevisionRequestNotification = [[ICDRequestAddRevisionNotification alloc] initWithNotificationCenter:notificationCenter];
+    
+    self.addRevisionRequestObserver = [[ICDRequestAddRevisionTestsObserver alloc] init];
+    [self.addRevisionRequestNotification addDidAddRevisionNotificationObserver:self.addRevisionRequestObserver
+                                                                      selector:@selector(didReceiveDidAddRevisionNotification:)];
+    [self.addRevisionRequestNotification addDidFailNotificationObserver:self.addRevisionRequestObserver
+                                                               selector:@selector(didReceiveDidFailNotification:)];
     
     self.addRevisionRequest = [[ICDRequestAddRevision alloc] initWithDatabaseName:ICDREQUESTADDREVISIONTESTS_DBNAME
                                                                        documentId:ICDREQUESTADDREVISIONTESTS_DOCID
                                                                       documentRev:ICDREQUESTADDREVISIONTESTS_DOCREV
                                                                      documentData:@{}
-                                                                     notification:notification];
+                                                                     notification:self.addRevisionRequestNotification];
     
     self.addRevisionRequestDelegate = [[ICDRequestAddRevisionTestsDelegateImplementation alloc] init];
     self.addRevisionRequest.delegate = self.addRevisionRequestDelegate;
-    
-    self.addRevisionRequestObserver = [[ICDRequestAddRevisionTestsObserver alloc] init];
-    [self.addRevisionRequest.notification addDidAddRevisionNotificationObserver:self.addRevisionRequestObserver
-                                                                       selector:@selector(didReceiveDidAddRevisionNotification:)
-                                                                         sender:nil];
-    [self.addRevisionRequest.notification addDidFailNotificationObserver:self.addRevisionRequestObserver
-                                                                selector:@selector(didReceiveDidFailNotification:)
-                                                                  sender:nil];
     
     self.mockObjectManager = [[ICDMockRKObjectManager alloc] init];
     
@@ -160,9 +159,10 @@
 - (void)tearDown
 {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
-    [self.addRevisionRequest.notification removeDidAddRevisionNotificationObserver:self.addRevisionRequestObserver sender:nil];
-    [self.addRevisionRequest.notification removeDidFailNotificationObserver:self.addRevisionRequestObserver sender:nil];
+    [self.addRevisionRequestNotification removeDidAddRevisionNotificationObserver:self.addRevisionRequestObserver];
+    [self.addRevisionRequestNotification removeDidFailNotificationObserver:self.addRevisionRequestObserver];
     self.addRevisionRequestObserver = nil;
+    self.addRevisionRequestNotification = nil;
     
     self.addRevisionRequest.delegate = nil;
     self.addRevisionRequestDelegate = nil;

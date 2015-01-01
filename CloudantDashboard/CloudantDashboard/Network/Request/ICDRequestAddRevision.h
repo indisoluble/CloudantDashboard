@@ -16,8 +16,6 @@
 
 @interface ICDRequestAddRevision : NSObject <ICDRequestProtocol>
 
-@property (strong, nonatomic, readonly) ICDRequestAddRevisionNotification *notification;
-
 @property (weak, nonatomic) id<ICDRequestAddRevisionDelegate> delegate;
 
 - (id)initWithDatabaseName:(NSString *)dbName
