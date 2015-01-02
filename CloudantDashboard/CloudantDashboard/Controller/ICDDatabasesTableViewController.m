@@ -177,8 +177,9 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     self.allDatabases = [NSMutableArray arrayWithArray:databases];
     [self.allDatabases sortUsingSelector:@selector(compare:)];
     
+    [self.tableView reloadData];
+    
     [self.refreshControl endRefreshing];
-    [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:ICDCOMMONANIMATIONDURATION_REFRESHCONTROL];
 }
 
 - (void)requestAllDatabases:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
@@ -471,8 +472,9 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     
     [self addLoginLogoutBarButtonItem];
     
+    [self.tableView reloadData];
+    
     [self.refreshControl endRefreshing];
-    [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:ICDCOMMONANIMATIONDURATION_REFRESHCONTROL];
 }
 
 - (void)releaseNetworkManager

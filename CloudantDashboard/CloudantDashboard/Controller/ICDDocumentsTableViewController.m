@@ -170,8 +170,9 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     // Refresh UI
     if ([self isViewLoaded])
     {
+        [self.tableView reloadData];
+        
         [self.refreshControl endRefreshing];
-        [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:ICDCOMMONANIMATIONDURATION_REFRESHCONTROL];
     }
 }
 
