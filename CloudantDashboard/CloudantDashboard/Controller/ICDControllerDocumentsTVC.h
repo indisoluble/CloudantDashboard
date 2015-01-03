@@ -1,5 +1,5 @@
 //
-//  ICDDocumentsTableViewController.h
+//  ICDControllerDocumentsTVC.h
 //  CloudantDashboard
 //
 //  Created by Enrique de la Torre (dev) on 23/12/2014.
@@ -12,7 +12,7 @@
 
 
 
-@interface ICDDocumentsTableViewController : UITableViewController
+@interface ICDControllerDocumentsTVC : UITableViewController
 
 - (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
              databaseName:(NSString *)databaseName;

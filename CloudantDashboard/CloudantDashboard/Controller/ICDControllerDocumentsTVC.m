@@ -1,14 +1,14 @@
 //
-//  ICDDocumentsTableViewController.m
+//  ICDControllerDocumentsTVC.m
 //  CloudantDashboard
 //
 //  Created by Enrique de la Torre (dev) on 23/12/2014.
 //  Copyright (c) 2014 Enrique de la Torre. All rights reserved.
 //
 
-#import "ICDDocumentsTableViewController.h"
+#import "ICDControllerDocumentsTVC.h"
 
-#import "ICDDocumentViewController.h"
+#import "ICDControllerDocumentVC.h"
 
 #import "ICDNetworkManagerFactory.h"
 
@@ -28,7 +28,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 
 
-@interface ICDDocumentsTableViewController ()
+@interface ICDControllerDocumentsTVC ()
     <ICDRequestAllDocumentsDelegate,
     ICDRequestCreateDocumentDelegate,
     ICDRequestDeleteDocumentDelegate>
@@ -50,7 +50,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 
 
-@implementation ICDDocumentsTableViewController
+@implementation ICDControllerDocumentsTVC
 
 #pragma mark - Synthesize properties
 - (id<ICDNetworkManagerProtocol>)networkManager
@@ -135,7 +135,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([sender isKindOfClass:[UITableViewCell class]] &&
-        [segue.destinationViewController isKindOfClass:[ICDDocumentViewController class]])
+        [segue.destinationViewController isKindOfClass:[ICDControllerDocumentVC class]])
     {
         [self prepareForSegueDocumentVC:segue.destinationViewController withCell:sender];
     }
@@ -374,10 +374,10 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     if (self.tableView.contentOffset.y == 0)
     {
-        __weak ICDDocumentsTableViewController *weakSelf = self;
+        __weak ICDControllerDocumentsTVC *weakSelf = self;
         void (^animationBlock)(void) = ^(void)
         {
-            __strong ICDDocumentsTableViewController *strongSelf = weakSelf;
+            __strong ICDControllerDocumentsTVC *strongSelf = weakSelf;
             if (strongSelf)
             {
                 strongSelf.tableView.contentOffset = CGPointMake(0, -strongSelf.refreshControl.frame.size.height);
@@ -543,7 +543,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     return YES;
 }
 
-- (void)prepareForSegueDocumentVC:(ICDDocumentViewController *)documentVC
+- (void)prepareForSegueDocumentVC:(ICDControllerDocumentVC *)documentVC
                          withCell:(UITableViewCell *)cell
 {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];

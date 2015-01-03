@@ -1,5 +1,5 @@
 //
-//  ICDDatabasesTableViewController.m
+//  ICDControllerDatabasesTVC.m
 //  CloudantDashboard
 //
 //  Created by Enrique de la Torre (dev) on 23/12/2014.
@@ -8,9 +8,9 @@
 
 #import <UIAlertView-Blocks/UIAlertView+Blocks.h>
 
-#import "ICDDatabasesTableViewController.h"
+#import "ICDControllerDatabasesTVC.h"
 
-#import "ICDDocumentsTableViewController.h"
+#import "ICDControllerDocumentsTVC.h"
 
 #import "ICDAuthorizationFactory.h"
 #import "ICDNetworkManagerFactory.h"
@@ -30,7 +30,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 
 
-@interface ICDDatabasesTableViewController ()
+@interface ICDControllerDatabasesTVC ()
     <ICDRequestAllDatabasesDelegate,
     ICDRequestCreateDatabaseDelegate,
     ICDRequestDeleteDatabaseDelegate>
@@ -50,7 +50,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 
 
-@implementation ICDDatabasesTableViewController
+@implementation ICDControllerDatabasesTVC
 
 #pragma mark - Synthesize properties
 - (id<ICDNetworkManagerProtocol>)networkManager
@@ -126,7 +126,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([sender isKindOfClass:[UITableViewCell class]] &&
-        [segue.destinationViewController isKindOfClass:[ICDDocumentsTableViewController class]])
+        [segue.destinationViewController isKindOfClass:[ICDControllerDocumentsTVC class]])
     {
         [self prepareForSegueDocumentsVC:segue.destinationViewController withCell:sender];
     }
@@ -368,7 +368,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     }
 }
 
-- (void)prepareForSegueDocumentsVC:(ICDDocumentsTableViewController *)documentVC
+- (void)prepareForSegueDocumentsVC:(ICDControllerDocumentsTVC *)documentVC
                           withCell:(UITableViewCell *)cell
 {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
@@ -380,11 +380,11 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 - (void)authorizeUserBeforeExecutingRequestAllDBs
 {
     __block UIAlertView *alertView = nil;
-    __weak ICDDatabasesTableViewController *weakSelf = self;
+    __weak ICDControllerDatabasesTVC *weakSelf = self;
     
     void (^continueAction)(void) = ^(void)
     {
-        __strong ICDDatabasesTableViewController *strongSelf = weakSelf;
+        __strong ICDControllerDatabasesTVC *strongSelf = weakSelf;
         if (!strongSelf)
         {
             return;
@@ -424,11 +424,11 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 - (void)askNameBeforeCreatingDatabase
 {
     __block UIAlertView *alertView = nil;
-    __weak ICDDatabasesTableViewController *weakSelf = self;
+    __weak ICDControllerDatabasesTVC *weakSelf = self;
     
     void (^createAction)(void) = ^(void)
     {
-        __strong ICDDatabasesTableViewController *strongSelf = weakSelf;
+        __strong ICDControllerDatabasesTVC *strongSelf = weakSelf;
         if (strongSelf)
         {
             UITextField *textField = [alertView textFieldAtIndex:0];

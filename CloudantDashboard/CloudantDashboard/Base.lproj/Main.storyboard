@@ -7,7 +7,7 @@
         <!--Databases-->
         <scene sceneID="wek-Bs-eTc">
             <objects>
-                <tableViewController title="Databases" id="ruC-cS-hIP" customClass="ICDDatabasesTableViewController" sceneMemberID="viewController">
+                <tableViewController title="Databases" id="ruC-cS-hIP" customClass="ICDControllerDatabasesTVC" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Z2m-Yh-8US">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -45,7 +45,7 @@
         <!--Documents-->
         <scene sceneID="EKe-eN-aOQ">
             <objects>
-                <tableViewController title="Documents" id="L1e-ud-3uE" customClass="ICDDocumentsTableViewController" sceneMemberID="viewController">
+                <tableViewController title="Documents" id="L1e-ud-3uE" customClass="ICDControllerDocumentsTVC" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Ilj-Xt-Xeg">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -89,7 +89,7 @@
         <!--Document-->
         <scene sceneID="FOu-kr-OW3">
             <objects>
-                <viewController title="Document" id="FAb-ub-VPK" customClass="ICDDocumentViewController" sceneMemberID="viewController">
+                <viewController title="Document" id="FAb-ub-VPK" customClass="ICDControllerDocumentVC" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="X9c-Jv-R3W"/>
                         <viewControllerLayoutGuide type="bottom" id="fTz-XB-6wr"/>

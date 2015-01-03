@@ -1,5 +1,5 @@
 //
-//  ICDDatabasesTableViewController.h
+//  ICDControllerDatabasesTVC.h
 //  CloudantDashboard
 //
 //  Created by Enrique de la Torre (dev) on 23/12/2014.
@@ -10,6 +10,6 @@
 
 
 
-@interface ICDDatabasesTableViewController : UITableViewController
+@interface ICDControllerDatabasesTVC : UITableViewController
 
 @end

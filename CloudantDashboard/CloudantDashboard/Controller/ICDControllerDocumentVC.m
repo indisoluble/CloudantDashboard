@@ -1,12 +1,12 @@
 //
-//  ICDDocumentViewController.m
+//  ICDControllerDocumentVC.m
 //  CloudantDashboard
 //
 //  Created by Enrique de la Torre (dev) on 23/12/2014.
 //  Copyright (c) 2014 Enrique de la Torre. All rights reserved.
 //
 
-#import "ICDDocumentViewController.h"
+#import "ICDControllerDocumentVC.h"
 
 #import "ICDNetworkManagerFactory.h"
 
@@ -21,7 +21,7 @@
 
 
 
-@interface ICDDocumentViewController () <ICDRequestDocumentDelegate, ICDRequestAddRevisionDelegate>
+@interface ICDControllerDocumentVC () <ICDRequestDocumentDelegate, ICDRequestAddRevisionDelegate>
 {
     id<ICDNetworkManagerProtocol> _networkManager;
 }
@@ -44,7 +44,7 @@
 
 
 
-@implementation ICDDocumentViewController
+@implementation ICDControllerDocumentVC
 
 #pragma mark - Synthesize properties
 - (id<ICDNetworkManagerProtocol>)networkManager
