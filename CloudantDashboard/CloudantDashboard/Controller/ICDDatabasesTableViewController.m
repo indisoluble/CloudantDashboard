@@ -40,9 +40,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 @property (strong, nonatomic, readonly) ICDNetworkManager *networkManager;
 
-@property (strong, nonatomic) ICDRequestAllDatabases *requestAllDBs;
-@property (strong, nonatomic) ICDRequestCreateDatabase *requestCreateDB;
-@property (strong, nonatomic) ICDRequestDeleteDatabase *requestDeleteDB;
+@property (strong, nonatomic) NSMutableArray *ongoingRequests;
 
 @property (strong, nonatomic) NSMutableArray *allDatabases;
 
@@ -66,6 +64,8 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
         [authentication retrieveUsername:&username password:&password error:nil];
         
         _networkManager = [ICDNetworkManager networkManagerWithUsername:username password:password];
+        
+        _ongoingRequests = [NSMutableArray array];
     }
     
     return _networkManager;
@@ -165,14 +165,15 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 #pragma mark - ICDRequestAllDatabasesDelegate methods
 - (void)requestAllDatabases:(id<ICDRequestProtocol>)request didGetDatabases:(NSArray *)databases
 {
-    if (request != self.requestAllDBs)
+    NSUInteger index = [self.ongoingRequests indexOfObject:request];
+    if (index == NSNotFound)
     {
         ICDLogDebug(@"Received databases from unexpected request. Ignore");
         
         return;
     }
     
-    [self releaseRequestAllDBs];
+    [self releaseOngoingRequestAtIndex:index];
     
     self.allDatabases = [NSMutableArray arrayWithArray:databases];
     [self.allDatabases sortUsingSelector:@selector(compare:)];
@@ -184,7 +185,8 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (void)requestAllDatabases:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
-    if (request != self.requestAllDBs)
+    NSUInteger index = [self.ongoingRequests indexOfObject:request];
+    if (index == NSNotFound)
     {
         ICDLogDebug(@"Received error from unexpected request. Ignore");
         
@@ -193,7 +195,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     
     ICDLogError(@"Error: %@", error);
     
-    [self releaseRequestAllDBs];
+    [self releaseOngoingRequestAtIndex:index];
     
     [self.refreshControl endRefreshing];
 }
@@ -202,22 +204,23 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 #pragma mark - ICDRequestCreateDatabaseDelegate methods
 - (void)requestCreateDatabase:(id<ICDRequestProtocol>)request didCreateDatabaseWithName:(NSString *)dbName
 {
-    if (request != self.requestCreateDB)
+    NSUInteger index = [self.ongoingRequests indexOfObject:request];
+    if (index == NSNotFound)
     {
         ICDLogDebug(@"Received database from unexpected request. Ignore");
         
         return;
     }
     
-    [self releaseRequestCreateDB];
+    [self releaseOngoingRequestAtIndex:index];
     
     ICDModelDatabase *database = [ICDModelDatabase databaseWithName:dbName];
-    NSUInteger index = [self.allDatabases indexOfObject:database
-                                          inSortedRange:NSMakeRange(0, [self.allDatabases count])
-                                                options:NSBinarySearchingInsertionIndex
-                                        usingComparator:^NSComparisonResult(id obj1, id obj2) {
-                                            return [(ICDModelDatabase *)obj1 compare:(ICDModelDatabase *)obj2];
-                                        }];
+    index = [self.allDatabases indexOfObject:database
+                               inSortedRange:NSMakeRange(0, [self.allDatabases count])
+                                     options:NSBinarySearchingInsertionIndex
+                             usingComparator:^NSComparisonResult(id obj1, id obj2) {
+                                 return [(ICDModelDatabase *)obj1 compare:(ICDModelDatabase *)obj2];
+                             }];
     [self.allDatabases insertObject:database atIndex:index];
     
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
@@ -231,7 +234,8 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (void)requestCreateDatabase:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
-    if (request != self.requestCreateDB)
+    NSUInteger index = [self.ongoingRequests indexOfObject:request];
+    if (index == NSNotFound)
     {
         ICDLogDebug(@"Received error from unexpected request. Ignore");
         
@@ -240,24 +244,25 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     
     ICDLogError(@"Error: %@", error);
     
-    [self releaseRequestCreateDB];
+    [self releaseOngoingRequestAtIndex:index];
 }
 
 
 #pragma mark - ICDRequestDeleteDatabaseDelegate methods
 - (void)requestDeleteDatabase:(id<ICDRequestProtocol>)request didDeleteDatabaseWithName:(NSString *)dbName
 {
-    if (request != self.requestDeleteDB)
+    NSUInteger index = [self.ongoingRequests indexOfObject:request];
+    if (index == NSNotFound)
     {
         ICDLogDebug(@"Received database from unexpected request. Ignore");
         
         return;
     }
     
-    [self releaseRequestDeleteDB];
+    [self releaseOngoingRequestAtIndex:index];
     
     ICDModelDatabase *database = [ICDModelDatabase databaseWithName:dbName];
-    NSUInteger index = [self.allDatabases indexOfObject:database];
+    index = [self.allDatabases indexOfObject:database];
     if (index == NSNotFound)
     {
         ICDLogError(@"Database <%@> is not in the list. Abort", dbName);
@@ -273,7 +278,8 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (void)requestDeleteDatabase:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
-    if (request != self.requestDeleteDB)
+    NSUInteger index = [self.ongoingRequests indexOfObject:request];
+    if (index == NSNotFound)
     {
         ICDLogDebug(@"Received error from unexpected request. Ignore");
         
@@ -282,7 +288,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     
     ICDLogError(@"Error: %@", error);
     
-    [self releaseRequestDeleteDB];
+    [self releaseOngoingRequestAtIndex:index];
 }
 
 
@@ -464,13 +470,11 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     
     [self releaseNetworkManager];
     
-    [self releaseRequestAllDBs];
-    [self releaseRequestCreateDB];
-    [self releaseRequestDeleteDB];
-    
-    self.allDatabases = [NSMutableArray array];
+    [self releaseOngoingRequests];
     
     [self addLoginLogoutBarButtonItem];
+    
+    self.allDatabases = [NSMutableArray array];
     
     [self.tableView reloadData];
     
@@ -483,6 +487,26 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     {
         _networkManager = nil;
     }
+}
+
+- (void)releaseOngoingRequests
+{
+    NSUInteger count = [self.ongoingRequests count];
+    for (NSUInteger index = 0; index < count; index++)
+    {
+        [self releaseOngoingRequestAtIndex:index];
+    }
+}
+
+- (void)releaseOngoingRequestAtIndex:(NSUInteger)index
+{
+    id oneRequest = [self.ongoingRequests objectAtIndex:index];
+    if ([oneRequest respondsToSelector:@selector(setDelegate:)])
+    {
+        [oneRequest setDelegate:nil];
+    }
+    
+    [self.ongoingRequests removeObjectAtIndex:index];
 }
 
 - (BOOL)checkAuthorizationBeforeExecutingRequestAllDBs
@@ -503,36 +527,18 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (BOOL)executeRequestAllDBs
 {
-    if (self.requestAllDBs)
-    {
-        ICDLogTrace(@"Already executing this request");
-        
-        return NO;
-    }
+    ICDRequestAllDatabases *requestAllDBs = [[ICDRequestAllDatabases alloc] init];
+    requestAllDBs.delegate = self;
     
-    self.requestAllDBs = [[ICDRequestAllDatabases alloc] init];
-    self.requestAllDBs.delegate = self;
-    
-    BOOL success = [self.networkManager asyncExecuteRequest:self.requestAllDBs];
+    BOOL success = [self.networkManager asyncExecuteRequest:requestAllDBs];
     if (success)
     {
+        [self.ongoingRequests addObject:requestAllDBs];
+        
         [self.refreshControl beginRefreshing];
-    }
-    else
-    {
-        [self releaseRequestAllDBs];
     }
     
     return success;
-}
-
-- (void)releaseRequestAllDBs
-{
-    if (self.requestAllDBs)
-    {
-        self.requestAllDBs.delegate = nil;
-        self.requestAllDBs = nil;
-    }
 }
 
 - (void)checkAuthorizationBeforeAskingDatabaseName
@@ -549,76 +555,44 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (BOOL)executeRequestCreateDBWithName:(NSString *)dbName
 {
-    if (self.requestCreateDB)
-    {
-        ICDLogTrace(@"Already executing this request");
-        
-        return NO;
-    }
-    
-    self.requestCreateDB = [[ICDRequestCreateDatabase alloc] initWithDatabaseName:dbName];
-    if (!self.requestCreateDB)
+    ICDRequestCreateDatabase *requestCreateDB = [[ICDRequestCreateDatabase alloc] initWithDatabaseName:dbName];
+    if (!requestCreateDB)
     {
         ICDLogWarning(@"Request not created with database name <%@>. Abort", dbName);
         
         return NO;
     }
     
-    self.requestCreateDB.delegate = self;
+    requestCreateDB.delegate = self;
     
-    BOOL success = [self.networkManager asyncExecuteRequest:self.requestCreateDB];
-    if (!success)
+    BOOL success = [self.networkManager asyncExecuteRequest:requestCreateDB];
+    if (success)
     {
-        [self releaseRequestCreateDB];
+        [self.ongoingRequests addObject:requestCreateDB];
     }
     
     return success;
 }
 
-- (void)releaseRequestCreateDB
-{
-    if (self.requestCreateDB)
-    {
-        self.requestCreateDB.delegate = nil;
-        self.requestCreateDB = nil;
-    }
-}
-
 - (BOOL)executeRequestDeleteDBWithName:(NSString *)dbName
 {
-    if (self.requestDeleteDB)
-    {
-        ICDLogTrace(@"Already executing this request");
-        
-        return NO;
-    }
-    
-    self.requestDeleteDB = [[ICDRequestDeleteDatabase alloc] initWithDatabaseName:dbName];
-    if (!self.requestDeleteDB)
+    ICDRequestDeleteDatabase *requestDeleteDB = [[ICDRequestDeleteDatabase alloc] initWithDatabaseName:dbName];
+    if (!requestDeleteDB)
     {
         ICDLogWarning(@"Request not created with database name <%@>. Abort", dbName);
         
         return NO;
     }
     
-    self.requestDeleteDB.delegate = self;
+    requestDeleteDB.delegate = self;
     
-    BOOL success = [self.networkManager asyncExecuteRequest:self.requestDeleteDB];
-    if (!success)
+    BOOL success = [self.networkManager asyncExecuteRequest:requestDeleteDB];
+    if (success)
     {
-        [self releaseRequestDeleteDB];
+        [self.ongoingRequests addObject:requestDeleteDB];
     }
     
     return YES;
-}
-
-- (void)releaseRequestDeleteDB
-{
-    if (self.requestDeleteDB)
-    {
-        self.requestDeleteDB.delegate = nil;
-        self.requestDeleteDB = nil;
-    }
 }
 
 @end

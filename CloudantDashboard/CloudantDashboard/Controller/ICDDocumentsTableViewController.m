@@ -33,9 +33,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 @property (strong, nonatomic) ICDNetworkManager *networkManager;
 
-@property (strong, nonatomic) ICDRequestAllDocuments *requestAllDocs;
-@property (strong, nonatomic) ICDRequestCreateDocument *requestCreateDoc;
-@property (strong, nonatomic) ICDRequestDeleteDocument *requestDeleteDoc;
+@property (strong, nonatomic) NSMutableArray *ongoingRequests;
 
 @property (strong, nonatomic) NSString *databaseName;
 
@@ -55,6 +53,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     self = [super initWithCoder:aDecoder];
     if (self)
     {
+        _ongoingRequests = [NSMutableArray array];
         _allDocuments = [NSMutableArray array];
         
         _isViewVisible = NO;
@@ -84,7 +83,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     [self addAllObservers];
     
-    if (self.requestAllDocs)
+    if ([self.ongoingRequests count] > 0)
     {
         [self forceShowRefreshControlAnimation];
     }
@@ -154,14 +153,15 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 #pragma mark - ICDRequestAllDocumentsForADatabaseDelegate methods
 - (void)requestAllDocuments:(id<ICDRequestProtocol>)request didGetDocuments:(NSArray *)documents
 {
-    if (request != self.requestAllDocs)
+    NSUInteger index = [self.ongoingRequests indexOfObject:request];
+    if (index == NSNotFound)
     {
         ICDLogDebug(@"Received documents from unexpected request. Ignore");
         
         return;
     }
     
-    [self releaseRequestAllDocs];
+    [self releaseOngoingRequestAtIndex:index];
     
     // Update data
     self.allDocuments = [NSMutableArray arrayWithArray:documents];
@@ -178,7 +178,8 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 - (void)requestAllDocuments:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
-    if (request != self.requestAllDocs)
+    NSUInteger index = [self.ongoingRequests indexOfObject:request];
+    if (index == NSNotFound)
     {
         ICDLogDebug(@"Received error from unexpected request. Ignore");
         
@@ -187,7 +188,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     ICDLogError(@"Error: %@", error);
     
-    [self releaseRequestAllDocs];
+    [self releaseOngoingRequestAtIndex:index];
     
     if ([self isViewLoaded])
     {
@@ -199,22 +200,23 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 #pragma mark - ICDRequestCreateDocumentDelegate methods
 - (void)requestCreateDocument:(id<ICDRequestProtocol>)request didCreateDocument:(ICDModelDocument *)document
 {
-    if (request != self.requestCreateDoc)
+    NSUInteger index = [self.ongoingRequests indexOfObject:request];
+    if (index == NSNotFound)
     {
         ICDLogDebug(@"Received document from unexpected request. Ignore");
         
         return;
     }
     
-    [self releaseRequestCreateDoc];
+    [self releaseOngoingRequestAtIndex:index];
     
     // Update data
-    NSUInteger index = [self.allDocuments indexOfObject:document
-                                          inSortedRange:NSMakeRange(0, [self.allDocuments count])
-                                                options:NSBinarySearchingInsertionIndex
-                                        usingComparator:^NSComparisonResult(id obj1, id obj2) {
-                                            return [(ICDModelDocument *)obj1 compare:(ICDModelDocument *)obj2];
-                                        }];
+    index = [self.allDocuments indexOfObject:document
+                               inSortedRange:NSMakeRange(0, [self.allDocuments count])
+                                     options:NSBinarySearchingInsertionIndex
+                             usingComparator:^NSComparisonResult(id obj1, id obj2) {
+                                 return [(ICDModelDocument *)obj1 compare:(ICDModelDocument *)obj2];
+                             }];
     [self.allDocuments insertObject:document atIndex:index];
     
     // Refresh UI
@@ -229,7 +231,8 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 - (void)requestCreateDocument:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
-    if (request != self.requestCreateDoc)
+    NSUInteger index = [self.ongoingRequests indexOfObject:request];
+    if (index == NSNotFound)
     {
         ICDLogDebug(@"Received error from unexpected request. Ignore");
         
@@ -238,7 +241,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     ICDLogError(@"Error: %@", error);
     
-    [self releaseRequestCreateDoc];
+    [self releaseOngoingRequestAtIndex:index];
 }
 
 
@@ -247,18 +250,19 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
       didDeleteDocumentWithId:(NSString *)docId
                      revision:(NSString *)docRev
 {
-    if (request != self.requestDeleteDoc)
+    NSUInteger index = [self.ongoingRequests indexOfObject:request];
+    if (index == NSNotFound)
     {
         ICDLogDebug(@"Received deleted document from unexpected request. Ignore");
         
         return;
     }
     
-    [self releaseRequestDeleteDoc];
+    [self releaseOngoingRequestAtIndex:index];
     
     // Update data
     ICDModelDocument *document = [ICDModelDocument documentWithId:docId rev:docRev];
-    NSUInteger index = [self.allDocuments indexOfObject:document];
+    index = [self.allDocuments indexOfObject:document];
     if (index == NSNotFound)
     {
         ICDLogError(@"Document <%@> is not in the list. Abort", document);
@@ -276,7 +280,8 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 - (void)requestDeleteDocument:(id<ICDRequestProtocol>)request
              didFailWithError:(NSError *)error
 {
-    if (request != self.requestDeleteDoc)
+    NSUInteger index = [self.ongoingRequests indexOfObject:request];
+    if (index == NSNotFound)
     {
         ICDLogDebug(@"Received error from unexpected request. Ignore");
         
@@ -285,7 +290,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     
     ICDLogError(@"Error: %@", error);
     
-    [self releaseRequestDeleteDoc];
+    [self releaseOngoingRequestAtIndex:index];
 }
 
 
@@ -299,11 +304,10 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     }
     
     self.networkManager = networkManager;
-    self.databaseName = databaseName;
     
-    [self releaseRequestAllDocs];
-    [self releaseRequestCreateDoc];
-    [self releaseRequestDeleteDoc];
+    [self releaseOngoingRequests];
+    
+    self.databaseName = databaseName;
     
     [self executeRequestAllDocsForceShowAnimation:YES];
 }
@@ -427,6 +431,26 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     }
 }
 
+- (void)releaseOngoingRequests
+{
+    NSUInteger count = [self.ongoingRequests count];
+    for (NSUInteger index = 0; index < count; index++)
+    {
+        [self releaseOngoingRequestAtIndex:index];
+    }
+}
+
+- (void)releaseOngoingRequestAtIndex:(NSUInteger)index
+{
+    id oneRequest = [self.ongoingRequests objectAtIndex:index];
+    if ([oneRequest respondsToSelector:@selector(setDelegate:)])
+    {
+        [oneRequest setDelegate:nil];
+    }
+    
+    [self.ongoingRequests removeObjectAtIndex:index];
+}
+
 - (BOOL)executeRequestAllDocsForceShowAnimation:(BOOL)forceShowAnimation
 {
     if (!self.networkManager)
@@ -436,43 +460,28 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
         return NO;
     }
     
-    if (self.requestAllDocs)
-    {
-        ICDLogTrace(@"Already executing this request");
-        
-        return NO;
-    }
-    
-    self.requestAllDocs = [[ICDRequestAllDocuments alloc] initWithDatabaseName:self.databaseName];
-    if (!self.requestAllDocs)
+    ICDRequestAllDocuments *requestAllDocs = [[ICDRequestAllDocuments alloc] initWithDatabaseName:self.databaseName];
+    if (!requestAllDocs)
     {
         ICDLogWarning(@"Request not created with database name <%@>. Abort", self.databaseName);
         
         return NO;
     }
     
-    self.requestAllDocs.delegate = self;
+    requestAllDocs.delegate = self;
     
-    BOOL success = [self.networkManager asyncExecuteRequest:self.requestAllDocs];
-    if (!success)
+    BOOL success = [self.networkManager asyncExecuteRequest:requestAllDocs];
+    if (success)
     {
-        [self releaseRequestAllDocs];
-    }
-    else if (forceShowAnimation && [self isViewLoaded])
-    {
-        [self forceShowRefreshControlAnimation];
+        [self.ongoingRequests addObject:requestAllDocs];
+        
+        if (forceShowAnimation && [self isViewLoaded])
+        {
+            [self forceShowRefreshControlAnimation];
+        }
     }
     
     return success;
-}
-
-- (void)releaseRequestAllDocs
-{
-    if (self.requestAllDocs)
-    {
-        self.requestAllDocs.delegate = nil;
-        self.requestAllDocs = nil;
-    }
 }
 
 - (BOOL)executeRequestCreateDoc
@@ -484,39 +493,23 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
         return NO;
     }
     
-    if (self.requestCreateDoc)
-    {
-        ICDLogTrace(@"Already executing this request");
-        
-        return NO;
-    }
-    
-    self.requestCreateDoc = [[ICDRequestCreateDocument alloc] initWithDatabaseName:self.databaseName];
-    if (!self.requestCreateDoc)
+    ICDRequestCreateDocument *requestCreateDoc = [[ICDRequestCreateDocument alloc] initWithDatabaseName:self.databaseName];
+    if (!requestCreateDoc)
     {
         ICDLogWarning(@"Request not created with database name <%@>. Abort", self.databaseName);
         
         return NO;
     }
     
-    self.requestCreateDoc.delegate = self;
+    requestCreateDoc.delegate = self;
     
-    BOOL success = [self.networkManager asyncExecuteRequest:self.requestCreateDoc];
-    if (!success)
+    BOOL success = [self.networkManager asyncExecuteRequest:requestCreateDoc];
+    if (success)
     {
-        [self releaseRequestCreateDoc];
+        [self.ongoingRequests addObject:requestCreateDoc];
     }
     
     return success;
-}
-
-- (void)releaseRequestCreateDoc
-{
-    if (self.requestCreateDoc)
-    {
-        self.requestCreateDoc.delegate = nil;
-        self.requestCreateDoc = nil;
-    }
 }
 
 - (BOOL)executeRequestDeleteDocWithData:(ICDModelDocument *)document
@@ -528,41 +521,25 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
         return NO;
     }
     
-    if (self.requestDeleteDoc)
-    {
-        ICDLogTrace(@"Already executing this request");
-        
-        return NO;
-    }
-    
-    self.requestDeleteDoc = [[ICDRequestDeleteDocument alloc] initWithDatabaseName:self.databaseName
-                                                                        documentId:document.documentId
-                                                                       documentRev:document.documentRev];
-    if (!self.requestDeleteDoc)
+    ICDRequestDeleteDocument *requestDeleteDoc = [[ICDRequestDeleteDocument alloc] initWithDatabaseName:self.databaseName
+                                                                                             documentId:document.documentId
+                                                                                            documentRev:document.documentRev];
+    if (!requestDeleteDoc)
     {
         ICDLogWarning(@"Request not created with database name <%@> and document <%@>. Abort", self.databaseName, document);
         
         return NO;
     }
     
-    self.requestDeleteDoc.delegate = self;
+    requestDeleteDoc.delegate = self;
     
-    BOOL success = [self.networkManager asyncExecuteRequest:self.requestDeleteDoc];
-    if (!success)
+    BOOL success = [self.networkManager asyncExecuteRequest:requestDeleteDoc];
+    if (success)
     {
-        [self releaseRequestDeleteDoc];
+        [self.ongoingRequests addObject:requestDeleteDoc];
     }
     
     return YES;
-}
-
-- (void)releaseRequestDeleteDoc
-{
-    if (self.requestDeleteDoc)
-    {
-        self.requestDeleteDoc.delegate = nil;
-        self.requestDeleteDoc = nil;
-    }
 }
 
 - (void)prepareForSegueDocumentVC:(ICDDocumentViewController *)documentVC
