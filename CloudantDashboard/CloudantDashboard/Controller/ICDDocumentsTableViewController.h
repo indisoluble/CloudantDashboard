@@ -8,13 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ICDNetworkManager.h"
+#import "ICDNetworkManagerProtocol.h"
 
 
 
 @interface ICDDocumentsTableViewController : UITableViewController
 
-- (void)useNetworkManager:(ICDNetworkManager *)networkManager
+- (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
              databaseName:(NSString *)databaseName;
 
 @end

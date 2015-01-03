@@ -10,6 +10,8 @@
 
 #import "ICDDocumentViewController.h"
 
+#import "ICDNetworkManagerFactory.h"
+
 #import "ICDRequestAllDocuments.h"
 #import "ICDRequestCreateDocument.h"
 #import "ICDRequestDeleteDocument.h"
@@ -30,8 +32,11 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     <ICDRequestAllDocumentsDelegate,
     ICDRequestCreateDocumentDelegate,
     ICDRequestDeleteDocumentDelegate>
+{
+    id<ICDNetworkManagerProtocol> _networkManager;
+}
 
-@property (strong, nonatomic) ICDNetworkManager *networkManager;
+@property (strong, nonatomic) id<ICDNetworkManagerProtocol> networkManager;
 
 @property (strong, nonatomic) NSMutableArray *ongoingRequests;
 
@@ -46,6 +51,23 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 
 @implementation ICDDocumentsTableViewController
+
+#pragma mark - Synthesize properties
+- (id<ICDNetworkManagerProtocol>)networkManager
+{
+    if (!_networkManager)
+    {
+        _networkManager = [ICDNetworkManagerFactory networkManager];
+    }
+    
+    return _networkManager;
+}
+
+- (void)setNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
+{
+    _networkManager = (networkManager ? networkManager : [ICDNetworkManagerFactory networkManager]);
+}
+
 
 #pragma mark - Init object
 - (id)initWithCoder:(NSCoder *)aDecoder
@@ -295,7 +317,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 
 #pragma mark - Public methods
-- (void)useNetworkManager:(ICDNetworkManager *)networkManager
+- (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
              databaseName:(NSString *)databaseName
 {
     if (databaseName)
@@ -453,13 +475,6 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 - (BOOL)executeRequestAllDocsForceShowAnimation:(BOOL)forceShowAnimation
 {
-    if (!self.networkManager)
-    {
-        ICDLogTrace(@"No network manager. Abort");
-        
-        return NO;
-    }
-    
     ICDRequestAllDocuments *requestAllDocs = [[ICDRequestAllDocuments alloc] initWithDatabaseName:self.databaseName];
     if (!requestAllDocs)
     {
@@ -486,13 +501,6 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 - (BOOL)executeRequestCreateDoc
 {
-    if (!self.networkManager)
-    {
-        ICDLogTrace(@"No network manager. Abort");
-        
-        return NO;
-    }
-    
     ICDRequestCreateDocument *requestCreateDoc = [[ICDRequestCreateDocument alloc] initWithDatabaseName:self.databaseName];
     if (!requestCreateDoc)
     {
@@ -514,13 +522,6 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 - (BOOL)executeRequestDeleteDocWithData:(ICDModelDocument *)document
 {
-    if (!self.networkManager)
-    {
-        ICDLogTrace(@"No network manager. Abort");
-        
-        return NO;
-    }
-    
     ICDRequestDeleteDocument *requestDeleteDoc = [[ICDRequestDeleteDocument alloc] initWithDatabaseName:self.databaseName
                                                                                              documentId:document.documentId
                                                                                             documentRev:document.documentRev];

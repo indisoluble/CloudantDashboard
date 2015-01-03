@@ -8,13 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ICDRequestProtocol.h"
+#import "ICDNetworkManagerProtocol.h"
 
 
-@interface ICDNetworkManager : NSObject
+@interface ICDNetworkManager : NSObject <ICDNetworkManagerProtocol>
 
 - (id)initWithObjectManager:(id)objectManager;
-
-- (BOOL)asyncExecuteRequest:(id<ICDRequestProtocol>)request;
 
 @end

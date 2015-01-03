@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ICDNetworkManager.h"
+#import "ICDNetworkManagerProtocol.h"
 
 #import "ICDModelDocument.h"
 
@@ -16,7 +16,7 @@
 
 @interface ICDDocumentViewController : UIViewController
 
-- (void)useNetworkManager:(ICDNetworkManager *)networkManager
+- (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
              databaseName:(NSString *)databaseName
                  document:(ICDModelDocument *)document;
 @end

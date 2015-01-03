@@ -8,6 +8,8 @@
 
 #import "ICDDocumentViewController.h"
 
+#import "ICDNetworkManagerFactory.h"
+
 #import "ICDRequestDocument.h"
 #import "ICDRequestAddRevision.h"
 
@@ -20,10 +22,13 @@
 
 
 @interface ICDDocumentViewController () <ICDRequestDocumentDelegate, ICDRequestAddRevisionDelegate>
+{
+    id<ICDNetworkManagerProtocol> _networkManager;
+}
 
 @property (weak, nonatomic) IBOutlet UITextView *textView;
 
-@property (strong, nonatomic) ICDNetworkManager *networkManager;
+@property (strong, nonatomic) id<ICDNetworkManagerProtocol> networkManager;
 
 @property (strong, nonatomic) ICDRequestDocument *requestDocument;
 @property (strong, nonatomic) ICDRequestAddRevision *requestAddRevision;
@@ -40,6 +45,23 @@
 
 
 @implementation ICDDocumentViewController
+
+#pragma mark - Synthesize properties
+- (id<ICDNetworkManagerProtocol>)networkManager
+{
+    if (!_networkManager)
+    {
+        _networkManager = [ICDNetworkManagerFactory networkManager];
+    }
+    
+    return _networkManager;
+}
+
+- (void)setNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
+{
+    _networkManager = (networkManager ? networkManager : [ICDNetworkManagerFactory networkManager]);
+}
+
 
 #pragma mark - Memory management
 - (void)didReceiveMemoryWarning
@@ -138,7 +160,7 @@
 
 
 #pragma mark - Public methods
-- (void)useNetworkManager:(ICDNetworkManager *)networkManager
+- (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
              databaseName:(NSString *)databaseName
                  document:(ICDModelDocument *)document
 {
@@ -270,13 +292,6 @@
 
 - (void)executeRequestDocument
 {
-    if (!self.networkManager)
-    {
-        ICDLogTrace(@"No network manager. Abort");
-        
-        return;
-    }
-    
     if (self.requestDocument)
     {
         ICDLogTrace(@"Already executing this request");
@@ -316,13 +331,6 @@
 
 - (void)executeRequestAddRevision
 {
-    if (!self.networkManager)
-    {
-        ICDLogTrace(@"No network manager. Abort");
-        
-        return;
-    }
-    
     if (self.requestAddRevision)
     {
         ICDLogTrace(@"Already executing this request");

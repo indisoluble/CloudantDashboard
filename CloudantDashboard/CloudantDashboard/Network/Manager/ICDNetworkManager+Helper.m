@@ -10,8 +10,6 @@
 
 #import "ICDNetworkManager+Helper.h"
 
-#import "ICDLog.h"
-
 
 
 #define ICDNETWORKMANAGER_BASEURL_FORMAT    @"https://%@.cloudant.com"
@@ -28,14 +26,7 @@
 #pragma mark - Public class methods
 + (instancetype)networkManagerWithUsername:(NSString *)username
                                   password:(NSString *)password
-{
-    if (!username || !password)
-    {
-        ICDLogError(@"Params not informed");
-        
-        return nil;
-    }
-    
+{    
     NSString *baseURLStr = [NSString stringWithFormat:ICDNETWORKMANAGER_BASEURL_FORMAT, username];
     
     AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:baseURLStr]];

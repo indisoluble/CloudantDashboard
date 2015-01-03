@@ -53,7 +53,12 @@
 }
 
 
-#pragma mark - Public methods
+#pragma mark - ICDNetworkManagerProtocol methods
+- (BOOL)isAuthorized
+{
+    return YES;
+}
+
 - (BOOL)asyncExecuteRequest:(id<ICDRequestProtocol>)request
 {
     if ([self isStackEmpty])

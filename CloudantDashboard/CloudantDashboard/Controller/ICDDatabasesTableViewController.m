@@ -13,7 +13,7 @@
 #import "ICDDocumentsTableViewController.h"
 
 #import "ICDAuthorizationFactory.h"
-#import "ICDNetworkManager+Helper.h"
+#import "ICDNetworkManagerFactory.h"
 
 #import "ICDRequestAllDatabases.h"
 #import "ICDRequestCreateDatabase.h"
@@ -35,10 +35,10 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     ICDRequestCreateDatabaseDelegate,
     ICDRequestDeleteDatabaseDelegate>
 {
-    ICDNetworkManager *_networkManager;
+    id<ICDNetworkManagerProtocol> _networkManager;
 }
 
-@property (strong, nonatomic, readonly) ICDNetworkManager *networkManager;
+@property (strong, nonatomic, readonly) id<ICDNetworkManagerProtocol> networkManager;
 
 @property (strong, nonatomic) NSMutableArray *ongoingRequests;
 
@@ -53,7 +53,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 @implementation ICDDatabasesTableViewController
 
 #pragma mark - Synthesize properties
-- (ICDNetworkManager *)networkManager
+- (id<ICDNetworkManagerProtocol>)networkManager
 {
     if (!_networkManager)
     {
@@ -63,7 +63,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
         NSString *password = nil;
         [authentication retrieveUsername:&username password:&password error:nil];
         
-        _networkManager = [ICDNetworkManager networkManagerWithUsername:username password:password];
+        _networkManager = [ICDNetworkManagerFactory networkManagerWithUsername:username password:password];
         
         _ongoingRequests = [NSMutableArray array];
     }
@@ -311,7 +311,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (void)addLoginLogoutBarButtonItem
 {
-    if (self.networkManager)
+    if ([self.networkManager isAuthorized])
     {
         [self addLogoutBarButtonItem];
     }
@@ -353,7 +353,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     BOOL endRefreshingAnimation = YES;
     
-    if (self.networkManager)
+    if ([self.networkManager isAuthorized])
     {
         endRefreshingAnimation = ![self executeRequestAllDBs];
     }
@@ -397,6 +397,8 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
         id<ICDAuthorizationProtocol> authentication = [ICDAuthorizationFactory authorization];
         if ([authentication saveUsername:usernameTextField.text password:passwordTextField.text error:&thisError])
         {
+            [strongSelf releaseNetworkManager];
+            
             [strongSelf addLoginLogoutBarButtonItem];
             
             [strongSelf executeRequestAllDBs];
@@ -513,7 +515,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     BOOL result = NO;
     
-    if (self.networkManager)
+    if ([self.networkManager isAuthorized])
     {
         result = [self executeRequestAllDBs];
     }
@@ -543,7 +545,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 
 - (void)checkAuthorizationBeforeAskingDatabaseName
 {
-    if (self.networkManager)
+    if ([self.networkManager isAuthorized])
     {
         [self askNameBeforeCreatingDatabase];
     }
