@@ -83,18 +83,17 @@
 }
 
 
+#pragma mark - Memory management
+- (void)dealloc
+{
+    [self removeAllObservers];
+}
+
+
 #pragma mark - ICDRequestAllDocumentsForADatabaseDelegate methods
 - (void)requestAllDocuments:(id<ICDRequestProtocol>)request didGetDocuments:(NSArray *)documents
 {
-    NSUInteger index = [self.ongoingRequests indexOfObject:request];
-    if (index == NSNotFound)
-    {
-        ICDLogDebug(@"Received documents from unexpected request. Ignore");
-        
-        return;
-    }
-    
-    [self releaseOngoingRequestAtIndex:index];
+    [self.ongoingRequests removeObject:request];
     
     self.isRefreshingDocs = NO;
     
@@ -111,17 +110,9 @@
 
 - (void)requestAllDocuments:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
-    NSUInteger index = [self.ongoingRequests indexOfObject:request];
-    if (index == NSNotFound)
-    {
-        ICDLogDebug(@"Received error from unexpected request. Ignore");
-        
-        return;
-    }
-    
     ICDLogError(@"Error: %@", error);
     
-    [self releaseOngoingRequestAtIndex:index];
+    [self.ongoingRequests removeObject:request];
     
     self.isRefreshingDocs = NO;
     
@@ -136,23 +127,15 @@
 #pragma mark - ICDRequestCreateDocumentDelegate methods
 - (void)requestCreateDocument:(id<ICDRequestProtocol>)request didCreateDocument:(ICDModelDocument *)document
 {
-    NSUInteger index = [self.ongoingRequests indexOfObject:request];
-    if (index == NSNotFound)
-    {
-        ICDLogDebug(@"Received document from unexpected request. Ignore");
-        
-        return;
-    }
-    
-    [self releaseOngoingRequestAtIndex:index];
+    [self.ongoingRequests removeObject:request];
     
     // Update data
-    index = [self.allDocuments indexOfObject:document
-                               inSortedRange:NSMakeRange(0, [self.allDocuments count])
-                                     options:NSBinarySearchingInsertionIndex
-                             usingComparator:^NSComparisonResult(id obj1, id obj2) {
-                                 return [(ICDModelDocument *)obj1 compare:(ICDModelDocument *)obj2];
-                             }];
+    NSUInteger index = [self.allDocuments indexOfObject:document
+                                          inSortedRange:NSMakeRange(0, [self.allDocuments count])
+                                                options:NSBinarySearchingInsertionIndex
+                                        usingComparator:^NSComparisonResult(id obj1, id obj2) {
+                                            return [(ICDModelDocument *)obj1 compare:(ICDModelDocument *)obj2];
+                                        }];
     [self.allDocuments insertObject:document atIndex:index];
     
     // Notify
@@ -164,17 +147,9 @@
 
 - (void)requestCreateDocument:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
-    NSUInteger index = [self.ongoingRequests indexOfObject:request];
-    if (index == NSNotFound)
-    {
-        ICDLogDebug(@"Received error from unexpected request. Ignore");
-        
-        return;
-    }
-    
     ICDLogError(@"Error: %@", error);
     
-    [self releaseOngoingRequestAtIndex:index];
+    [self.ongoingRequests removeObject:request];
 }
 
 
@@ -183,19 +158,11 @@
       didDeleteDocumentWithId:(NSString *)docId
                      revision:(NSString *)docRev
 {
-    NSUInteger index = [self.ongoingRequests indexOfObject:request];
-    if (index == NSNotFound)
-    {
-        ICDLogDebug(@"Received deleted document from unexpected request. Ignore");
-        
-        return;
-    }
-    
-    [self releaseOngoingRequestAtIndex:index];
+    [self.ongoingRequests removeObject:request];
     
     // Update data
     ICDModelDocument *document = [ICDModelDocument documentWithId:docId rev:docRev];
-    index = [self.allDocuments indexOfObject:document];
+    NSUInteger index = [self.allDocuments indexOfObject:document];
     if (index == NSNotFound)
     {
         ICDLogError(@"Document <%@> is not in the list. Abort", document);
@@ -215,17 +182,9 @@
 - (void)requestDeleteDocument:(id<ICDRequestProtocol>)request
              didFailWithError:(NSError *)error
 {
-    NSUInteger index = [self.ongoingRequests indexOfObject:request];
-    if (index == NSNotFound)
-    {
-        ICDLogDebug(@"Received error from unexpected request. Ignore");
-        
-        return;
-    }
-    
     ICDLogError(@"Error: %@", error);
     
-    [self releaseOngoingRequestAtIndex:index];
+    [self.ongoingRequests removeObject:request];
 }
 
 
@@ -306,21 +265,16 @@
     NSUInteger count = [self.ongoingRequests count];
     for (NSUInteger index = 0; index < count; index++)
     {
-        [self releaseOngoingRequestAtIndex:index];
+        id oneRequest = [self.ongoingRequests lastObject];
+        if ([oneRequest respondsToSelector:@selector(setDelegate:)])
+        {
+            // Set delegate to nil, release the instance is not enought
+            // The instance could send a message to the delegate before being freed from memory
+            [oneRequest setDelegate:nil];
+        }
+        
+        [self.ongoingRequests removeLastObject];
     }
-}
-
-- (void)releaseOngoingRequestAtIndex:(NSUInteger)index
-{
-    id oneRequest = [self.ongoingRequests objectAtIndex:index];
-    if ([oneRequest respondsToSelector:@selector(setDelegate:)])
-    {
-        // Set delegate to nil, release the instance is not enought
-        // The instance could send a message to the delegate before being freed from memory
-        [oneRequest setDelegate:nil];
-    }
-    
-    [self.ongoingRequests removeObjectAtIndex:index];
 }
 
 - (void)addAllObservers

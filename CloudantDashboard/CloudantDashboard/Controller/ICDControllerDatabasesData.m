@@ -73,19 +73,13 @@
 #pragma mark - ICDRequestAllDatabasesDelegate methods
 - (void)requestAllDatabases:(id<ICDRequestProtocol>)request didGetDatabases:(NSArray *)databases
 {
-    NSUInteger index = [self.ongoingRequests indexOfObject:request];
-    if (index == NSNotFound)
-    {
-        ICDLogDebug(@"Received databases from unexpected request. Ignore");
-        
-        return;
-    }
+    [self.ongoingRequests removeObject:request];
     
-    [self releaseOngoingRequestAtIndex:index];
-    
+    // Update data
     self.allDatabases = [NSMutableArray arrayWithArray:databases];
     [self.allDatabases sortUsingSelector:@selector(compare:)];
     
+    // Notify
     if (self.delegate)
     {
         [self.delegate icdControllerDatabasesData:self didRefreshDBsWithResult:YES];
@@ -94,18 +88,11 @@
 
 - (void)requestAllDatabases:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
-    NSUInteger index = [self.ongoingRequests indexOfObject:request];
-    if (index == NSNotFound)
-    {
-        ICDLogDebug(@"Received error from unexpected request. Ignore");
-        
-        return;
-    }
-    
     ICDLogError(@"Error: %@", error);
     
-    [self releaseOngoingRequestAtIndex:index];
+    [self.ongoingRequests removeObject:request];
     
+    // Notify
     if (self.delegate)
     {
         [self.delegate icdControllerDatabasesData:self didRefreshDBsWithResult:NO];
@@ -116,25 +103,19 @@
 #pragma mark - ICDRequestCreateDatabaseDelegate methods
 - (void)requestCreateDatabase:(id<ICDRequestProtocol>)request didCreateDatabaseWithName:(NSString *)dbName
 {
-    NSUInteger index = [self.ongoingRequests indexOfObject:request];
-    if (index == NSNotFound)
-    {
-        ICDLogDebug(@"Received database from unexpected request. Ignore");
-        
-        return;
-    }
+    [self.ongoingRequests removeObject:request];
     
-    [self releaseOngoingRequestAtIndex:index];
-    
+    // Update data
     ICDModelDatabase *database = [ICDModelDatabase databaseWithName:dbName];
-    index = [self.allDatabases indexOfObject:database
-                               inSortedRange:NSMakeRange(0, [self.allDatabases count])
-                                     options:NSBinarySearchingInsertionIndex
-                             usingComparator:^NSComparisonResult(id obj1, id obj2) {
-                                 return [(ICDModelDatabase *)obj1 compare:(ICDModelDatabase *)obj2];
-                             }];
+    NSUInteger index = [self.allDatabases indexOfObject:database
+                                          inSortedRange:NSMakeRange(0, [self.allDatabases count])
+                                                options:NSBinarySearchingInsertionIndex
+                                        usingComparator:^NSComparisonResult(id obj1, id obj2) {
+                                            return [(ICDModelDatabase *)obj1 compare:(ICDModelDatabase *)obj2];
+                                        }];
     [self.allDatabases insertObject:database atIndex:index];
     
+    // Notify
     if (self.delegate)
     {
         [self.delegate icdControllerDatabasesData:self didCreateDBAtIndex:index];
@@ -143,35 +124,20 @@
 
 - (void)requestCreateDatabase:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
-    NSUInteger index = [self.ongoingRequests indexOfObject:request];
-    if (index == NSNotFound)
-    {
-        ICDLogDebug(@"Received error from unexpected request. Ignore");
-        
-        return;
-    }
-    
     ICDLogError(@"Error: %@", error);
     
-    [self releaseOngoingRequestAtIndex:index];
+    [self.ongoingRequests removeObject:request];
 }
 
 
 #pragma mark - ICDRequestDeleteDatabaseDelegate methods
 - (void)requestDeleteDatabase:(id<ICDRequestProtocol>)request didDeleteDatabaseWithName:(NSString *)dbName
 {
-    NSUInteger index = [self.ongoingRequests indexOfObject:request];
-    if (index == NSNotFound)
-    {
-        ICDLogDebug(@"Received database from unexpected request. Ignore");
-        
-        return;
-    }
+    [self.ongoingRequests removeObject:request];
     
-    [self releaseOngoingRequestAtIndex:index];
-    
+    // Update data
     ICDModelDatabase *database = [ICDModelDatabase databaseWithName:dbName];
-    index = [self.allDatabases indexOfObject:database];
+    NSUInteger index = [self.allDatabases indexOfObject:database];
     if (index == NSNotFound)
     {
         ICDLogError(@"Database <%@> is not in the list. Abort", dbName);
@@ -181,6 +147,7 @@
     
     [self.allDatabases removeObjectAtIndex:index];
     
+    // Notify
     if (self.delegate)
     {
         [self.delegate icdControllerDatabasesData:self didDeleteDBAtIndex:index];
@@ -189,17 +156,9 @@
 
 - (void)requestDeleteDatabase:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
-    NSUInteger index = [self.ongoingRequests indexOfObject:request];
-    if (index == NSNotFound)
-    {
-        ICDLogDebug(@"Received error from unexpected request. Ignore");
-        
-        return;
-    }
-    
     ICDLogError(@"Error: %@", error);
     
-    [self releaseOngoingRequestAtIndex:index];
+    [self.ongoingRequests removeObject:request];
 }
 
 
@@ -317,21 +276,16 @@
     NSUInteger count = [self.ongoingRequests count];
     for (NSUInteger index = 0; index < count; index++)
     {
-        [self releaseOngoingRequestAtIndex:index];
+        id oneRequest = [self.ongoingRequests lastObject];
+        if ([oneRequest respondsToSelector:@selector(setDelegate:)])
+        {
+            // Set delegate to nil, release the instance is not enought
+            // The instance could send a message to the delegate before being freed from memory
+            [oneRequest setDelegate:nil];
+        }
+        
+        [self.ongoingRequests removeLastObject];
     }
-}
-
-- (void)releaseOngoingRequestAtIndex:(NSUInteger)index
-{
-    id oneRequest = [self.ongoingRequests objectAtIndex:index];
-    if ([oneRequest respondsToSelector:@selector(setDelegate:)])
-    {
-        // Set delegate to nil, release the instance is not enought
-        // The instance could send a message to the delegate before being freed from memory
-        [oneRequest setDelegate:nil];
-    }
-    
-    [self.ongoingRequests removeObjectAtIndex:index];
 }
 
 @end
