@@ -326,6 +326,8 @@
     id oneRequest = [self.ongoingRequests objectAtIndex:index];
     if ([oneRequest respondsToSelector:@selector(setDelegate:)])
     {
+        // Set delegate to nil, release the instance is not enought
+        // The instance could send a message to the delegate before being freed from memory
         [oneRequest setDelegate:nil];
     }
     
