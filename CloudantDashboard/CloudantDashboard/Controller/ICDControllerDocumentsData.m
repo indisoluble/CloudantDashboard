@@ -23,20 +23,12 @@
     <ICDRequestAllDocumentsDelegate,
     ICDRequestCreateDocumentDelegate,
     ICDRequestDeleteDocumentDelegate>
-{
-    id<ICDNetworkManagerProtocol> _networkManager;
-}
-
-@property (strong, nonatomic) NSString *databaseName;
-@property (strong, nonatomic) id<ICDNetworkManagerProtocol> networkManager;
 
 @property (assign, nonatomic) BOOL isRefreshingDocs;
 
-@property (strong, nonatomic) NSMutableArray *ongoingRequests;
-
 @property (strong, nonatomic) NSMutableArray *allDocuments;
 
-@property (assign, nonatomic) BOOL allObserversAdded;
+@property (assign, nonatomic) BOOL didAddRevisionObserverAdded;
 
 @end
 
@@ -44,39 +36,26 @@
 
 @implementation ICDControllerDocumentsData
 
-#pragma mark - Synthesize properties
-- (id<ICDNetworkManagerProtocol>)networkManager
-{
-    if (!_networkManager)
-    {
-        _networkManager = [ICDNetworkManagerFactory networkManager];
-    }
-    
-    return _networkManager;
-}
-
-- (void)setNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
-{
-    _networkManager = (networkManager ? networkManager : [ICDNetworkManagerFactory networkManager]);
-}
-
-
 #pragma mark - Init object
 - (id)init
+{
+    return [self initWithDatabaseName:nil networkManager:nil];
+}
+
+- (id)initWithDatabaseName:(NSString *)databaseNameOrNil
+            networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil
 {
     self = [super init];
     if (self)
     {
-        _databaseName = nil;
-        _networkManager = nil;
+        _databaseNameOrNil = databaseNameOrNil;
+        _networkManager = (networkManagerOrNil ? networkManagerOrNil : [ICDNetworkManagerFactory networkManager]);
         
         _isRefreshingDocs = NO;
         
-        _ongoingRequests = [NSMutableArray array];
-        
         _allDocuments = [NSMutableArray array];
         
-        _allObserversAdded = NO;
+        _didAddRevisionObserverAdded = NO;
     }
     
     return self;
@@ -86,16 +65,16 @@
 #pragma mark - Memory management
 - (void)dealloc
 {
-    [self removeAllObservers];
+    [self removeObserverForDidAddRevisionNotification];
 }
 
 
 #pragma mark - ICDRequestAllDocumentsForADatabaseDelegate methods
 - (void)requestAllDocuments:(id<ICDRequestProtocol>)request didGetDocuments:(NSArray *)documents
 {
-    [self.ongoingRequests removeObject:request];
-    
     self.isRefreshingDocs = NO;
+    
+    [self addObserverForDidAddRevisionNotification];
     
     // Update data
     self.allDocuments = [NSMutableArray arrayWithArray:documents];
@@ -112,8 +91,6 @@
 {
     ICDLogError(@"Error: %@", error);
     
-    [self.ongoingRequests removeObject:request];
-    
     self.isRefreshingDocs = NO;
     
     // Notify
@@ -127,8 +104,6 @@
 #pragma mark - ICDRequestCreateDocumentDelegate methods
 - (void)requestCreateDocument:(id<ICDRequestProtocol>)request didCreateDocument:(ICDModelDocument *)document
 {
-    [self.ongoingRequests removeObject:request];
-    
     // Update data
     NSUInteger index = [self.allDocuments indexOfObject:document
                                           inSortedRange:NSMakeRange(0, [self.allDocuments count])
@@ -148,8 +123,6 @@
 - (void)requestCreateDocument:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
     ICDLogError(@"Error: %@", error);
-    
-    [self.ongoingRequests removeObject:request];
 }
 
 
@@ -158,8 +131,6 @@
       didDeleteDocumentWithId:(NSString *)docId
                      revision:(NSString *)docRev
 {
-    [self.ongoingRequests removeObject:request];
-    
     // Update data
     ICDModelDocument *document = [ICDModelDocument documentWithId:docId rev:docRev];
     NSUInteger index = [self.allDocuments indexOfObject:document];
@@ -183,8 +154,6 @@
              didFailWithError:(NSError *)error
 {
     ICDLogError(@"Error: %@", error);
-    
-    [self.ongoingRequests removeObject:request];
 }
 
 
@@ -197,14 +166,6 @@
 - (ICDModelDocument *)documentAtIndex:(NSUInteger)index
 {
     return (ICDModelDocument *)self.allDocuments[index];
-}
-
-- (BOOL)asyncRefreshDocsWithNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
-                              databaseName:(NSString *)databaseName
-{
-    [self useNetworkManager:networkManager databaseName:databaseName];
-    
-    return [self asyncRefreshDocs];
 }
 
 - (BOOL)asyncRefreshDocs
@@ -230,71 +191,26 @@
     return [self executeRequestDeleteDocWithData:document];
 }
 
-- (void)reset
-{
-    [self removeAllObservers];
-    
-    [self releaseOngoingRequests];
-    
-    self.isRefreshingDocs = NO;
-    
-    self.networkManager = nil;
-    
-    self.databaseName = nil;
-}
-
 
 #pragma mark - Private methods
-- (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
-             databaseName:(NSString *)databaseName
+- (void)addObserverForDidAddRevisionNotification
 {
-    [self reset];
-    
-    self.databaseName = databaseName;
-    
-    self.networkManager = networkManager;
-    
-    if (self.databaseName)
-    {
-        [self addAllObservers];
-    }
-}
-
-- (void)releaseOngoingRequests
-{
-    NSUInteger count = [self.ongoingRequests count];
-    for (NSUInteger index = 0; index < count; index++)
-    {
-        id oneRequest = [self.ongoingRequests lastObject];
-        if ([oneRequest respondsToSelector:@selector(setDelegate:)])
-        {
-            // Set delegate to nil, release the instance is not enought
-            // The instance could send a message to the delegate before being freed from memory
-            [oneRequest setDelegate:nil];
-        }
-        
-        [self.ongoingRequests removeLastObject];
-    }
-}
-
-- (void)addAllObservers
-{
-    if (!self.allObserversAdded)
+    if (!self.didAddRevisionObserverAdded)
     {
         [[ICDRequestAddRevisionNotification sharedInstance] addDidAddRevisionNotificationObserver:self
                                                                                          selector:@selector(didReceiveDidAddRevisionNotification:)];
         
-        self.allObserversAdded = YES;
+        self.didAddRevisionObserverAdded = YES;
     }
 }
 
-- (void)removeAllObservers
+- (void)removeObserverForDidAddRevisionNotification
 {
-    if (self.allObserversAdded)
+    if (self.didAddRevisionObserverAdded)
     {
         [[ICDRequestAddRevisionNotification sharedInstance] removeDidAddRevisionNotificationObserver:self];
         
-        self.allObserversAdded = NO;
+        self.didAddRevisionObserverAdded = NO;
     }
 }
 
@@ -304,7 +220,7 @@
     
     // Validate
     NSString *dbName = notification.userInfo[kICDRequestAddRevisionNotificationDidAddRevisionUserInfoKeyDatabaseName];
-    if (![self.databaseName isEqualToString:dbName])
+    if (!self.databaseNameOrNil || ![self.databaseNameOrNil isEqualToString:dbName])
     {
         ICDLogDebug(@"Revision added to a document in another database. Ignore");
         
@@ -344,67 +260,49 @@
 
 - (BOOL)executeRequestAllDocs
 {
-    ICDRequestAllDocuments *requestAllDocs = [[ICDRequestAllDocuments alloc] initWithDatabaseName:self.databaseName];
+    ICDRequestAllDocuments *requestAllDocs = [[ICDRequestAllDocuments alloc] initWithDatabaseName:self.databaseNameOrNil];
     if (!requestAllDocs)
     {
-        ICDLogWarning(@"Request not created with database name <%@>. Abort", self.databaseName);
+        ICDLogWarning(@"Request not created with database name <%@>. Abort", self.databaseNameOrNil);
         
         return NO;
     }
     
     requestAllDocs.delegate = self;
     
-    BOOL success = [self.networkManager asyncExecuteRequest:requestAllDocs];
-    if (success)
-    {
-        [self.ongoingRequests addObject:requestAllDocs];
-    }
-    
-    return success;
+    return [self.networkManager asyncExecuteRequest:requestAllDocs];
 }
 
 - (BOOL)executeRequestCreateDoc
 {
-    ICDRequestCreateDocument *requestCreateDoc = [[ICDRequestCreateDocument alloc] initWithDatabaseName:self.databaseName];
+    ICDRequestCreateDocument *requestCreateDoc = [[ICDRequestCreateDocument alloc] initWithDatabaseName:self.databaseNameOrNil];
     if (!requestCreateDoc)
     {
-        ICDLogWarning(@"Request not created with database name <%@>. Abort", self.databaseName);
+        ICDLogWarning(@"Request not created with database name <%@>. Abort", self.databaseNameOrNil);
         
         return NO;
     }
     
     requestCreateDoc.delegate = self;
     
-    BOOL success = [self.networkManager asyncExecuteRequest:requestCreateDoc];
-    if (success)
-    {
-        [self.ongoingRequests addObject:requestCreateDoc];
-    }
-    
-    return success;
+    return [self.networkManager asyncExecuteRequest:requestCreateDoc];
 }
 
 - (BOOL)executeRequestDeleteDocWithData:(ICDModelDocument *)document
 {
-    ICDRequestDeleteDocument *requestDeleteDoc = [[ICDRequestDeleteDocument alloc] initWithDatabaseName:self.databaseName
+    ICDRequestDeleteDocument *requestDeleteDoc = [[ICDRequestDeleteDocument alloc] initWithDatabaseName:self.databaseNameOrNil
                                                                                              documentId:document.documentId
                                                                                             documentRev:document.documentRev];
     if (!requestDeleteDoc)
     {
-        ICDLogWarning(@"Request not created with database name <%@> and document <%@>. Abort", self.databaseName, document);
+        ICDLogWarning(@"Request not created with database name <%@> and document <%@>. Abort", self.databaseNameOrNil, document);
         
         return NO;
     }
     
     requestDeleteDoc.delegate = self;
     
-    BOOL success = [self.networkManager asyncExecuteRequest:requestDeleteDoc];
-    if (success)
-    {
-        [self.ongoingRequests addObject:requestDeleteDoc];
-    }
-    
-    return YES;
+    return [self.networkManager asyncExecuteRequest:requestDeleteDoc];
 }
 
 @end

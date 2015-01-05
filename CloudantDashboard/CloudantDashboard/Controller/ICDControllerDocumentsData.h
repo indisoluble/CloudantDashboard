@@ -20,23 +20,22 @@
 
 @interface ICDControllerDocumentsData : NSObject
 
-@property (strong, nonatomic, readonly) NSString *databaseName;
+@property (strong, nonatomic, readonly) NSString *databaseNameOrNil;
 @property (strong, nonatomic, readonly) id<ICDNetworkManagerProtocol> networkManager;
 
 @property (assign, nonatomic, readonly) BOOL isRefreshingDocs;
 
 @property (weak, nonatomic) id<ICDControllerDocumentsDataDelegate> delegate;
 
+- (id)initWithDatabaseName:(NSString *)databaseNameOrNil
+            networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil;
+
 - (NSInteger)numberOfDocuments;
 - (ICDModelDocument *)documentAtIndex:(NSUInteger)index;
 
-- (BOOL)asyncRefreshDocsWithNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
-                              databaseName:(NSString *)databaseName;
 - (BOOL)asyncRefreshDocs;
 - (BOOL)asyncCreateDoc;
 - (BOOL)asyncDeleteDocAtIndex:(NSUInteger)index;
-
-- (void)reset;
 
 @end
 

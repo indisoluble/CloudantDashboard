@@ -24,14 +24,15 @@
 
 @property (weak, nonatomic) id<ICDControllerDatabasesDataDelegate> delegate;
 
+- (id)initWithUsername:(NSString *)usernameOrNil password:(NSString *)passwordOrNil;
+- (id)initWithNetworkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil;
+
 - (NSInteger)numberOfDatabases;
 - (ICDModelDatabase *)databaseAtIndex:(NSUInteger)index;
 
 - (BOOL)asyncRefreshDBs;
 - (BOOL)asyncCreateDBWithName:(NSString *)dbName;
 - (BOOL)asyncDeleteDBAtIndex:(NSUInteger)index;
-
-- (void)reset;
 
 @end
 

@@ -8,7 +8,6 @@
 
 #import "ICDControllerDatabasesData.h"
 
-#import "ICDAuthorizationFactory.h"
 #import "ICDNetworkManagerFactory.h"
 
 #import "ICDRequestAllDatabases.h"
@@ -23,11 +22,6 @@
     <ICDRequestAllDatabasesDelegate,
     ICDRequestCreateDatabaseDelegate,
     ICDRequestDeleteDatabaseDelegate>
-{
-    id<ICDNetworkManagerProtocol> _networkManager;
-}
-
-@property (strong, nonatomic) NSMutableArray *ongoingRequests;
 
 @property (strong, nonatomic) NSMutableArray *allDatabases;
 
@@ -37,31 +31,26 @@
 
 @implementation ICDControllerDatabasesData
 
-#pragma mark - Synthesize properties
-- (id<ICDNetworkManagerProtocol>)networkManager
-{
-    if (!_networkManager)
-    {
-        id<ICDAuthorizationProtocol> authentication = [ICDAuthorizationFactory authorization];
-        
-        NSString *username = nil;
-        NSString *password = nil;
-        [authentication retrieveUsername:&username password:&password error:nil];
-        
-        _networkManager = [ICDNetworkManagerFactory networkManagerWithUsername:username password:password];
-    }
-    
-    return _networkManager;
-}
-
-
 #pragma mark - Init
 - (id)init
+{
+    return [self initWithNetworkManager:nil];
+}
+
+- (id)initWithUsername:(NSString *)usernameOrNil password:(NSString *)passwordOrNil
+{
+    id<ICDNetworkManagerProtocol> networkManager = [ICDNetworkManagerFactory networkManagerWithUsername:usernameOrNil
+                                                                                               password:passwordOrNil];
+    
+    return [self initWithNetworkManager:networkManager];
+}
+
+- (id)initWithNetworkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil
 {
     self = [super init];
     if (self)
     {
-        _ongoingRequests = [NSMutableArray array];
+        _networkManager = (networkManagerOrNil ? networkManagerOrNil : [ICDNetworkManagerFactory networkManager]);
         
         _allDatabases = [NSMutableArray array];
     }
@@ -73,8 +62,6 @@
 #pragma mark - ICDRequestAllDatabasesDelegate methods
 - (void)requestAllDatabases:(id<ICDRequestProtocol>)request didGetDatabases:(NSArray *)databases
 {
-    [self.ongoingRequests removeObject:request];
-    
     // Update data
     self.allDatabases = [NSMutableArray arrayWithArray:databases];
     [self.allDatabases sortUsingSelector:@selector(compare:)];
@@ -90,8 +77,6 @@
 {
     ICDLogError(@"Error: %@", error);
     
-    [self.ongoingRequests removeObject:request];
-    
     // Notify
     if (self.delegate)
     {
@@ -103,8 +88,6 @@
 #pragma mark - ICDRequestCreateDatabaseDelegate methods
 - (void)requestCreateDatabase:(id<ICDRequestProtocol>)request didCreateDatabaseWithName:(NSString *)dbName
 {
-    [self.ongoingRequests removeObject:request];
-    
     // Update data
     ICDModelDatabase *database = [ICDModelDatabase databaseWithName:dbName];
     NSUInteger index = [self.allDatabases indexOfObject:database
@@ -125,16 +108,12 @@
 - (void)requestCreateDatabase:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
     ICDLogError(@"Error: %@", error);
-    
-    [self.ongoingRequests removeObject:request];
 }
 
 
 #pragma mark - ICDRequestDeleteDatabaseDelegate methods
 - (void)requestDeleteDatabase:(id<ICDRequestProtocol>)request didDeleteDatabaseWithName:(NSString *)dbName
 {
-    [self.ongoingRequests removeObject:request];
-    
     // Update data
     ICDModelDatabase *database = [ICDModelDatabase databaseWithName:dbName];
     NSUInteger index = [self.allDatabases indexOfObject:database];
@@ -157,8 +136,6 @@
 - (void)requestDeleteDatabase:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
     ICDLogError(@"Error: %@", error);
-    
-    [self.ongoingRequests removeObject:request];
 }
 
 
@@ -196,15 +173,6 @@
     return [self executeRequestDeleteDBWithName:database.name];
 }
 
-- (void)reset
-{
-    [self releaseNetworkManager];
-    
-    [self releaseOngoingRequests];
-    
-    self.allDatabases = [NSMutableArray array];
-}
-
 
 #pragma mark - Private methods
 - (BOOL)executeRequestAllDBs
@@ -212,13 +180,7 @@
     ICDRequestAllDatabases *requestAllDBs = [[ICDRequestAllDatabases alloc] init];
     requestAllDBs.delegate = self;
     
-    BOOL success = [self.networkManager asyncExecuteRequest:requestAllDBs];
-    if (success)
-    {
-        [self.ongoingRequests addObject:requestAllDBs];
-    }
-    
-    return success;
+    return [self.networkManager asyncExecuteRequest:requestAllDBs];
 }
 
 - (BOOL)executeRequestCreateDBWithName:(NSString *)dbName
@@ -233,13 +195,7 @@
     
     requestCreateDB.delegate = self;
     
-    BOOL success = [self.networkManager asyncExecuteRequest:requestCreateDB];
-    if (success)
-    {
-        [self.ongoingRequests addObject:requestCreateDB];
-    }
-    
-    return success;
+    return [self.networkManager asyncExecuteRequest:requestCreateDB];
 }
 
 - (BOOL)executeRequestDeleteDBWithName:(NSString *)dbName
@@ -254,38 +210,7 @@
     
     requestDeleteDB.delegate = self;
     
-    BOOL success = [self.networkManager asyncExecuteRequest:requestDeleteDB];
-    if (success)
-    {
-        [self.ongoingRequests addObject:requestDeleteDB];
-    }
-    
-    return YES;
-}
-
-- (void)releaseNetworkManager
-{
-    if (_networkManager)
-    {
-        _networkManager = nil;
-    }
-}
-
-- (void)releaseOngoingRequests
-{
-    NSUInteger count = [self.ongoingRequests count];
-    for (NSUInteger index = 0; index < count; index++)
-    {
-        id oneRequest = [self.ongoingRequests lastObject];
-        if ([oneRequest respondsToSelector:@selector(setDelegate:)])
-        {
-            // Set delegate to nil, release the instance is not enought
-            // The instance could send a message to the delegate before being freed from memory
-            [oneRequest setDelegate:nil];
-        }
-        
-        [self.ongoingRequests removeLastObject];
-    }
+    return [self.networkManager asyncExecuteRequest:requestDeleteDB];
 }
 
 @end

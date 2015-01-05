@@ -21,9 +21,6 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 
 @interface ICDControllerDocumentsTVC () <ICDControllerDocumentsDataDelegate>
-{
-    ICDControllerDocumentsData *_data;
-}
 
 @property (strong, nonatomic, readonly) ICDControllerDocumentsData *data;
 
@@ -35,25 +32,15 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 @implementation ICDControllerDocumentsTVC
 
-#pragma mark - Synthesize properties
-- (ICDControllerDocumentsData *)data
-{
-    if (!_data)
-    {
-        _data = [[ICDControllerDocumentsData alloc] init];
-        _data.delegate = self;
-    }
-    
-    return _data;
-}
-
-
 #pragma mark - Init object
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super initWithCoder:aDecoder];
     if (self)
     {
+        _data = [[ICDControllerDocumentsData alloc] init];
+        _data.delegate = self;
+        
         _isViewVisible = NO;
     }
     
@@ -97,11 +84,6 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     [super viewWillDisappear:animated];
     
     self.isViewVisible = NO;
-    
-    if ([self isMovingFromParentViewController])
-    {
-        [self.data reset];
-    }
 }
 
 
@@ -213,7 +195,16 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
         self.title = databaseName;
     }
     
-    [self.data asyncRefreshDocsWithNetworkManager:networkManager databaseName:databaseName];
+    [self recreateDataWithDatabaseName:databaseName networkManager:networkManager];
+    
+    if ([self isViewLoaded])
+    {
+        [self.tableView reloadData];
+        
+        [self.refreshControl endRefreshing];
+    }
+    
+    [self.data asyncRefreshDocs];
 }
 
 
@@ -282,8 +273,26 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     ICDModelDocument *document = [self.data documentAtIndex:indexPath.row];
     
     [documentVC useNetworkManager:self.data.networkManager
-                     databaseName:self.data.databaseName
+                     databaseName:self.data.databaseNameOrNil
                          document:document];
+}
+
+- (void)recreateDataWithDatabaseName:(NSString *)databaseName
+                      networkManager:(id<ICDNetworkManagerProtocol>)networkManager
+{
+    [self releaseData];
+    
+    _data = [[ICDControllerDocumentsData alloc] initWithDatabaseName:databaseName networkManager:networkManager];
+    _data.delegate = self;
+}
+
+- (void)releaseData
+{
+    if (_data)
+    {
+        _data.delegate = nil;
+        _data = nil;
+    }
 }
 
 @end

@@ -44,7 +44,14 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     if (!_data)
     {
-        _data = [[ICDControllerDatabasesData alloc] init];
+        id<ICDAuthorizationProtocol> authentication = [ICDAuthorizationFactory authorization];
+        
+        NSString *usernameOrNil = nil;
+        NSString *passwordOrNil = nil;
+        [authentication retrieveUsername:&usernameOrNil password:&passwordOrNil error:nil];
+        
+        _data = [[ICDControllerDatabasesData alloc] initWithUsername:usernameOrNil
+                                                            password:passwordOrNil];
         _data.delegate = self;
     }
     
@@ -300,7 +307,7 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
         id<ICDAuthorizationProtocol> authentication = [ICDAuthorizationFactory authorization];
         if ([authentication saveUsername:usernameTextField.text password:passwordTextField.text error:&thisError])
         {
-            [strongSelf.data reset];
+            [strongSelf releaseData];
             
             [strongSelf addLoginLogoutBarButtonItem];
             
@@ -373,13 +380,22 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     id<ICDAuthorizationProtocol> authentication = [ICDAuthorizationFactory authorization];
     [authentication removeUsernamePasswordError:nil];
     
-    [self.data reset];
+    [self releaseData];
     
     [self addLoginLogoutBarButtonItem];
     
     [self.tableView reloadData];
     
     [self.refreshControl endRefreshing];
+}
+
+- (void)releaseData
+{
+    if (_data)
+    {
+        _data.delegate = nil;
+        _data = nil;
+    }
 }
 
 - (void)prepareForSegueDocumentsVC:(ICDControllerDocumentsTVC *)documentVC
