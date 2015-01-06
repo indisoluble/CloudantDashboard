@@ -12,7 +12,7 @@
 
 #import "ICDControllerDocumentsData.h"
 
-#import "ICDCommonAnimationDuration.h"
+#import "UITableViewController+RefreshControlHelper.h"
 
 
 
@@ -238,31 +238,6 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     if (![self.data asyncRefreshDocs])
     {
         [self.refreshControl endRefreshing];
-    }
-}
-
-- (void)forceShowRefreshControlAnimation
-{
-    [self.refreshControl beginRefreshing];
-    
-    if (self.tableView.contentOffset.y == 0)
-    {
-        __weak ICDControllerDocumentsTVC *weakSelf = self;
-        void (^animationBlock)(void) = ^(void)
-        {
-            __strong ICDControllerDocumentsTVC *strongSelf = weakSelf;
-            if (strongSelf)
-            {
-                strongSelf.tableView.contentOffset = CGPointMake(0, -strongSelf.refreshControl.frame.size.height);
-            }
-        };
-        
-        [UIView animateWithDuration:ICDCOMMONANIMATIONDURATION_REFRESHCONTROL
-                              delay:0
-                            options:UIViewAnimationOptionBeginFromCurrentState
-                         animations:animationBlock
-                         completion:nil];
-        
     }
 }
 
