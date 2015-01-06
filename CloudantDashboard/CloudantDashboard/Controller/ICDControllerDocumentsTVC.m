@@ -12,6 +12,7 @@
 
 #import "ICDControllerDocumentsData.h"
 
+#import "NSIndexPath+IndexSetHelper.h"
 #import "UITableViewController+RefreshControlHelper.h"
 
 
@@ -150,14 +151,14 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 }
 
 - (void)icdControllerDocumentsData:(ICDControllerDocumentsData *)data
-               didCreateDocAtIndex:(NSUInteger)index
+            didCreateDocsAtIndexes:(NSIndexSet *)indexes
 {
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-    [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    NSArray *indexPaths = [NSIndexPath indexPathsForRows:indexes inSection:0];
+    [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
     
     if (self.isViewVisible)
     {
-        [self.tableView selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionTop];
+        [self.tableView selectRowAtIndexPath:[indexPaths lastObject] animated:YES scrollPosition:UITableViewScrollPositionTop];
     }
 }
 
@@ -211,16 +212,32 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 #pragma mark - Private methods
 - (void)customizeUI
 {
-    [self addAddBarButtonItem];
+    [self addRightBarButtonItems];
     [self addRefreshControl];
 }
 
-- (void)addAddBarButtonItem
+- (void)addRightBarButtonItems
+{
+    self.navigationItem.rightBarButtonItems = @[[self addBarButtomItem], [self bulkBarButtonItem]];
+}
+
+- (UIBarButtonItem *)addBarButtomItem
 {
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                                                           target:self.data
                                                                           action:@selector(asyncCreateDoc)];
-    self.navigationItem.rightBarButtonItem = item;
+    
+    return item;
+}
+
+- (UIBarButtonItem *)bulkBarButtonItem
+{
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Bulk", @"Bulk")
+                                                             style:UIBarButtonItemStylePlain
+                                                            target:self.data
+                                                            action:@selector(asyncBulkDocs)];
+    
+    return item;
 }
 
 - (void)addRefreshControl

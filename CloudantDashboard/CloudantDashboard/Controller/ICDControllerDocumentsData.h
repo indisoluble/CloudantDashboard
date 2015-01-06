@@ -35,6 +35,7 @@
 
 - (BOOL)asyncRefreshDocs;
 - (BOOL)asyncCreateDoc;
+- (BOOL)asyncBulkDocs;
 - (BOOL)asyncDeleteDocAtIndex:(NSUInteger)index;
 
 @end
@@ -48,7 +49,7 @@
           didRefreshDocsWithResult:(BOOL)success;
 
 - (void)icdControllerDocumentsData:(ICDControllerDocumentsData *)data
-               didCreateDocAtIndex:(NSUInteger)index;
+            didCreateDocsAtIndexes:(NSIndexSet *)indexes;
 
 - (void)icdControllerDocumentsData:(ICDControllerDocumentsData *)data
                didUpdateDocAtIndex:(NSUInteger)index;

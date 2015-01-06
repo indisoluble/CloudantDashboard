@@ -19,6 +19,9 @@
 		FF0CBEC91A508BE200E29E4D /* NSDictionary+CloudantSpecialKeys.m in Sources */ = {isa = PBXBuildFile; fileRef = FF0CBEC81A508BE200E29E4D /* NSDictionary+CloudantSpecialKeys.m */; };
 		FF1762891A55BCA6000B2F67 /* ICDRequestAllDatabasesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1762881A55BCA6000B2F67 /* ICDRequestAllDatabasesTests.m */; };
 		FF1C27D21A58C84C00E88C56 /* ICDControllerDocumentsData.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1C27D11A58C84C00E88C56 /* ICDControllerDocumentsData.m */; };
+		FF1C740F1A5C7AE000FFB2FF /* ICDRequestBulkDocuments.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1C740E1A5C7AE000FFB2FF /* ICDRequestBulkDocuments.m */; };
+		FF1C74131A5C888700FFB2FF /* NSIndexPath+IndexSetHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1C74121A5C888700FFB2FF /* NSIndexPath+IndexSetHelper.m */; };
+		FF1C74151A5C8F4700FFB2FF /* ICDRequestBulkDocumentsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1C74141A5C8F4700FFB2FF /* ICDRequestBulkDocumentsTests.m */; };
 		FF228E831A4C799F00155AA0 /* ICDRequestResponseValueDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = FF228E821A4C799F00155AA0 /* ICDRequestResponseValueDictionary.m */; };
 		FF468FF81A587A8B00D2E1A6 /* ICDNetworkManagerFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = FF468FF71A587A8B00D2E1A6 /* ICDNetworkManagerFactory.m */; };
 		FF468FFB1A587AEF00D2E1A6 /* ICDNetworkManagerDummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FF468FFA1A587AEF00D2E1A6 /* ICDNetworkManagerDummy.m */; };
@@ -94,6 +97,12 @@
 		FF1762881A55BCA6000B2F67 /* ICDRequestAllDatabasesTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestAllDatabasesTests.m; sourceTree = "<group>"; };
 		FF1C27D01A58C84C00E88C56 /* ICDControllerDocumentsData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDControllerDocumentsData.h; sourceTree = "<group>"; };
 		FF1C27D11A58C84C00E88C56 /* ICDControllerDocumentsData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDControllerDocumentsData.m; sourceTree = "<group>"; };
+		FF1C740D1A5C7AE000FFB2FF /* ICDRequestBulkDocuments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestBulkDocuments.h; sourceTree = "<group>"; };
+		FF1C740E1A5C7AE000FFB2FF /* ICDRequestBulkDocuments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestBulkDocuments.m; sourceTree = "<group>"; };
+		FF1C74101A5C7BC800FFB2FF /* ICDRequestBulkDocumentsDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestBulkDocumentsDelegate.h; sourceTree = "<group>"; };
+		FF1C74111A5C888700FFB2FF /* NSIndexPath+IndexSetHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSIndexPath+IndexSetHelper.h"; sourceTree = "<group>"; };
+		FF1C74121A5C888700FFB2FF /* NSIndexPath+IndexSetHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSIndexPath+IndexSetHelper.m"; sourceTree = "<group>"; };
+		FF1C74141A5C8F4700FFB2FF /* ICDRequestBulkDocumentsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestBulkDocumentsTests.m; sourceTree = "<group>"; };
 		FF228E811A4C799F00155AA0 /* ICDRequestResponseValueDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestResponseValueDictionary.h; sourceTree = "<group>"; };
 		FF228E821A4C799F00155AA0 /* ICDRequestResponseValueDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestResponseValueDictionary.m; sourceTree = "<group>"; };
 		FF2D02281A48DFBF00E03C6E /* ICDRequestAllDatabasesDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestAllDatabasesDelegate.h; sourceTree = "<group>"; };
@@ -267,6 +276,9 @@
 				FF6FEA481A49F53200988CD3 /* ICDRequestAllDocuments.h */,
 				FF6FEA491A49F53200988CD3 /* ICDRequestAllDocuments.m */,
 				FF6FEA4A1A49F53200988CD3 /* ICDRequestAllDocumentsDelegate.h */,
+				FF1C740D1A5C7AE000FFB2FF /* ICDRequestBulkDocuments.h */,
+				FF1C740E1A5C7AE000FFB2FF /* ICDRequestBulkDocuments.m */,
+				FF1C74101A5C7BC800FFB2FF /* ICDRequestBulkDocumentsDelegate.h */,
 				FF4877801A4C42A600F157D5 /* ICDRequestCreateDatabase.h */,
 				FF4877811A4C42A600F157D5 /* ICDRequestCreateDatabase.m */,
 				FF4877831A4C442400F157D5 /* ICDRequestCreateDatabaseDelegate.h */,
@@ -368,6 +380,7 @@
 				FF0CBEC51A50835600E29E4D /* ICDRequestAddRevisionTests.m */,
 				FF1762881A55BCA6000B2F67 /* ICDRequestAllDatabasesTests.m */,
 				FF6FEA4C1A49F68F00988CD3 /* ICDRequestAllDocumentsTests.m */,
+				FF1C74141A5C8F4700FFB2FF /* ICDRequestBulkDocumentsTests.m */,
 				FF4877841A4C469500F157D5 /* ICDRequestCreateDatabaseTests.m */,
 				FFE135C01A4C9EE1002F9E23 /* ICDRequestCreateDocumentTests.m */,
 				FF7386501A4B351E008B2AA2 /* ICDRequestDeleteDatabaseTests.m */,
@@ -526,6 +539,8 @@
 		FFFE3D3A1A5C6DC500187AA2 /* Category */ = {
 			isa = PBXGroup;
 			children = (
+				FF1C74111A5C888700FFB2FF /* NSIndexPath+IndexSetHelper.h */,
+				FF1C74121A5C888700FFB2FF /* NSIndexPath+IndexSetHelper.m */,
 				FFFE3D3B1A5C6DF800187AA2 /* UITableViewController+RefreshControlHelper.h */,
 				FFFE3D3C1A5C6DF800187AA2 /* UITableViewController+RefreshControlHelper.m */,
 			);
@@ -683,6 +698,7 @@
 				FF8620711A473A2C00AC68D2 /* AppDelegate.m in Sources */,
 				FF0CBEC91A508BE200E29E4D /* NSDictionary+CloudantSpecialKeys.m in Sources */,
 				FF468FF81A587A8B00D2E1A6 /* ICDNetworkManagerFactory.m in Sources */,
+				FF1C74131A5C888700FFB2FF /* NSIndexPath+IndexSetHelper.m in Sources */,
 				FF6FEA3A1A49D20400988CD3 /* ICDModelDocument.m in Sources */,
 				FFA07EA71A4DD33B0092351A /* ICDAuthorizationKeychain.m in Sources */,
 				FF028DC71A488873008D2561 /* ICDRequestAllDatabases.m in Sources */,
@@ -702,6 +718,7 @@
 				FFA07EA41A4DD08A0092351A /* ICDAuthorizationFactory.m in Sources */,
 				FF658C8B1A4F958700E209EE /* ICDJSONHighlightFactory.m in Sources */,
 				FF6FEA441A49DEBD00988CD3 /* ICDControllerDocumentsTVC.m in Sources */,
+				FF1C740F1A5C7AE000FFB2FF /* ICDRequestBulkDocuments.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -713,6 +730,7 @@
 				FF8A4F0A1A547564003B29BA /* ICDMockRKMappingResult.m in Sources */,
 				FFDC3AA11A4CE724003D4271 /* ICDRequestDeleteDocumentTests.m in Sources */,
 				FF028DDA1A489691008D2561 /* ICDMockRequest.m in Sources */,
+				FF1C74151A5C8F4700FFB2FF /* ICDRequestBulkDocumentsTests.m in Sources */,
 				FF4877851A4C469500F157D5 /* ICDRequestCreateDatabaseTests.m in Sources */,
 				FF0CBEC61A50835600E29E4D /* ICDRequestAddRevisionTests.m in Sources */,
 				FFE135C11A4C9EE1002F9E23 /* ICDRequestCreateDocumentTests.m in Sources */,

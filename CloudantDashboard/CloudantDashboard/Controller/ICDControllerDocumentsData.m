@@ -12,6 +12,7 @@
 
 #import "ICDRequestAllDocuments.h"
 #import "ICDRequestCreateDocument.h"
+#import "ICDRequestBulkDocuments.h"
 #import "ICDRequestDeleteDocument.h"
 #import "ICDRequestAddRevisionNotification.h"
 
@@ -22,6 +23,7 @@
 @interface ICDControllerDocumentsData ()
     <ICDRequestAllDocumentsDelegate,
     ICDRequestCreateDocumentDelegate,
+    ICDRequestBulkDocumentsDelegate,
     ICDRequestDeleteDocumentDelegate>
 
 @property (assign, nonatomic) BOOL isRefreshingDocs;
@@ -104,23 +106,47 @@
 #pragma mark - ICDRequestCreateDocumentDelegate methods
 - (void)requestCreateDocument:(id<ICDRequestProtocol>)request didCreateDocument:(ICDModelDocument *)document
 {
+    [self requestBulkDocuments:nil didBulkDocuments:@[document]];
+}
+
+- (void)requestCreateDocument:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
+{
+    ICDLogError(@"Error: %@", error);
+}
+
+
+#pragma mark - ICDRequestBulkDocumentsDelegate methods
+- (void)requestBulkDocuments:(id<ICDRequestProtocol>)request didBulkDocuments:(NSArray *)documents
+{
+    NSMutableIndexSet *indexes = [NSMutableIndexSet indexSet];
+    
     // Update data
-    NSUInteger index = [self.allDocuments indexOfObject:document
-                                          inSortedRange:NSMakeRange(0, [self.allDocuments count])
-                                                options:NSBinarySearchingInsertionIndex
-                                        usingComparator:^NSComparisonResult(id obj1, id obj2) {
-                                            return [(ICDModelDocument *)obj1 compare:(ICDModelDocument *)obj2];
-                                        }];
-    [self.allDocuments insertObject:document atIndex:index];
+    NSUInteger index = 0;
+    
+    NSComparator comparator = ^NSComparisonResult(id obj1, id obj2)
+    {
+        return [(ICDModelDocument *)obj1 compare:(ICDModelDocument *)obj2];
+    };
+    
+    for (ICDModelDocument *oneDocument in [documents sortedArrayUsingSelector:@selector(compare:)])
+    {
+        index = [self.allDocuments indexOfObject:oneDocument
+                                   inSortedRange:NSMakeRange(0, [self.allDocuments count])
+                                         options:NSBinarySearchingInsertionIndex
+                                 usingComparator:comparator];
+        [self.allDocuments insertObject:oneDocument atIndex:index];
+        
+        [indexes addIndex:index];
+    }
     
     // Notify
     if (self.delegate)
     {
-        [self.delegate icdControllerDocumentsData:self didCreateDocAtIndex:index];
+        [self.delegate icdControllerDocumentsData:self didCreateDocsAtIndexes:indexes];
     }
 }
 
-- (void)requestCreateDocument:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
+- (void)requestBulkDocuments:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
     ICDLogError(@"Error: %@", error);
 }
@@ -182,6 +208,11 @@
 - (BOOL)asyncCreateDoc
 {
     return [self executeRequestCreateDoc];
+}
+
+- (BOOL)asyncBulkDocs
+{
+    return [self executeRequestBulkDocs];
 }
 
 - (BOOL)asyncDeleteDocAtIndex:(NSUInteger)index
@@ -286,6 +317,21 @@
     requestCreateDoc.delegate = self;
     
     return [self.networkManager asyncExecuteRequest:requestCreateDoc];
+}
+
+- (BOOL)executeRequestBulkDocs
+{
+    ICDRequestBulkDocuments *requestBulkDocs = [[ICDRequestBulkDocuments alloc] initWithDatabaseName:self.databaseNameOrNil];
+    if (!requestBulkDocs)
+    {
+        ICDLogWarning(@"Request not created with database name <%@>. Abort", self.databaseNameOrNil);
+        
+        return NO;
+    }
+    
+    requestBulkDocs.delegate = self;
+    
+    return [self.networkManager asyncExecuteRequest:requestBulkDocs];
 }
 
 - (BOOL)executeRequestDeleteDocWithData:(ICDModelDocument *)document
