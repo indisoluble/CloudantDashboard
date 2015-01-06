@@ -38,7 +38,6 @@
 
 @property (strong, nonatomic) NSString *path;
 @property (strong, nonatomic) NSDictionary *parameters;
-@property (strong, nonatomic) NSArray *responseDescriptors;
 
 @end
 
@@ -77,7 +76,6 @@
             
             _path = [NSString stringWithFormat:ICDREQUESTDELETEDOCUMENT_PATH_FORMAT, trimmedDBName, _documentId];
             _parameters = @{ICDREQUESTDELETEDOCUMENT_PARAMETER_KEY_REV: _documentRev};
-            _responseDescriptors = [ICDRequestDeleteDocument responseDescriptorsWithPath:_path];
         }
     }
     
@@ -90,7 +88,7 @@
                           completionHandler:(ICDRequestProtocolCompletionHandlerBlockType)completionHandler
 {
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
-    NSArray *thisResponseDescriptors = self.responseDescriptors;
+    NSArray *thisResponseDescriptors = [ICDRequestDeleteDocument responseDescriptorsWithPath:self.path];
     
     NSString *thisDocumentId = self.documentId;
     NSString *thisDocumentRev = self.documentRev;

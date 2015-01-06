@@ -29,7 +29,6 @@
 @property (strong, nonatomic) NSString *dbName;
 
 @property (strong, nonatomic) NSString *path;
-@property (strong, nonatomic) RKResponseDescriptor *responseDescriptor;
 
 @end
 
@@ -60,7 +59,6 @@
             _dbName = trimmedDBName;
             
             _path = [NSString stringWithFormat:ICDREQUESTALLDOCUMENTS_PATH_FORMAT, _dbName];
-            _responseDescriptor = [ICDRequestAllDocuments responseDescriptorForPath:_path];
         }
     }
     
@@ -73,7 +71,7 @@
                           completionHandler:(ICDRequestProtocolCompletionHandlerBlockType)completionHandler
 {
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
-    RKResponseDescriptor *thisResponseDescriptor = self.responseDescriptor;
+    RKResponseDescriptor *thisResponseDescriptor = [ICDRequestAllDocuments responseDescriptorForPath:self.path];
     
     NSString *thisDBName = self.dbName;
     

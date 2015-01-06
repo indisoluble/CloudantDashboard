@@ -37,7 +37,6 @@
 
 @property (strong, nonatomic) NSString *path;
 @property (strong, nonatomic) NSMutableDictionary *parameters;
-@property (strong, nonatomic) RKResponseDescriptor *responseDescriptor;
 
 @end
 
@@ -92,8 +91,6 @@
             [_parameters setObject:_docId forKey:kNSDictionaryCloudantSpecialKeysDocumentId];
             [_parameters setObject:trimmedDocRev forKey:kNSDictionaryCloudantSpecialKeysDocumentRev];
             
-            _responseDescriptor = [ICDRequestAddRevision responseDescriptorForSuccessWithPath:_path];
-            
             _notification = (notificationOrNil ? notificationOrNil : [ICDRequestAddRevisionNotification sharedInstance]);
         }
     }
@@ -107,7 +104,7 @@
                           completionHandler:(ICDRequestProtocolCompletionHandlerBlockType)completionHandler
 {
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
-    RKResponseDescriptor *thisResponseDescriptor = self.responseDescriptor;
+    RKResponseDescriptor *thisResponseDescriptor = [ICDRequestAddRevision responseDescriptorForSuccessWithPath:self.path];
     
     NSString *thisDBName = self.dbName;
     NSString *thisDocId = self.docId;

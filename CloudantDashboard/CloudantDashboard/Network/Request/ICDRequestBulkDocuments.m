@@ -32,8 +32,6 @@
 @interface ICDRequestBulkDocuments ()
 
 @property (strong, nonatomic) NSString *path;
-@property (strong, nonatomic) NSDictionary *parameters;
-@property (strong, nonatomic) RKResponseDescriptor *responseDescriptor;
 
 @end
 
@@ -61,11 +59,7 @@
         }
         else
         {
-            NSArray *docs = [ICDRequestBulkDocuments arrayWithObject:@{} times:ICDREQUESTBULKDOCUMENTS_NUMBEROFDOCS];
-            
             _path = [NSString stringWithFormat:ICDREQUESTBULKDOCUMENTS_PATH_FORMAT, trimmedDBName];
-            _parameters = @{ICDREQUESTBULKDOCUMENTS_PARAMETER_KEY_DOCS: docs};
-            _responseDescriptor = [ICDRequestBulkDocuments responseDescriptorForSuccessWithPath:_path];
         }
     }
     
@@ -78,7 +72,7 @@
                           completionHandler:(ICDRequestProtocolCompletionHandlerBlockType)completionHandler
 {
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
-    RKResponseDescriptor *thisResponseDescriptor = self.responseDescriptor;
+    RKResponseDescriptor *thisResponseDescriptor = [ICDRequestBulkDocuments responseDescriptorForSuccessWithPath:self.path];
     
     // Add configuration
     [thisObjectManager addResponseDescriptor:thisResponseDescriptor];
@@ -127,7 +121,10 @@
         }
     };
     
-    [thisObjectManager postObject:nil path:self.path parameters:self.parameters success:successBlock failure:failureBlock];
+    NSArray *docs = [ICDRequestBulkDocuments arrayWithObject:@{} times:ICDREQUESTBULKDOCUMENTS_NUMBEROFDOCS];
+    NSDictionary *parameters = @{ICDREQUESTBULKDOCUMENTS_PARAMETER_KEY_DOCS: docs};
+
+    [thisObjectManager postObject:nil path:self.path parameters:parameters success:successBlock failure:failureBlock];
 }
 
 

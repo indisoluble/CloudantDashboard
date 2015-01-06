@@ -32,7 +32,6 @@
 
 @property (strong, nonatomic) NSString *dbName;
 @property (strong, nonatomic) NSString *path;
-@property (strong, nonatomic) NSArray *responseDescriptors;
 
 @end
 
@@ -62,7 +61,6 @@
         {
             _dbName = trimmedDBName;
             _path = [NSString stringWithFormat:ICDREQUESTCREATEDATABASE_PATH_FORMAT, _dbName];
-            _responseDescriptors = [ICDRequestCreateDatabase responseDescriptorsWithPath:_path];
         }
     }
     
@@ -75,7 +73,7 @@
                           completionHandler:(ICDRequestProtocolCompletionHandlerBlockType)completionHandler
 {
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
-    NSArray *thisResponseDescriptors = self.responseDescriptors;
+    NSArray *thisResponseDescriptors = [ICDRequestCreateDatabase responseDescriptorsWithPath:self.path];
     
     NSString *thisDBName = self.dbName;
     

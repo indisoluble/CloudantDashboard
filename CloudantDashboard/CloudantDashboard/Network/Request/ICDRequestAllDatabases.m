@@ -22,8 +22,6 @@
 
 @interface ICDRequestAllDatabases ()
 
-@property (strong, nonatomic) RKResponseDescriptor *responseDescriptor;
-
 @end
 
 
@@ -36,7 +34,7 @@
     self = [super init];
     if (self)
     {
-        _responseDescriptor = [ICDRequestAllDatabases responseDescriptor];
+        
     }
     
     return self;
@@ -47,7 +45,7 @@
                           completionHandler:(ICDRequestProtocolCompletionHandlerBlockType)completionHandler
 {
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
-    RKResponseDescriptor *thisResponseDescriptor = self.responseDescriptor;
+    RKResponseDescriptor *thisResponseDescriptor = [ICDRequestAllDatabases responseDescriptor];
     
     // Add configuration
     [thisObjectManager addResponseDescriptor:thisResponseDescriptor];

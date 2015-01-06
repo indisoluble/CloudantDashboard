@@ -28,8 +28,6 @@
 @interface ICDRequestCreateDocument ()
 
 @property (strong, nonatomic) NSString *path;
-@property (strong, nonatomic) RKRequestDescriptor *requestDescriptor;
-@property (strong, nonatomic) RKResponseDescriptor *responseDescriptor;
 
 @end
 
@@ -58,8 +56,6 @@
         else
         {
             _path = [NSString stringWithFormat:ICDREQUESTCREATEDOCUMENT_PATH_FORMAT, trimmedDBName];
-            _requestDescriptor = [ICDRequestCreateDocument requestDescriptor];
-            _responseDescriptor = [ICDRequestCreateDocument responseDescriptorForSuccessWithPath:_path];
         }
     }
     
@@ -72,8 +68,8 @@
                           completionHandler:(ICDRequestProtocolCompletionHandlerBlockType)completionHandler
 {
     RKObjectManager *thisObjectManager = (RKObjectManager *)objectManager;
-    RKRequestDescriptor *thisRequestDescriptor = self.requestDescriptor;
-    RKResponseDescriptor *thisResponseDescriptor = self.responseDescriptor;
+    RKRequestDescriptor *thisRequestDescriptor = [ICDRequestCreateDocument requestDescriptor];
+    RKResponseDescriptor *thisResponseDescriptor = [ICDRequestCreateDocument responseDescriptorForSuccessWithPath:self.path];
     
     // Add configuration
     [thisObjectManager addRequestDescriptor:thisRequestDescriptor];
