@@ -8,7 +8,7 @@
 
 #import "ICDControllerDocumentsTVC.h"
 
-#import "ICDControllerDocumentVC.h"
+#import "ICDControllerOneDocumentVC.h"
 
 #import "ICDControllerDocumentsData.h"
 
@@ -92,7 +92,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([sender isKindOfClass:[UITableViewCell class]] &&
-        [segue.destinationViewController isKindOfClass:[ICDControllerDocumentVC class]])
+        [segue.destinationViewController isKindOfClass:[ICDControllerOneDocumentVC class]])
     {
         [self prepareForSegueDocumentVC:segue.destinationViewController withCell:sender];
     }
@@ -258,7 +258,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     }
 }
 
-- (void)prepareForSegueDocumentVC:(ICDControllerDocumentVC *)documentVC
+- (void)prepareForSegueDocumentVC:(ICDControllerOneDocumentVC *)documentVC
                          withCell:(UITableViewCell *)cell
 {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];

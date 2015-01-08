@@ -89,7 +89,7 @@
         <!--Document-->
         <scene sceneID="FOu-kr-OW3">
             <objects>
-                <viewController title="Document" id="FAb-ub-VPK" customClass="ICDControllerDocumentVC" sceneMemberID="viewController">
+                <viewController title="Document" id="FAb-ub-VPK" customClass="ICDControllerOneDocumentVC" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="X9c-Jv-R3W"/>
                         <viewControllerLayoutGuide type="bottom" id="fTz-XB-6wr"/>

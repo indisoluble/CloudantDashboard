@@ -1,5 +1,5 @@
 //
-//  ICDControllerDocumentVC.h
+//  ICDControllerOneDocumentVC.h
 //  CloudantDashboard
 //
 //  Created by Enrique de la Torre (dev) on 23/12/2014.
@@ -14,7 +14,7 @@
 
 
 
-@interface ICDControllerDocumentVC : UIViewController
+@interface ICDControllerOneDocumentVC : UIViewController
 
 - (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
              databaseName:(NSString *)databaseName
