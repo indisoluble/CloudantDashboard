@@ -14,13 +14,13 @@
 
 #import "ICDLog.h"
 
+#import "NSDictionary+CloudantSpecialKeys.h"
+
 
 
 #define ICDREQUESTBULKDOCUMENTS_PATH_FORMAT @"/%@/_bulk_docs"
 
 #define ICDREQUESTBULKDOCUMENTS_PARAMETER_KEY_DOCS  @"docs"
-
-#define ICDREQUESTBULKDOCUMENTS_NUMBEROFDOCS    100
 
 #define ICDREQUESTBULKDOCUMENTS_STATUSCODE_CREATED  201
 
@@ -32,6 +32,7 @@
 @interface ICDRequestBulkDocuments ()
 
 @property (strong, nonatomic) NSString *path;
+@property (strong, nonatomic) NSDictionary *parameters;
 
 @end
 
@@ -42,10 +43,12 @@
 #pragma mark - Init object
 - (id)init
 {
-    return [self initWithDatabaseName:nil];
+    return [self initWithDatabaseName:nil documentData:nil numberOfCopies:0];
 }
 
 - (id)initWithDatabaseName:(NSString *)dbName
+              documentData:(NSDictionary *)docData
+            numberOfCopies:(NSUInteger)numberOfCopies
 {
     self = [super init];
     if (self)
@@ -53,13 +56,18 @@
         NSCharacterSet *whiteSpacesAndNewLines = [NSCharacterSet whitespaceAndNewlineCharacterSet];
         NSString *trimmedDBName = (dbName ? [dbName stringByTrimmingCharactersInSet:whiteSpacesAndNewLines] : nil);
         
-        if (!trimmedDBName || ([trimmedDBName length] == 0))
+        if (!trimmedDBName || ([trimmedDBName length] == 0) ||
+            !docData || [docData containAnyCloudantSpecialKeys] ||
+            (numberOfCopies == 0))
         {
             self = nil;
         }
         else
         {
             _path = [NSString stringWithFormat:ICDREQUESTBULKDOCUMENTS_PATH_FORMAT, trimmedDBName];
+            
+            NSArray *docs = [ICDRequestBulkDocuments arrayWithObject:docData times:numberOfCopies];
+            _parameters = @{ICDREQUESTBULKDOCUMENTS_PARAMETER_KEY_DOCS: docs};
         }
     }
     
@@ -121,10 +129,7 @@
         }
     };
     
-    NSArray *docs = [ICDRequestBulkDocuments arrayWithObject:@{} times:ICDREQUESTBULKDOCUMENTS_NUMBEROFDOCS];
-    NSDictionary *parameters = @{ICDREQUESTBULKDOCUMENTS_PARAMETER_KEY_DOCS: docs};
-
-    [thisObjectManager postObject:nil path:self.path parameters:parameters success:successBlock failure:failureBlock];
+    [thisObjectManager postObject:nil path:self.path parameters:self.parameters success:successBlock failure:failureBlock];
 }
 
 

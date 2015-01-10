@@ -22,6 +22,9 @@
 
 "Document is not a dictionary" = "Document is not a dictionary";
 
+"Copy document" = "Copy document";
+"Set the number of copies" = "Set the number of copies";
+
 "Downloading ..." = "Downloading ...";
 "Saving ..." = "Saving ...";
 
@@ -32,4 +35,4 @@
 "Login" = "Login";
 "Logout" = "Logout";
 
-"Bulk" = "++";
+"Copy" = "Copy";

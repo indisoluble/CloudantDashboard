@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Enrique de la Torre. All rights reserved.
 //
 
+#import <UIAlertView-Blocks/UIAlertView+Blocks.h>
+
 #import "ICDControllerOneDocumentVC.h"
 
 #import "ICDControllerOneDocumentData.h"
@@ -125,7 +127,7 @@
 {
     if (self.highlightedJSON)
     {
-        [self addEditBarButtonItem];
+        [self addRightBarButtonItems];
         
         self.textView.attributedText = self.highlightedJSON;
         
@@ -138,17 +140,33 @@
     self.navigationItem.rightBarButtonItem = nil;
 }
 
-- (void)addEditBarButtonItem
+- (void)addRightBarButtonItems
+{
+    self.navigationItem.rightBarButtonItems = @[[self editBarButtonItem], [self copyBarButtonItem]];
+}
+
+- (UIBarButtonItem *)editBarButtonItem
 {
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit
                                                                           target:self
                                                                           action:@selector(prepareTextViewForEditingJSON)];
-    self.navigationItem.rightBarButtonItem = item;
+    
+    return item;
+}
+
+- (UIBarButtonItem *)copyBarButtonItem
+{
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Copy", @"Copy")
+                                                             style:UIBarButtonItemStylePlain
+                                                            target:self
+                                                            action:@selector(askHowManyTimesDocumentHasToBeCopied)];
+    
+    return item;
 }
 
 - (void)prepareTextViewForEditingJSON
 {
-    [self addSaveBarButtonItem];
+    [self replaceRightBarButtonsWithSaveBarButtonItem];
     
     NSMutableDictionary *dictionary = [self.data.fullDocument dictionaryWithoutCloudantSpecialKeys];
     self.textView.attributedText = [[ICDJSONHighlightFactory jsonHighlight] highlightDictionary:dictionary];
@@ -156,12 +174,54 @@
     self.textView.editable = YES;
 }
 
-- (void)addSaveBarButtonItem
+- (void)askHowManyTimesDocumentHasToBeCopied
+{
+    __block UIAlertView *alertView = nil;
+    __weak ICDControllerOneDocumentVC *weakSelf = self;
+    
+    void (^continueAction)(void) = ^(void)
+    {
+        __strong ICDControllerOneDocumentVC *strongSelf = weakSelf;
+        if (!strongSelf)
+        {
+            return;
+        }
+        
+        UITextField *textField = [alertView textFieldAtIndex:0];
+        NSInteger numberOfCopies = [textField.text integerValue];
+        if (numberOfCopies <= 0)
+        {
+            ICDLogTrace(@"Provided negative value: %li", (long)numberOfCopies);
+            
+            return;
+        }
+        
+        if (strongSelf.delegate)
+        {
+            [strongSelf.delegate icdControllerOneDocumentVC:strongSelf
+                                          didSelectCopyData:strongSelf.data.fullDocument
+                                                      times:numberOfCopies];
+        }
+    };
+    
+    RIButtonItem *continueItem = [RIButtonItem itemWithLabel:NSLocalizedString(@"Continue", @"Continue") action:continueAction];
+    RIButtonItem *cancelItem = [RIButtonItem itemWithLabel:NSLocalizedString(@"Cancel", @"Cancel")];
+    
+    alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Copy document", @"Copy document")
+                                           message:NSLocalizedString(@"Set the number of copies", @"Set the number of copies")
+                                  cancelButtonItem:cancelItem
+                                  otherButtonItems:continueItem, nil];
+    alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+    
+    [alertView show];
+}
+
+- (void)replaceRightBarButtonsWithSaveBarButtonItem
 {
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
                                                                           target:self
                                                                           action:@selector(checkJSONBeforeUpdatingDocument)];
-    self.navigationItem.rightBarButtonItem = item;
+    self.navigationItem.rightBarButtonItems = @[item];
 }
 
 - (void)checkJSONBeforeUpdatingDocument

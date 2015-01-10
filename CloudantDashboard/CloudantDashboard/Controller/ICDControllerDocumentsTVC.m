@@ -12,6 +12,7 @@
 
 #import "ICDControllerDocumentsData.h"
 
+#import "NSDictionary+CloudantSpecialKeys.h"
 #import "NSIndexPath+IndexSetHelper.h"
 #import "UITableViewController+RefreshControlHelper.h"
 
@@ -21,7 +22,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 
 
-@interface ICDControllerDocumentsTVC () <ICDControllerDocumentsDataDelegate>
+@interface ICDControllerDocumentsTVC () <ICDControllerOneDocumentVCDelegate, ICDControllerDocumentsDataDelegate>
 
 @property (strong, nonatomic, readonly) ICDControllerDocumentsData *data;
 
@@ -127,6 +128,17 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 }
 
 
+#pragma mark - ICDControllerOneDocumentVCDelegate methods
+- (void)icdControllerOneDocumentVC:(ICDControllerOneDocumentVC *)vc
+                 didSelectCopyData:(NSDictionary *)data
+                             times:(NSUInteger)numberOfCopies
+{
+    [vc.navigationController popToViewController:self animated:YES];
+    
+    [self.data asyncBulkDocsWithData:[data dictionaryWithoutCloudantSpecialKeys] numberOfCopies:numberOfCopies];
+}
+
+
 #pragma mark - ICDControllerDocumentsDataDelegate methods
 - (void)icdControllerDocumentsDataWillRefreshDocs:(ICDControllerDocumentsData *)data
 {
@@ -218,7 +230,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 
 - (void)addRightBarButtonItems
 {
-    self.navigationItem.rightBarButtonItems = @[[self addBarButtomItem], [self bulkBarButtonItem]];
+    self.navigationItem.rightBarButtonItems = @[[self addBarButtomItem]];
 }
 
 - (UIBarButtonItem *)addBarButtomItem
@@ -226,16 +238,6 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                                                           target:self.data
                                                                           action:@selector(asyncCreateDoc)];
-    
-    return item;
-}
-
-- (UIBarButtonItem *)bulkBarButtonItem
-{
-    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Bulk", @"Bulk")
-                                                             style:UIBarButtonItemStylePlain
-                                                            target:self.data
-                                                            action:@selector(asyncBulkDocs)];
     
     return item;
 }
@@ -264,6 +266,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     ICDModelDocument *document = [self.data documentAtIndex:indexPath.row];
     
+    documentVC.delegate = self;
     [documentVC useNetworkManager:self.data.networkManager
                      databaseName:self.data.databaseNameOrNil
                          document:document];

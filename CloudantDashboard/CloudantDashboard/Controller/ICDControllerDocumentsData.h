@@ -35,7 +35,8 @@
 
 - (BOOL)asyncRefreshDocs;
 - (BOOL)asyncCreateDoc;
-- (BOOL)asyncBulkDocs;
+- (BOOL)asyncBulkDocsWithData:(NSDictionary *)data
+               numberOfCopies:(NSUInteger)numberOfCopies;
 - (BOOL)asyncDeleteDocAtIndex:(NSUInteger)index;
 
 @end

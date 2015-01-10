@@ -14,9 +14,25 @@
 
 
 
+@protocol ICDControllerOneDocumentVCDelegate;
+
+
+
 @interface ICDControllerOneDocumentVC : UIViewController
+
+@property (weak, nonatomic) id<ICDControllerOneDocumentVCDelegate> delegate;
 
 - (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
              databaseName:(NSString *)databaseName
                  document:(ICDModelDocument *)document;
+@end
+
+
+
+@protocol ICDControllerOneDocumentVCDelegate <NSObject>
+
+- (void)icdControllerOneDocumentVC:(ICDControllerOneDocumentVC *)vc
+                 didSelectCopyData:(NSDictionary *)data
+                             times:(NSUInteger)numberOfCopies;
+
 @end

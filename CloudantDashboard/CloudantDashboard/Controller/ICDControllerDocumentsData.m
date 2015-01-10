@@ -210,9 +210,10 @@
     return [self executeRequestCreateDoc];
 }
 
-- (BOOL)asyncBulkDocs
+- (BOOL)asyncBulkDocsWithData:(NSDictionary *)data
+               numberOfCopies:(NSUInteger)numberOfCopies
 {
-    return [self executeRequestBulkDocs];
+    return [self executeRequestBulkDocsWithData:data numberOfCopies:numberOfCopies];
 }
 
 - (BOOL)asyncDeleteDocAtIndex:(NSUInteger)index
@@ -319,9 +320,12 @@
     return [self.networkManager asyncExecuteRequest:requestCreateDoc];
 }
 
-- (BOOL)executeRequestBulkDocs
+- (BOOL)executeRequestBulkDocsWithData:(NSDictionary *)data
+                        numberOfCopies:(NSUInteger)numberOfCopies
 {
-    ICDRequestBulkDocuments *requestBulkDocs = [[ICDRequestBulkDocuments alloc] initWithDatabaseName:self.databaseNameOrNil];
+    ICDRequestBulkDocuments *requestBulkDocs = [[ICDRequestBulkDocuments alloc] initWithDatabaseName:self.databaseNameOrNil
+                                                                                        documentData:data
+                                                                                      numberOfCopies:numberOfCopies];
     if (!requestBulkDocs)
     {
         ICDLogWarning(@"Request not created with database name <%@>. Abort", self.databaseNameOrNil);

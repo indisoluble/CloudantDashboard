@@ -13,6 +13,15 @@
 
 #import "ICDMockRKObjectManager.h"
 
+#import "NSDictionary+CloudantSpecialKeys.h"
+
+
+
+#define ICDREQUESTBULKDOCUMENTSTESTS_DBNAME         @"dbName"
+#define ICDREQUESTBULKDOCUMENTSTESTS_DOCID          @"docId"
+#define ICDREQUESTBULKDOCUMENTSTESTS_DOCREV         @"docRec"
+#define ICDREQUESTBULKDOCUMENTSTESTS_NUMBEROFCOPIES 10
+
 
 
 @interface ICDRequestBulkDocumentsTests : XCTestCase
@@ -33,7 +42,9 @@
     [super setUp];
     
     // Put setup code here. This method is called before the invocation of each test method in the class.
-    self.bulkDocumentsRequest = [[ICDRequestBulkDocuments alloc] initWithDatabaseName:@"dbName"];
+    self.bulkDocumentsRequest = [[ICDRequestBulkDocuments alloc] initWithDatabaseName:ICDREQUESTBULKDOCUMENTSTESTS_DBNAME
+                                                                         documentData:@{}
+                                                                       numberOfCopies:ICDREQUESTBULKDOCUMENTSTESTS_NUMBEROFCOPIES];
     
     self.mockObjectManager = [[ICDMockRKObjectManager alloc] init];
     
@@ -60,20 +71,62 @@
 
 - (void)testInitWithoutADatabaseNameFails
 {
-    XCTAssertNil([[ICDRequestBulkDocuments alloc] initWithDatabaseName:nil],
+    XCTAssertNil([[ICDRequestBulkDocuments alloc] initWithDatabaseName:nil
+                                                          documentData:@{}
+                                                        numberOfCopies:ICDREQUESTBULKDOCUMENTSTESTS_NUMBEROFCOPIES],
                  @"we need a database name to know where to create the documents");
 }
 
 - (void)testInitWithEmptyDatabaseNameFails
 {
-    XCTAssertNil([[ICDRequestBulkDocuments alloc] initWithDatabaseName:@""],
+    XCTAssertNil([[ICDRequestBulkDocuments alloc] initWithDatabaseName:@""
+                                                          documentData:@{}
+                                                        numberOfCopies:ICDREQUESTBULKDOCUMENTSTESTS_NUMBEROFCOPIES],
                  @"An empty name is not a valid database name");
 }
 
 - (void)testInitWithDatabaseNameEqualToSpacesFails
 {
-    XCTAssertNil([[ICDRequestBulkDocuments alloc] initWithDatabaseName:@"  "],
+    XCTAssertNil([[ICDRequestBulkDocuments alloc] initWithDatabaseName:@"  "
+                                                          documentData:@{}
+                                                        numberOfCopies:ICDREQUESTBULKDOCUMENTSTESTS_NUMBEROFCOPIES],
                  @"Only spaces is equal to an empty database name");
+}
+
+- (void)testInitWithoutDocumentDataFails
+{
+    XCTAssertNil([[ICDRequestBulkDocuments alloc] initWithDatabaseName:ICDREQUESTBULKDOCUMENTSTESTS_DBNAME
+                                                          documentData:nil
+                                                        numberOfCopies:ICDREQUESTBULKDOCUMENTSTESTS_NUMBEROFCOPIES],
+                 @"The new documemts have to be created with some data");
+}
+
+- (void)testInitWithADocumentIdInDocumentDataFails
+{
+    NSDictionary *data = @{kNSDictionaryCloudantSpecialKeysDocumentId: ICDREQUESTBULKDOCUMENTSTESTS_DOCID};
+    
+    XCTAssertNil([[ICDRequestBulkDocuments alloc] initWithDatabaseName:ICDREQUESTBULKDOCUMENTSTESTS_DBNAME
+                                                          documentData:data
+                                                        numberOfCopies:ICDREQUESTBULKDOCUMENTSTESTS_NUMBEROFCOPIES],
+                 @"The document ID will be set by the server");
+}
+
+- (void)testInitWithADocumentRevInDocumemtDataFails
+{
+    NSDictionary *data = @{kNSDictionaryCloudantSpecialKeysDocumentRev: ICDREQUESTBULKDOCUMENTSTESTS_DOCID};
+    
+    XCTAssertNil([[ICDRequestBulkDocuments alloc] initWithDatabaseName:ICDREQUESTBULKDOCUMENTSTESTS_DBNAME
+                                                          documentData:data
+                                                        numberOfCopies:ICDREQUESTBULKDOCUMENTSTESTS_NUMBEROFCOPIES],
+                 @"The document revision will be set by the server");
+}
+
+- (void)testInitWithNumberOfCopiesEqualTo0Fails
+{
+    XCTAssertNil([[ICDRequestBulkDocuments alloc] initWithDatabaseName:ICDREQUESTBULKDOCUMENTSTESTS_DBNAME
+                                                          documentData:@{}
+                                                        numberOfCopies:0],
+                 @"At least you have to create one document");
 }
 
 - (void)testExecuteRequestCallCompletionHandlerIfItSucceeds

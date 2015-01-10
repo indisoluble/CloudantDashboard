@@ -17,6 +17,8 @@
 
 @property (weak, nonatomic) id<ICDRequestBulkDocumentsDelegate> delegate;
 
-- (id)initWithDatabaseName:(NSString *)dbName;
+- (id)initWithDatabaseName:(NSString *)dbName
+              documentData:(NSDictionary *)docData
+            numberOfCopies:(NSUInteger)numberOfCopies;
 
 @end
