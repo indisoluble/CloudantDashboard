@@ -2,6 +2,9 @@
 /* Class = "IBUINavigationItem"; title = "Document"; ObjectID = "02U-HK-5Je"; */
 "02U-HK-5Je.title" = "Documento";
 
+/* Class = "IBUINavigationItem"; title = "Options"; ObjectID = "5h7-e6-sO3"; */
+"5h7-e6-sO3.title" = "Opciones";
+
 /* Class = "IBUIViewController"; title = "Document"; ObjectID = "FAb-ub-VPK"; */
 "FAb-ub-VPK.title" = "Documento";
 
@@ -17,11 +20,14 @@
 /* Class = "IBUILabel"; text = "Document Revision"; ObjectID = "cBH-1m-eFb"; */
 "cBH-1m-eFb.text" = "Revisión del documento";
 
-/* Class = "IBUILabel"; text = "Title"; ObjectID = "hJw-0r-f8k"; */
-"hJw-0r-f8k.text" = "Título";
+/* Class = "IBUILabel"; text = "Database name"; ObjectID = "hJw-0r-f8k"; */
+"hJw-0r-f8k.text" = "Nombre de la base de datos";
 
 /* Class = "IBUITableViewController"; title = "Databases"; ObjectID = "ruC-cS-hIP"; */
 "ruC-cS-hIP.title" = "Bases de Datos";
 
-/* Class = "IBUINavigationItem"; title = "Documents"; ObjectID = "siY-iW-qgr"; */
-"siY-iW-qgr.title" = "Documentos";
+/* Class = "IBUINavigationItem"; title = "All Documents"; ObjectID = "siY-iW-qgr"; */
+"siY-iW-qgr.title" = "Todos los documentos";
+
+/* Class = "IBUILabel"; text = "Option"; ObjectID = "uUB-SF-eoc"; */
+"uUB-SF-eoc.text" = "Opción";

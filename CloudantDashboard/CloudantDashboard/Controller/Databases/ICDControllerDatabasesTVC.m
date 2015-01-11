@@ -10,7 +10,7 @@
 
 #import "ICDControllerDatabasesTVC.h"
 
-#import "ICDControllerDocumentsTVC.h"
+#import "ICDControllerOneDatabaseTVC.h"
 
 #import "ICDControllerDatabasesData.h"
 
@@ -20,7 +20,7 @@
 
 
 
-NSString * const kICDDatabasesTVCCellID = @"databaseCell";
+NSString * const kICDControllerDatabasesTVCCellID = @"databaseCell";
 
 
 
@@ -112,9 +112,9 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([sender isKindOfClass:[UITableViewCell class]] &&
-        [segue.destinationViewController isKindOfClass:[ICDControllerDocumentsTVC class]])
+        [segue.destinationViewController isKindOfClass:[ICDControllerOneDatabaseTVC class]])
     {
-        [self prepareForSegueDocumentsVC:segue.destinationViewController withCell:sender];
+        [self prepareForSegueOneDatabaseTVC:segue.destinationViewController withCell:sender];
     }
 }
 
@@ -129,7 +129,8 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
 {
     ICDModelDatabase *database = [self.data databaseAtIndex:indexPath.row];
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kICDDatabasesTVCCellID forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kICDControllerDatabasesTVCCellID
+                                                            forIndexPath:indexPath];
     cell.textLabel.text = database.name;
     
     return cell;
@@ -398,13 +399,13 @@ NSString * const kICDDatabasesTVCCellID = @"databaseCell";
     }
 }
 
-- (void)prepareForSegueDocumentsVC:(ICDControllerDocumentsTVC *)documentVC
-                          withCell:(UITableViewCell *)cell
+- (void)prepareForSegueOneDatabaseTVC:(ICDControllerOneDatabaseTVC *)oneDatabaseTVC
+                             withCell:(UITableViewCell *)cell
 {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     ICDModelDatabase *database = [self.data databaseAtIndex:indexPath.row];
     
-    [documentVC useNetworkManager:self.data.networkManager databaseName:database.name];
+    [oneDatabaseTVC useNetworkManager:self.data.networkManager databaseName:database.name];
 }
 
 @end

@@ -18,7 +18,7 @@
 
 
 
-NSString * const kICDDocumentsTVCCellID = @"documentCell";
+NSString * const kICDControllerDocumentsTVCCellID = @"documentCell";
 
 
 
@@ -110,7 +110,8 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 {
     ICDModelDocument *document = [self.data documentAtIndex:indexPath.row];
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kICDDocumentsTVCCellID forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kICDControllerDocumentsTVCCellID
+                                                            forIndexPath:indexPath];
     cell.textLabel.text = document.documentId;
     cell.detailTextLabel.text = document.documentRev;
     
@@ -202,12 +203,7 @@ NSString * const kICDDocumentsTVCCellID = @"documentCell";
 #pragma mark - Public methods
 - (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
              databaseName:(NSString *)databaseName
-{
-    if (databaseName)
-    {
-        self.title = databaseName;
-    }
-    
+{    
     [self recreateDataWithDatabaseName:databaseName networkManager:networkManager];
     
     if ([self isViewLoaded])
