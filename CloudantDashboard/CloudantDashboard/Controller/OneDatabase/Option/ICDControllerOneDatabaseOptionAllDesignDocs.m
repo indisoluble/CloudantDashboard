@@ -1,24 +1,24 @@
 //
-//  ICDControllerOneDatabaseOptionAllDocs.m
+//  ICDControllerOneDatabaseOptionAllDesignDocs.m
 //  CloudantDashboard
 //
-//  Created by Enrique de la Torre (dev) on 11/01/2015.
+//  Created by Enrique de la Torre (dev) on 15/01/2015.
 //  Copyright (c) 2015 Enrique de la Torre. All rights reserved.
 //
 
-#import "ICDControllerOneDatabaseOptionAllDocs.h"
+#import "ICDControllerOneDatabaseOptionAllDesignDocs.h"
 
-#import "ICDControllerDocumentsTVC.h"
+#import "ICDControllerDesignDocsTVC.h"
 
 #import "ICDControllerOneDatabaseOptionCommon.h"
 
 
 
-#define ICDCONTROLLERONEDATABASEOPTIONALLDOCS_SEGUE @"showAllDocuments"
+#define ICDCONTROLLERONEDATABASEOPTIONALLDOCS_SEGUE @"showAllDesignDocs"
 
 
 
-@interface ICDControllerOneDatabaseOptionAllDocs ()
+@interface ICDControllerOneDatabaseOptionAllDesignDocs ()
 
 @property (strong, nonatomic, readonly) NSString *dbNameOrNil;
 @property (strong, nonatomic, readonly) id<ICDNetworkManagerProtocol> networkManagerOrNil;
@@ -27,7 +27,7 @@
 
 
 
-@implementation ICDControllerOneDatabaseOptionAllDocs
+@implementation ICDControllerOneDatabaseOptionAllDesignDocs
 
 #pragma mark - Init object
 - (id)init
@@ -55,7 +55,7 @@
 {
     UITableViewCell *cell = [ICDControllerOneDatabaseOptionCommon dequeueCommonCellFromTableView:tableView
                                                                                      atIndexPath:indexPath];
-    cell.textLabel.text = NSLocalizedString(@"All Documents", @"All Documents");
+    cell.textLabel.text = NSLocalizedString(@"All Design Docs", @"All Design Docs");
     
     return cell;
 }
@@ -67,9 +67,9 @@
 
 - (void)configureViewController:(UIViewController *)viewController
 {
-    ICDControllerDocumentsTVC *documentsTVC = (ICDControllerDocumentsTVC *)viewController;
+    ICDControllerDesignDocsTVC *designDocsTVC = (ICDControllerDesignDocsTVC *)viewController;
     
-    [documentsTVC useNetworkManager:self.networkManagerOrNil databaseName:self.dbNameOrNil];
+    [designDocsTVC useNetworkManager:self.networkManagerOrNil databaseName:self.dbNameOrNil];
 }
 
 

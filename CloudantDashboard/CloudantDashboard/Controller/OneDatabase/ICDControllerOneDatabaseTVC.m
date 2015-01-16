@@ -9,6 +9,7 @@
 #import "ICDControllerOneDatabaseTVC.h"
 
 #import "ICDControllerOneDatabaseOptionAllDocs.h"
+#import "ICDControllerOneDatabaseOptionAllDesignDocs.h"
 
 
 
@@ -112,7 +113,9 @@
                              databaseName:(NSString *)databaseName
 {
     _options = @[[ICDControllerOneDatabaseOptionAllDocs optionWithDatabaseName:databaseName
-                                                                networkManager:networkManager]];
+                                                                networkManager:networkManager],
+                 [ICDControllerOneDatabaseOptionAllDesignDocs optionWithDatabaseName:databaseName
+                                                                      networkManager:networkManager]];
 }
 
 @end
