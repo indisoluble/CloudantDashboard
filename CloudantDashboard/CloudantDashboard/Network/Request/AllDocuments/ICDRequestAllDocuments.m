@@ -14,6 +14,8 @@
 
 #import "ICDLog.h"
 
+#import "NSObject+ICDShallowDictionary.h"
+
 
 
 #define ICDREQUESTALLDOCUMENTS_JSON_DOCUMENT_KEY_ID     @"id"
@@ -29,6 +31,7 @@
 @property (strong, nonatomic) NSString *dbName;
 
 @property (strong, nonatomic) NSString *path;
+@property (strong, nonatomic) NSDictionary *parameters;
 
 @end
 
@@ -39,10 +42,11 @@
 #pragma mark - Init object
 - (id)init
 {
-    return [self initWithDatabaseName:nil];
+    return [self initWithDatabaseName:nil arguments:nil];
 }
 
 - (id)initWithDatabaseName:(NSString *)dbName
+                 arguments:(ICDRequestAllDocumentsArguments *)argumentsOrNil
 {
     self = [super init];
     if (self)
@@ -59,6 +63,7 @@
             _dbName = trimmedDBName;
             
             _path = [NSString stringWithFormat:ICDREQUESTALLDOCUMENTS_PATH_FORMAT, _dbName];
+            _parameters = (argumentsOrNil ? [argumentsOrNil icdShallowDictionary] : nil);
         }
     }
     
@@ -121,7 +126,7 @@
         }
     };
     
-    [thisObjectManager getObjectsAtPath:self.path parameters:nil success:successBlock failure:failureBlock];
+    [thisObjectManager getObjectsAtPath:self.path parameters:self.parameters success:successBlock failure:failureBlock];
 }
 
 

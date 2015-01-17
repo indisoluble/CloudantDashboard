@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 
 #import "ICDRequestProtocol.h"
+
+#import "ICDRequestAllDocumentsArguments.h"
 #import "ICDRequestAllDocumentsDelegate.h"
 
 
@@ -17,6 +19,7 @@
 
 @property (weak, nonatomic) id<ICDRequestAllDocumentsDelegate> delegate;
 
-- (id)initWithDatabaseName:(NSString *)dbName;
+- (id)initWithDatabaseName:(NSString *)dbName
+                 arguments:(ICDRequestAllDocumentsArguments *)argumentsOrNil;
 
 @end

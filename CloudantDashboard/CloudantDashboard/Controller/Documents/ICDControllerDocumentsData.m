@@ -292,7 +292,8 @@
 
 - (BOOL)executeRequestAllDocs
 {
-    ICDRequestAllDocuments *requestAllDocs = [[ICDRequestAllDocuments alloc] initWithDatabaseName:self.databaseNameOrNil];
+    ICDRequestAllDocuments *requestAllDocs = [[ICDRequestAllDocuments alloc] initWithDatabaseName:self.databaseNameOrNil
+                                                                                        arguments:nil];
     if (!requestAllDocs)
     {
         ICDLogWarning(@"Request not created with database name <%@>. Abort", self.databaseNameOrNil);

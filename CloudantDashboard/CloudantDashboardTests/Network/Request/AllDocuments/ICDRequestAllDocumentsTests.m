@@ -15,6 +15,10 @@
 
 
 
+#define ICDREQUESTALLDOCUMENTSTESTS_DBNAME  @"dbName"
+
+
+
 @interface ICDRequestAllDocumentsTests : XCTestCase
 
 @property (strong, nonatomic) ICDRequestAllDocuments *allDocumentsRequest;
@@ -33,7 +37,8 @@
     [super setUp];
     
     // Put setup code here. This method is called before the invocation of each test method in the class.
-    self.allDocumentsRequest = [[ICDRequestAllDocuments alloc] initWithDatabaseName:@"dbName"];
+    self.allDocumentsRequest = [[ICDRequestAllDocuments alloc] initWithDatabaseName:ICDREQUESTALLDOCUMENTSTESTS_DBNAME
+                                                                          arguments:nil];
     
     self.mockObjectManager = [[ICDMockRKObjectManager alloc] init];
     
@@ -60,20 +65,33 @@
 
 - (void)testInitWithoutADatabaseNameFails
 {
-    XCTAssertNil([[ICDRequestAllDocuments alloc] initWithDatabaseName:nil],
+    XCTAssertNil([[ICDRequestAllDocuments alloc] initWithDatabaseName:nil  arguments:nil],
                  @"Without a name, we can not request the documents in a database");
 }
 
 - (void)testInitWithEmptyDatabaseNameFails
 {
-    XCTAssertNil([[ICDRequestAllDocuments alloc] initWithDatabaseName:@""],
+    XCTAssertNil([[ICDRequestAllDocuments alloc] initWithDatabaseName:@""  arguments:nil],
                  @"An empty name is not a valid databae name");
 }
 
 - (void)testInitWithDatabaseNameEqualToSpacesFails
 {
-    XCTAssertNil([[ICDRequestAllDocuments alloc] initWithDatabaseName:@"  "],
+    XCTAssertNil([[ICDRequestAllDocuments alloc] initWithDatabaseName:@"  "  arguments:nil],
                  @"Only spaces is equal to an empty database name");
+}
+
+- (void)testInitWithoutArgumentsSucceed
+{
+    XCTAssertNotNil(self.allDocumentsRequest, @"No argument is mandatory");
+}
+
+- (void)testInitWithArgumentsEmptySucceed
+{
+    ICDRequestAllDocumentsArguments *arguments = [[ICDRequestAllDocumentsArguments alloc] init];
+    XCTAssertNotNil([[ICDRequestAllDocuments alloc] initWithDatabaseName:ICDREQUESTALLDOCUMENTSTESTS_DBNAME
+                                                               arguments:arguments],
+                    @"No argument is mandatory");
 }
 
 - (void)testExecuteRequestCallCompletionHandlerIfItSucceeds
