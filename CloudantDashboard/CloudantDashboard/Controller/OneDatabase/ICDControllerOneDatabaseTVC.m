@@ -8,14 +8,13 @@
 
 #import "ICDControllerOneDatabaseTVC.h"
 
-#import "ICDControllerOneDatabaseOptionAllDocs.h"
-#import "ICDControllerOneDatabaseOptionAllDesignDocs.h"
+#import "ICDControllerOneDatabaseData.h"
 
 
 
 @interface ICDControllerOneDatabaseTVC ()
 
-@property (strong, nonatomic, readonly) NSArray *options;
+@property (strong, nonatomic, readonly) ICDControllerOneDatabaseData *data;
 
 @end
 
@@ -29,7 +28,7 @@
     self = [super initWithCoder:aDecoder];
     if (self)
     {
-        _options = @[];
+        _data = [[ICDControllerOneDatabaseData alloc] init];
     }
     
     return self;
@@ -70,12 +69,12 @@
 #pragma mark - UITableViewDataSource methods
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.options count];
+    return [self.data numberOfOptions];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    id<ICDControllerOneDatabaseOptionProtocol> oneOption = self.options[indexPath.row];
+    id<ICDControllerOneDatabaseOptionProtocol> oneOption = [self.data optionAtIndex:indexPath.row];
     
     return [oneOption cellForTableView:tableView atIndexPath:indexPath];
 }
@@ -84,7 +83,7 @@
 #pragma mark - UITableViewDelegate methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    id<ICDControllerOneDatabaseOptionProtocol> oneOption = self.options[indexPath.row];
+    id<ICDControllerOneDatabaseOptionProtocol> oneOption = [self.data optionAtIndex:indexPath.row];
     
     [self performSegueWithIdentifier:[oneOption segueIdentifier] sender:oneOption];
 }
@@ -99,7 +98,7 @@
         self.title = databaseName;
     }
     
-    [self recreateOptionsWithNetworkManager:networkManager databaseName:databaseName];
+    [self recreateDataWithNetworkManager:networkManager databaseName:databaseName];
     
     if ([self isViewLoaded])
     {
@@ -109,13 +108,11 @@
 
 
 #pragma mark - Private methods
-- (void)recreateOptionsWithNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
-                             databaseName:(NSString *)databaseName
+- (void)recreateDataWithNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
+                          databaseName:(NSString *)databaseName
 {
-    _options = @[[ICDControllerOneDatabaseOptionAllDocs optionWithDatabaseName:databaseName
-                                                                networkManager:networkManager],
-                 [ICDControllerOneDatabaseOptionAllDesignDocs optionWithDatabaseName:databaseName
-                                                                      networkManager:networkManager]];
+    _data = [[ICDControllerOneDatabaseData alloc] initWithDatabaseName:databaseName
+                                                        networkManager:networkManager];
 }
 
 @end
