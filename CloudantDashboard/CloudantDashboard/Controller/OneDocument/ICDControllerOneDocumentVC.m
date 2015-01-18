@@ -127,7 +127,10 @@
 {
     if (self.highlightedJSON)
     {
-        [self addRightBarButtonItems];
+        if (![self.data.documentOrNil isDesignDoc])
+        {
+            [self addRightBarButtonItems];
+        }
         
         self.textView.attributedText = self.highlightedJSON;
         

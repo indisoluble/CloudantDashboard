@@ -15,10 +15,16 @@
 
 
 
+extern NSString * const kICDModelDocumentDesignDocIdPrefix;
+
+
+
 @interface ICDModelDocument : NSObject
 
 @property (strong, nonatomic) NSString *documentId;
 @property (strong, nonatomic) NSString *documentRev;
+
+- (BOOL)isDesignDoc;
 
 - (NSComparisonResult)compare:(ICDModelDocument *)otherDocument;
 

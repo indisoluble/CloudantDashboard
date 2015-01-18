@@ -8,6 +8,8 @@
 
 #import "ICDControllerDesignDocsTVC.h"
 
+#import "ICDControllerOneDocumentVC.h"
+
 #import "ICDControllerDesignDocsData.h"
 
 #import "UITableViewController+RefreshControlHelper.h"
@@ -56,6 +58,8 @@ NSString * const kICDControllerDesignDocsTVCCellID = @"designDocCell";
 {
     [super viewDidLoad];
     
+    self.clearsSelectionOnViewWillAppear = NO;
+    
     [self customizeUI];
     
     if (self.data.isRefreshingDesignDocs)
@@ -68,8 +72,11 @@ NSString * const kICDControllerDesignDocsTVCCellID = @"designDocCell";
 #pragma mark - Navigation
  - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    if ([sender isKindOfClass:[UITableViewCell class]] &&
+        [segue.destinationViewController isKindOfClass:[ICDControllerOneDocumentVC class]])
+    {
+        [self prepareForSegueDocumentVC:segue.destinationViewController withCell:sender];
+    }
 }
 
 
@@ -155,6 +162,17 @@ NSString * const kICDControllerDesignDocsTVCCellID = @"designDocCell";
     {
         [self.refreshControl endRefreshing];
     }
+}
+
+- (void)prepareForSegueDocumentVC:(ICDControllerOneDocumentVC *)documentVC
+                         withCell:(UITableViewCell *)cell
+{
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    ICDModelDocument *designDoc = [self.data designDocAtIndex:indexPath.row];
+    
+    [documentVC useNetworkManager:self.data.networkManager
+                     databaseName:self.data.databaseNameOrNil
+                         document:designDoc];
 }
 
 - (void)recreateDataWithDatabaseName:(NSString *)databaseName

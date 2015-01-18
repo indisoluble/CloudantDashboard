@@ -84,7 +84,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vdg-Km-QkJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1922" y="55"/>
+            <point key="canvasLocation" x="1890" y="55"/>
         </scene>
         <!--All Design Docs-->
         <scene sceneID="HCN-8u-cbL">
@@ -114,6 +114,9 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="FAb-ub-VPK" kind="show" identifier="showDesignDoc" id="zqo-jL-t3b"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -125,7 +128,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NCr-aX-0Zp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1922" y="789"/>
+            <point key="canvasLocation" x="1890" y="789"/>
         </scene>
         <!--Options-->
         <scene sceneID="tgP-u4-u9V">
@@ -200,7 +203,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NEs-HP-jFW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2694" y="55"/>
+            <point key="canvasLocation" x="2735" y="422"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="zoA-CT-UGL">
@@ -219,4 +222,7 @@
             <point key="canvasLocation" x="-535" y="422"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="zqo-jL-t3b"/>
+    </inferredMetricsTieBreakers>
 </document>

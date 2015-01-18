@@ -8,6 +8,8 @@
 
 #import "ICDRequestAllDocumentsArguments.h"
 
+#import "ICDModelDocument.h"
+
 
 
 @interface ICDRequestAllDocumentsArguments ()
@@ -22,8 +24,8 @@
 + (ICDRequestAllDocumentsArguments *)allDesignDocs
 {
     ICDRequestAllDocumentsArguments *arguments = [[ICDRequestAllDocumentsArguments alloc] init];
-    arguments.startkey = @"\"_design\"";
-    arguments.endkey = @"\"_design0\"";
+    arguments.startkey = [NSString stringWithFormat:@"\"%@\"", kICDModelDocumentDesignDocIdPrefix];
+    arguments.endkey = [NSString stringWithFormat:@"\"%@0\"", kICDModelDocumentDesignDocIdPrefix];
     
     return arguments;
 }
