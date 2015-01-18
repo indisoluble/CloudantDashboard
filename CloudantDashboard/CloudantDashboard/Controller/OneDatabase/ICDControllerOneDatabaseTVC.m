@@ -10,9 +10,11 @@
 
 #import "ICDControllerOneDatabaseData.h"
 
+#import "UITableViewController+RefreshControlHelper.h"
 
 
-@interface ICDControllerOneDatabaseTVC ()
+
+@interface ICDControllerOneDatabaseTVC () <ICDControllerOneDatabaseDataDelegate>
 
 @property (strong, nonatomic, readonly) ICDControllerOneDatabaseData *data;
 
@@ -29,6 +31,7 @@
     if (self)
     {
         _data = [[ICDControllerOneDatabaseData alloc] init];
+        _data.delegate = self;
     }
     
     return self;
@@ -50,6 +53,13 @@
     [super viewDidLoad];
     
     self.clearsSelectionOnViewWillAppear = NO;
+    
+    [self customizeUI];
+    
+    if (self.data.isRefreshingDesignDocs)
+    {
+        [self forceShowRefreshControlAnimation];
+    }
 }
 
 
@@ -85,7 +95,35 @@
 {
     id<ICDControllerOneDatabaseOptionProtocol> oneOption = [self.data optionAtIndex:indexPath.row];
     
-    [self performSegueWithIdentifier:[oneOption segueIdentifier] sender:oneOption];
+    NSString *segueIdentifier = [oneOption segueIdentifier];
+    if (segueIdentifier)
+    {
+        [self performSegueWithIdentifier:segueIdentifier sender:oneOption];
+    }
+}
+
+
+#pragma mark - ICDControllerOneDatabaseDataDelegate methods
+- (void)icdControllerOneDatabaseDataWillRefreshDesignDocs:(ICDControllerOneDatabaseData *)data
+{
+    if ([self isViewLoaded])
+    {
+        [self forceShowRefreshControlAnimation];
+    }
+}
+
+- (void)icdControllerOneDatabaseData:(ICDControllerOneDatabaseData *)data
+      didRefreshDesignDocsWithResult:(BOOL)success
+{
+    if ([self isViewLoaded])
+    {
+        if (success)
+        {
+            [self.tableView reloadData];
+        }
+        
+        [self.refreshControl endRefreshing];
+    }
 }
 
 
@@ -103,16 +141,55 @@
     if ([self isViewLoaded])
     {
         [self.tableView reloadData];
+        
+        [self.refreshControl endRefreshing];
     }
+    
+    [self.data asyncRefreshDesignDocs];
 }
 
 
 #pragma mark - Private methods
+- (void)customizeUI
+{
+    [self addRefreshControl];
+}
+
+- (void)addRefreshControl
+{
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self
+                       action:@selector(executeActionAfterPullingToRefresh)
+             forControlEvents:UIControlEventValueChanged];
+    
+    self.refreshControl = refreshControl;
+}
+
+- (void)executeActionAfterPullingToRefresh
+{
+    if (![self.data asyncRefreshDesignDocs])
+    {
+        [self.refreshControl endRefreshing];
+    }
+}
+
 - (void)recreateDataWithNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
                           databaseName:(NSString *)databaseName
 {
+    [self releaseData];
+    
     _data = [[ICDControllerOneDatabaseData alloc] initWithDatabaseName:databaseName
                                                         networkManager:networkManager];
+    _data.delegate = self;
+}
+
+- (void)releaseData
+{
+    if (_data)
+    {
+        _data.delegate = nil;
+        _data = nil;
+    }
 }
 
 @end

@@ -13,12 +13,32 @@
 
 
 
+@protocol ICDControllerOneDatabaseDataDelegate;
+
+
+
 @interface ICDControllerOneDatabaseData : NSObject
+
+@property (assign, nonatomic, readonly) BOOL isRefreshingDesignDocs;
+
+@property (weak, nonatomic) id<ICDControllerOneDatabaseDataDelegate> delegate;
 
 - (id)initWithDatabaseName:(NSString *)databaseNameOrNil
             networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil;
 
 - (NSInteger)numberOfOptions;
 - (id<ICDControllerOneDatabaseOptionProtocol>)optionAtIndex:(NSUInteger)index;
+
+- (BOOL)asyncRefreshDesignDocs;
+
+@end
+
+
+
+@protocol ICDControllerOneDatabaseDataDelegate <NSObject>
+
+- (void)icdControllerOneDatabaseDataWillRefreshDesignDocs:(ICDControllerOneDatabaseData *)data;
+- (void)icdControllerOneDatabaseData:(ICDControllerOneDatabaseData *)data
+      didRefreshDesignDocsWithResult:(BOOL)success;
 
 @end
