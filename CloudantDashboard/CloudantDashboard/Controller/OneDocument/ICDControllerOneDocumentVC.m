@@ -16,6 +16,7 @@
 
 #import "ICDLog.h"
 
+#import "NSString+CloudantDesignDocId.h"
 #import "NSDictionary+CloudantSpecialKeys.h"
 
 
@@ -127,7 +128,7 @@
 {
     if (self.highlightedJSON)
     {
-        if (![self.data.documentOrNil isDesignDoc])
+        if (![self.data.documentOrNil.documentId isDesignDocId])
         {
             [self addRightBarButtonItems];
         }

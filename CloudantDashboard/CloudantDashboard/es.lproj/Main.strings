@@ -5,6 +5,9 @@
 /* Class = "IBUINavigationItem"; title = "Options"; ObjectID = "5h7-e6-sO3"; */
 "5h7-e6-sO3.title" = "Opciones";
 
+/* Class = "IBUILabel"; text = "View name"; ObjectID = "Ajd-pI-ss4"; */
+"Ajd-pI-ss4.text" = "Nombre de la vista";
+
 /* Class = "IBUIViewController"; title = "Document"; ObjectID = "FAb-ub-VPK"; */
 "FAb-ub-VPK.title" = "Documento";
 
@@ -13,6 +16,9 @@
 
 /* Class = "IBUINavigationItem"; title = "All Design Docs"; ObjectID = "KNk-n5-b2t"; */
 "KNk-n5-b2t.title" = "Todos los documentos de diseño";
+
+/* Class = "IBUINavigationItem"; title = "Views"; ObjectID = "KUX-th-VUr"; */
+"KUX-th-VUr.title" = "Vistas";
 
 /* Class = "IBUILabel"; text = "Design Doc ID"; ObjectID = "KWt-SG-MXS"; */
 "KWt-SG-MXS.text" = "ID del documento de diseño";

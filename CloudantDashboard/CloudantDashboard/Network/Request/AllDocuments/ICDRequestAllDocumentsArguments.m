@@ -8,7 +8,7 @@
 
 #import "ICDRequestAllDocumentsArguments.h"
 
-#import "ICDModelDocument.h"
+#import "NSString+CloudantDesignDocId.h"
 
 
 
@@ -24,8 +24,8 @@
 + (ICDRequestAllDocumentsArguments *)allDesignDocs
 {
     ICDRequestAllDocumentsArguments *arguments = [[ICDRequestAllDocumentsArguments alloc] init];
-    arguments.startkey = [NSString stringWithFormat:@"\"%@\"", kICDModelDocumentDesignDocIdPrefix];
-    arguments.endkey = [NSString stringWithFormat:@"\"%@0\"", kICDModelDocumentDesignDocIdPrefix];
+    arguments.startkey = [NSString stringWithFormat:@"\"%@\"", kNSStringCloudantDesignDocIdPrefix];
+    arguments.endkey = [NSString stringWithFormat:@"\"%@0\"", kNSStringCloudantDesignDocIdPrefix];
     
     return arguments;
 }

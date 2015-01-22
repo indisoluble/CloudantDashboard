@@ -20,7 +20,7 @@
 
 @property (assign, nonatomic) BOOL isRefreshingDesignDocs;
 
-@property (strong, nonatomic) NSMutableArray *allDesignDocs;
+@property (strong, nonatomic) NSArray *allDesignDocs;
 
 @end
 
@@ -45,7 +45,7 @@
         
         _isRefreshingDesignDocs = NO;
         
-        _allDesignDocs = [NSMutableArray array];
+        _allDesignDocs = @[];
     }
     
     return self;
@@ -58,7 +58,7 @@
     self.isRefreshingDesignDocs = NO;
     
     // Update data
-    self.allDesignDocs = [NSMutableArray arrayWithArray:documents];
+    self.allDesignDocs = documents;
     
     // Notify
     if (self.delegate)

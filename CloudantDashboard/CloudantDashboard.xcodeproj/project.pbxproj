@@ -19,7 +19,10 @@
 		FF21D9F01A69BE9100261AB5 /* ICDControllerOneDatabaseOptionCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = FF21D9EF1A69BE9100261AB5 /* ICDControllerOneDatabaseOptionCommon.m */; };
 		FF468FF81A587A8B00D2E1A6 /* ICDNetworkManagerFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = FF468FF71A587A8B00D2E1A6 /* ICDNetworkManagerFactory.m */; };
 		FF468FFB1A587AEF00D2E1A6 /* ICDNetworkManagerDummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FF468FFA1A587AEF00D2E1A6 /* ICDNetworkManagerDummy.m */; };
+		FF60A2C91A6EFB260080BB86 /* ICDControllerDesignDocViewsTVC.m in Sources */ = {isa = PBXBuildFile; fileRef = FF60A2C81A6EFB260080BB86 /* ICDControllerDesignDocViewsTVC.m */; };
 		FF6FEA3A1A49D20400988CD3 /* ICDModelDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6FEA391A49D20400988CD3 /* ICDModelDocument.m */; };
+		FF75C96F1A6F0AD4007EB00F /* ICDControllerDesignDocViewsData.m in Sources */ = {isa = PBXBuildFile; fileRef = FF75C96E1A6F0AD4007EB00F /* ICDControllerDesignDocViewsData.m */; };
+		FF75C9771A6F1021007EB00F /* ICDRequestDesignDoc.m in Sources */ = {isa = PBXBuildFile; fileRef = FF75C9761A6F1021007EB00F /* ICDRequestDesignDoc.m */; };
 		FF86206E1A473A2C00AC68D2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FF86206D1A473A2C00AC68D2 /* main.m */; };
 		FF8620711A473A2C00AC68D2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8620701A473A2C00AC68D2 /* AppDelegate.m */; };
 		FF8620771A473A2C00AC68D2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FF8620751A473A2C00AC68D2 /* Main.storyboard */; };
@@ -33,6 +36,10 @@
 		FF95C1AF1A6C541100AF8702 /* ICDControllerOneDatabaseOptionDesignDoc.m in Sources */ = {isa = PBXBuildFile; fileRef = FF95C1AE1A6C541100AF8702 /* ICDControllerOneDatabaseOptionDesignDoc.m */; };
 		FFA07EA41A4DD08A0092351A /* ICDAuthorizationFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA07EA31A4DD08A0092351A /* ICDAuthorizationFactory.m */; };
 		FFA07EA71A4DD33B0092351A /* ICDAuthorizationKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA07EA61A4DD33B0092351A /* ICDAuthorizationKeychain.m */; };
+		FFB6CB7C1A703E2E00D1EC7F /* ICDRequestDesignDocTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB6CB7B1A703E2E00D1EC7F /* ICDRequestDesignDocTests.m */; };
+		FFB6CB801A70478400D1EC7F /* NSString+CloudantDesignDocId.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB6CB7F1A70478400D1EC7F /* NSString+CloudantDesignDocId.m */; };
+		FFB6CB831A705A0500D1EC7F /* ICDModelDesignDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB6CB821A705A0500D1EC7F /* ICDModelDesignDocument.m */; };
+		FFB6CB861A70608500D1EC7F /* ICDModelDesignDocumentView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB6CB851A70608500D1EC7F /* ICDModelDesignDocumentView.m */; };
 		FFBC78491A6AFE12008FD15D /* ICDRequestResponseValueDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = FFBC78441A6AFE12008FD15D /* ICDRequestResponseValueDictionary.m */; };
 		FFBC784A1A6AFE12008FD15D /* ICDRequestResponseValueError.m in Sources */ = {isa = PBXBuildFile; fileRef = FFBC78461A6AFE12008FD15D /* ICDRequestResponseValueError.m */; };
 		FFBC784B1A6AFE12008FD15D /* ICDRequestResponseValueOk.m in Sources */ = {isa = PBXBuildFile; fileRef = FFBC78481A6AFE12008FD15D /* ICDRequestResponseValueOk.m */; };
@@ -107,14 +114,20 @@
 		FF21D9EB1A69B22500261AB5 /* ICDControllerDesignDocsTVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDControllerDesignDocsTVC.m; sourceTree = "<group>"; };
 		FF21D9EE1A69BE9100261AB5 /* ICDControllerOneDatabaseOptionCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDControllerOneDatabaseOptionCommon.h; sourceTree = "<group>"; };
 		FF21D9EF1A69BE9100261AB5 /* ICDControllerOneDatabaseOptionCommon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDControllerOneDatabaseOptionCommon.m; sourceTree = "<group>"; };
-		FF21D9F61A69C0E200261AB5 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
 		FF468FF51A5879A200D2E1A6 /* ICDNetworkManagerProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDNetworkManagerProtocol.h; sourceTree = "<group>"; };
 		FF468FF61A587A8B00D2E1A6 /* ICDNetworkManagerFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDNetworkManagerFactory.h; sourceTree = "<group>"; };
 		FF468FF71A587A8B00D2E1A6 /* ICDNetworkManagerFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDNetworkManagerFactory.m; sourceTree = "<group>"; };
 		FF468FF91A587AEF00D2E1A6 /* ICDNetworkManagerDummy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDNetworkManagerDummy.h; sourceTree = "<group>"; };
 		FF468FFA1A587AEF00D2E1A6 /* ICDNetworkManagerDummy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDNetworkManagerDummy.m; sourceTree = "<group>"; };
+		FF60A2C71A6EFB260080BB86 /* ICDControllerDesignDocViewsTVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDControllerDesignDocViewsTVC.h; sourceTree = "<group>"; };
+		FF60A2C81A6EFB260080BB86 /* ICDControllerDesignDocViewsTVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDControllerDesignDocViewsTVC.m; sourceTree = "<group>"; };
 		FF6FEA381A49D20400988CD3 /* ICDModelDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDModelDocument.h; sourceTree = "<group>"; };
 		FF6FEA391A49D20400988CD3 /* ICDModelDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDModelDocument.m; sourceTree = "<group>"; };
+		FF75C96D1A6F0AD4007EB00F /* ICDControllerDesignDocViewsData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDControllerDesignDocViewsData.h; sourceTree = "<group>"; };
+		FF75C96E1A6F0AD4007EB00F /* ICDControllerDesignDocViewsData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDControllerDesignDocViewsData.m; sourceTree = "<group>"; };
+		FF75C9731A6F0D22007EB00F /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
+		FF75C9751A6F1021007EB00F /* ICDRequestDesignDoc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestDesignDoc.h; sourceTree = "<group>"; };
+		FF75C9761A6F1021007EB00F /* ICDRequestDesignDoc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestDesignDoc.m; sourceTree = "<group>"; };
 		FF8620681A473A2C00AC68D2 /* CloudantDashboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CloudantDashboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF86206C1A473A2C00AC68D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FF86206D1A473A2C00AC68D2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -144,6 +157,14 @@
 		FFA07EA31A4DD08A0092351A /* ICDAuthorizationFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDAuthorizationFactory.m; sourceTree = "<group>"; };
 		FFA07EA51A4DD33B0092351A /* ICDAuthorizationKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDAuthorizationKeychain.h; sourceTree = "<group>"; };
 		FFA07EA61A4DD33B0092351A /* ICDAuthorizationKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDAuthorizationKeychain.m; sourceTree = "<group>"; };
+		FFB6CB791A703B4000D1EC7F /* ICDRequestDesignDocDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestDesignDocDelegate.h; sourceTree = "<group>"; };
+		FFB6CB7B1A703E2E00D1EC7F /* ICDRequestDesignDocTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestDesignDocTests.m; sourceTree = "<group>"; };
+		FFB6CB7E1A70478400D1EC7F /* NSString+CloudantDesignDocId.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+CloudantDesignDocId.h"; sourceTree = "<group>"; };
+		FFB6CB7F1A70478400D1EC7F /* NSString+CloudantDesignDocId.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+CloudantDesignDocId.m"; sourceTree = "<group>"; };
+		FFB6CB811A705A0500D1EC7F /* ICDModelDesignDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDModelDesignDocument.h; sourceTree = "<group>"; };
+		FFB6CB821A705A0500D1EC7F /* ICDModelDesignDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDModelDesignDocument.m; sourceTree = "<group>"; };
+		FFB6CB841A70608500D1EC7F /* ICDModelDesignDocumentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDModelDesignDocumentView.h; sourceTree = "<group>"; };
+		FFB6CB851A70608500D1EC7F /* ICDModelDesignDocumentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDModelDesignDocumentView.m; sourceTree = "<group>"; };
 		FFBC78431A6AFE12008FD15D /* ICDRequestResponseValueDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestResponseValueDictionary.h; sourceTree = "<group>"; };
 		FFBC78441A6AFE12008FD15D /* ICDRequestResponseValueDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestResponseValueDictionary.m; sourceTree = "<group>"; };
 		FFBC78451A6AFE12008FD15D /* ICDRequestResponseValueError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDRequestResponseValueError.h; sourceTree = "<group>"; };
@@ -266,8 +287,13 @@
 		FF028DBC1A487682008D2561 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				FFB6CB7D1A70470E00D1EC7F /* Category */,
 				FF028DBD1A4876F6008D2561 /* ICDModelDatabase.h */,
 				FF028DBE1A4876F6008D2561 /* ICDModelDatabase.m */,
+				FFB6CB811A705A0500D1EC7F /* ICDModelDesignDocument.h */,
+				FFB6CB821A705A0500D1EC7F /* ICDModelDesignDocument.m */,
+				FFB6CB841A70608500D1EC7F /* ICDModelDesignDocumentView.h */,
+				FFB6CB851A70608500D1EC7F /* ICDModelDesignDocumentView.m */,
 				FF6FEA381A49D20400988CD3 /* ICDModelDocument.h */,
 				FF6FEA391A49D20400988CD3 /* ICDModelDocument.m */,
 			);
@@ -311,6 +337,7 @@
 				FFBC78571A6B00B6008FD15D /* CreateDocument */,
 				FFBC78581A6B00D0008FD15D /* DeleteDatabase */,
 				FFBC78591A6B00F1008FD15D /* DeleteDocument */,
+				FF75C9741A6F0FE5007EB00F /* DesignDoc */,
 				FFBC785A1A6B010D008FD15D /* Document */,
 				FF028DC61A488873008D2561 /* ICDRequestProtocol.h */,
 			);
@@ -397,12 +424,24 @@
 				FF19AF621A5F3C1A00D38083 /* Auxiliar */,
 				FFF84E301A62EC29001BF70D /* Databases */,
 				FF21D9E91A69AFBC00261AB5 /* DesignDocs */,
+				FF60A2C61A6EFA250080BB86 /* DesignDocViews */,
 				FFF84E311A62EC5E001BF70D /* Documents */,
 				FFDE67311A62F6F300383937 /* OneDatabase */,
 				FFF84E321A62EC87001BF70D /* OneDocument */,
 				FF8620751A473A2C00AC68D2 /* Main.storyboard */,
 			);
 			path = Controller;
+			sourceTree = "<group>";
+		};
+		FF60A2C61A6EFA250080BB86 /* DesignDocViews */ = {
+			isa = PBXGroup;
+			children = (
+				FF75C96D1A6F0AD4007EB00F /* ICDControllerDesignDocViewsData.h */,
+				FF75C96E1A6F0AD4007EB00F /* ICDControllerDesignDocViewsData.m */,
+				FF60A2C71A6EFB260080BB86 /* ICDControllerDesignDocViewsTVC.h */,
+				FF60A2C81A6EFB260080BB86 /* ICDControllerDesignDocViewsTVC.m */,
+			);
+			path = DesignDocViews;
 			sourceTree = "<group>";
 		};
 		FF6FEA3B1A49D85000988CD3 /* Request */ = {
@@ -416,6 +455,7 @@
 				FFBC788D1A6B0534008FD15D /* CreateDocument */,
 				FFBC788F1A6B0534008FD15D /* DeleteDatabase */,
 				FFBC78911A6B0534008FD15D /* DeleteDocument */,
+				FFB6CB7A1A703DFB00D1EC7F /* DesignDoc */,
 				FFBC78931A6B0534008FD15D /* Document */,
 			);
 			path = Request;
@@ -428,6 +468,16 @@
 				FFBC78421A6AFD3C008FD15D /* ResponseValue */,
 			);
 			path = Auxiliar;
+			sourceTree = "<group>";
+		};
+		FF75C9741A6F0FE5007EB00F /* DesignDoc */ = {
+			isa = PBXGroup;
+			children = (
+				FF75C9751A6F1021007EB00F /* ICDRequestDesignDoc.h */,
+				FF75C9761A6F1021007EB00F /* ICDRequestDesignDoc.m */,
+				FFB6CB791A703B4000D1EC7F /* ICDRequestDesignDocDelegate.h */,
+			);
+			path = DesignDoc;
 			sourceTree = "<group>";
 		};
 		FF86205F1A473A2C00AC68D2 = {
@@ -551,6 +601,23 @@
 				FF9C0C391A479201001C4EBA /* ICDLog.h */,
 			);
 			path = Log;
+			sourceTree = "<group>";
+		};
+		FFB6CB7A1A703DFB00D1EC7F /* DesignDoc */ = {
+			isa = PBXGroup;
+			children = (
+				FFB6CB7B1A703E2E00D1EC7F /* ICDRequestDesignDocTests.m */,
+			);
+			path = DesignDoc;
+			sourceTree = "<group>";
+		};
+		FFB6CB7D1A70470E00D1EC7F /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				FFB6CB7E1A70478400D1EC7F /* NSString+CloudantDesignDocId.h */,
+				FFB6CB7F1A70478400D1EC7F /* NSString+CloudantDesignDocId.m */,
+			);
+			path = Category;
 			sourceTree = "<group>";
 		};
 		FFBC78421A6AFD3C008FD15D /* ResponseValue */ = {
@@ -999,15 +1066,18 @@
 				FFF84E271A62EB4E001BF70D /* NSIndexPath+IndexSetHelper.m in Sources */,
 				FFBC785F1A6B0392008FD15D /* ICDRequestAllDocuments.m in Sources */,
 				FFBC78521A6AFF73008FD15D /* RKObjectManager+Helper.m in Sources */,
+				FF75C96F1A6F0AD4007EB00F /* ICDControllerDesignDocViewsData.m in Sources */,
 				FF95C1AF1A6C541100AF8702 /* ICDControllerOneDatabaseOptionDesignDoc.m in Sources */,
 				FF21D9EC1A69B22500261AB5 /* ICDControllerDesignDocsTVC.m in Sources */,
 				FFBC787A1A6B03EA008FD15D /* ICDRequestDeleteDatabase.m in Sources */,
 				FF028DCA1A488895008D2561 /* ICDNetworkManager.m in Sources */,
 				FFF84E441A62EEFB001BF70D /* ICDControllerOneDocumentVC.m in Sources */,
 				FFDE67341A62FC9900383937 /* ICDControllerOneDatabaseTVC.m in Sources */,
+				FFB6CB861A70608500D1EC7F /* ICDModelDesignDocumentView.m in Sources */,
 				FFF84E281A62EB4E001BF70D /* UITableViewController+RefreshControlHelper.m in Sources */,
 				FFBC78A61A6B1878008FD15D /* NSObject+ICDShallowDictionary.m in Sources */,
 				FFF84E431A62EEFB001BF70D /* ICDControllerOneDocumentData.m in Sources */,
+				FFB6CB801A70478400D1EC7F /* NSString+CloudantDesignDocId.m in Sources */,
 				FF19AF651A5F3E0F00D38083 /* ICDRequestCustomAddRevision.m in Sources */,
 				FFBC78A01A6B062C008FD15D /* ICDRequestAllDocumentsArguments.m in Sources */,
 				FF8620711A473A2C00AC68D2 /* AppDelegate.m in Sources */,
@@ -1025,13 +1095,16 @@
 				FFBC786A1A6B03B7008FD15D /* ICDRequestAllDatabases.m in Sources */,
 				FFBC78651A6B03AA008FD15D /* ICDRequestAddRevision.m in Sources */,
 				FF95C1AC1A6C46D900AF8702 /* ICDControllerOneDatabaseData.m in Sources */,
+				FF60A2C91A6EFB260080BB86 /* ICDControllerDesignDocViewsTVC.m in Sources */,
 				FFFB5ADE1A6AD7CF00A33E4F /* ICDControllerDesignDocsData.m in Sources */,
 				FFF84E3E1A62EEEF001BF70D /* ICDControllerDocumentsTVC.m in Sources */,
 				FF86206E1A473A2C00AC68D2 /* main.m in Sources */,
 				FFDE67391A630AE000383937 /* ICDControllerOneDatabaseOptionAllDocs.m in Sources */,
 				FF8620961A473FD800AC68D2 /* ICDAuthorizationErrorBuilder.m in Sources */,
 				FFBC78491A6AFE12008FD15D /* ICDRequestResponseValueDictionary.m in Sources */,
+				FFB6CB831A705A0500D1EC7F /* ICDModelDesignDocument.m in Sources */,
 				FF028DE41A48B7FF008D2561 /* ICDNetworkManager+Helper.m in Sources */,
+				FF75C9771A6F1021007EB00F /* ICDRequestDesignDoc.m in Sources */,
 				FFF84E381A62EEE4001BF70D /* ICDControllerDatabasesTVC.m in Sources */,
 				FFF84E2E1A62EBB7001BF70D /* ICDJSONHighlight.m in Sources */,
 				FFA07EA41A4DD08A0092351A /* ICDAuthorizationFactory.m in Sources */,
@@ -1052,6 +1125,7 @@
 				FFBC78981A6B0534008FD15D /* ICDRequestBulkDocumentsTests.m in Sources */,
 				FFBC78991A6B0534008FD15D /* ICDRequestCreateDatabaseTests.m in Sources */,
 				FF8A4F0A1A547564003B29BA /* ICDMockRKMappingResult.m in Sources */,
+				FFB6CB7C1A703E2E00D1EC7F /* ICDRequestDesignDocTests.m in Sources */,
 				FF028DDA1A489691008D2561 /* ICDMockRequest.m in Sources */,
 				FFBC78951A6B0534008FD15D /* ICDRequestAddRevisionTests.m in Sources */,
 				FFDE673E1A63136F00383937 /* ICDControllerOneDatabaseOptionAllDocsTests.m in Sources */,
@@ -1075,7 +1149,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				FF8620761A473A2C00AC68D2 /* Base */,
-				FF21D9F61A69C0E200261AB5 /* es */,
+				FF75C9731A6F0D22007EB00F /* es */,
 			);
 			name = Main.storyboard;
 			path = ..;

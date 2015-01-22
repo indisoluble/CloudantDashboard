@@ -8,7 +8,13 @@
 
 #import "ICDControllerOneDatabaseOptionDesignDoc.h"
 
+#import "ICDControllerDesignDocViewsTVC.h"
+
 #import "ICDControllerOneDatabaseOptionCommon.h"
+
+
+
+#define ICDCONTROLLERONEDATABASEOPTIONDESIGNDOC_SEGUE   @"showDesignDoc"
 
 
 
@@ -61,14 +67,16 @@
 
 - (NSString *)segueIdentifier
 {
-    // TODO
-    
-    return nil;
+    return ICDCONTROLLERONEDATABASEOPTIONDESIGNDOC_SEGUE;
 }
 
 - (void)configureViewController:(UIViewController *)viewController
 {
-    // TODO
+    ICDControllerDesignDocViewsTVC *designDocViewsTVC = (ICDControllerDesignDocViewsTVC *)viewController;
+    
+    [designDocViewsTVC useNetworkManager:self.networkManagerOrNil
+                            databaseName:self.databaseNameOrNil
+                               designDoc:self.designDoc];
 }
 
 

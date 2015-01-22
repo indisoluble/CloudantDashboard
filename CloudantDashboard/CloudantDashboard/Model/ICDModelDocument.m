@@ -10,10 +10,6 @@
 
 
 
-NSString * const kICDModelDocumentDesignDocIdPrefix = @"_design";
-
-
-
 @interface ICDModelDocument ()
 
 @end
@@ -77,11 +73,6 @@ NSString * const kICDModelDocumentDesignDocIdPrefix = @"_design";
 
 
 #pragma mark - Public methods
-- (BOOL)isDesignDoc
-{
-    return [self.documentId hasPrefix:kICDModelDocumentDesignDocIdPrefix];
-}
-
 - (NSComparisonResult)compare:(ICDModelDocument *)otherDocument
 {
     NSComparisonResult result = [self.documentId compare:otherDocument.documentId];
@@ -97,7 +88,7 @@ NSString * const kICDModelDocumentDesignDocIdPrefix = @"_design";
 #pragma mark - Public class methods
 + (instancetype)documentWithId:(NSString *)documentId rev:(NSString *)documentRev
 {
-    ICDModelDocument *document = [[ICDModelDocument alloc] init];
+    ICDModelDocument *document = (ICDModelDocument *)[[[self class] alloc] init];
     document.documentId = documentId;
     document.documentRev = documentRev;
     
