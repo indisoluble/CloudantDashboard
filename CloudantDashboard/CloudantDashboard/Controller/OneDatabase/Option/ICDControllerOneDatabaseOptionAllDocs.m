@@ -10,11 +10,9 @@
 
 #import "ICDControllerDocumentsTVC.h"
 
+#import "ICDControllerDocumentsDataAllDocuments.h"
+
 #import "ICDControllerOneDatabaseOptionCommon.h"
-
-
-
-#define ICDCONTROLLERONEDATABASEOPTIONALLDOCS_SEGUE @"showAllDocuments"
 
 
 
@@ -62,14 +60,16 @@
 
 - (NSString *)segueIdentifier
 {
-    return ICDCONTROLLERONEDATABASEOPTIONALLDOCS_SEGUE;
+    return [ICDControllerOneDatabaseOptionCommon commonSegue];
 }
 
 - (void)configureViewController:(UIViewController *)viewController
 {
     ICDControllerDocumentsTVC *documentsTVC = (ICDControllerDocumentsTVC *)viewController;
+    ICDControllerDocumentsDataAllDocuments *data = [[ICDControllerDocumentsDataAllDocuments alloc] initWithDatabaseName:self.dbNameOrNil
+                                                                                                         networkManager:self.networkManagerOrNil];
     
-    [documentsTVC useNetworkManager:self.networkManagerOrNil databaseName:self.dbNameOrNil];
+    [documentsTVC useData:data];
 }
 
 

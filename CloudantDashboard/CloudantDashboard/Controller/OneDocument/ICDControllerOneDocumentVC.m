@@ -27,6 +27,7 @@
 
 @property (strong, nonatomic, readonly) ICDControllerOneDocumentData *data;
 
+@property (assign, nonatomic) BOOL allowCopy;
 @property (strong, nonatomic) NSAttributedString *highlightedJSON;
 
 @end
@@ -34,6 +35,23 @@
 
 
 @implementation ICDControllerOneDocumentVC
+
+#pragma mark - Init object
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self)
+    {
+        _data = [[ICDControllerOneDocumentData alloc] init];
+        _data.delegate = self;
+        
+        _allowCopy = NO;
+        _highlightedJSON = nil;
+    }
+    
+    return self;
+}
+
 
 #pragma mark - Memory management
 - (void)didReceiveMemoryWarning
@@ -85,7 +103,10 @@
 - (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
              databaseName:(NSString *)databaseName
                  document:(ICDModelDocument *)document
+            allowCopyData:(BOOL)allowCopy
 {
+    self.allowCopy = allowCopy;
+    
     self.highlightedJSON = nil;
     if ([self isViewLoaded])
     {
@@ -128,10 +149,7 @@
 {
     if (self.highlightedJSON)
     {
-        if (![self.data.documentOrNil.documentId isDesignDocId])
-        {
-            [self addRightBarButtonItems];
-        }
+        [self addRightBarButtonItems];
         
         self.textView.attributedText = self.highlightedJSON;
         
@@ -146,7 +164,9 @@
 
 - (void)addRightBarButtonItems
 {
-    self.navigationItem.rightBarButtonItems = @[[self editBarButtonItem], [self copyBarButtonItem]];
+    self.navigationItem.rightBarButtonItems = (self.allowCopy ?
+                                               @[[self editBarButtonItem], [self copyBarButtonItem]] :
+                                               @[[self editBarButtonItem]]);
 }
 
 - (UIBarButtonItem *)editBarButtonItem

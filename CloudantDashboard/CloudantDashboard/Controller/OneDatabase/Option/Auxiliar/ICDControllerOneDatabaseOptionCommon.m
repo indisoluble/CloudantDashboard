@@ -10,6 +10,10 @@
 
 
 
+#define ICDCONTROLLERONEDATABASEOPTIONCOMMON_SEGUE  @"showAllDocuments"
+
+
+
 NSString * const kICDControllerOneDatabaseOptionCellID = @"databaseOptionCell";
 
 
@@ -22,7 +26,12 @@ NSString * const kICDControllerOneDatabaseOptionCellID = @"databaseOptionCell";
 
 @implementation ICDControllerOneDatabaseOptionCommon
 
-#pragma mark - Private class methods
+#pragma mark - Public class methods
++ (NSString *)commonSegue
+{
+    return ICDCONTROLLERONEDATABASEOPTIONCOMMON_SEGUE;
+}
+
 + (UITableViewCell *)dequeueCommonCellFromTableView:(UITableView *)tableView
                                         atIndexPath:(NSIndexPath *)indexPath
 {

@@ -8,13 +8,11 @@
 
 #import "ICDControllerOneDatabaseOptionAllDesignDocs.h"
 
-#import "ICDControllerDesignDocsTVC.h"
+#import "ICDControllerDocumentsTVC.h"
+
+#import "ICDControllerDocumentsDataAllDesignDocs.h"
 
 #import "ICDControllerOneDatabaseOptionCommon.h"
-
-
-
-#define ICDCONTROLLERONEDATABASEOPTIONALLDOCS_SEGUE @"showAllDesignDocs"
 
 
 
@@ -62,14 +60,17 @@
 
 - (NSString *)segueIdentifier
 {
-    return ICDCONTROLLERONEDATABASEOPTIONALLDOCS_SEGUE;
+    return [ICDControllerOneDatabaseOptionCommon commonSegue];
 }
 
 - (void)configureViewController:(UIViewController *)viewController
 {
-    ICDControllerDesignDocsTVC *designDocsTVC = (ICDControllerDesignDocsTVC *)viewController;
+    ICDControllerDocumentsTVC *documentsTVC = (ICDControllerDocumentsTVC *)viewController;
+    ICDControllerDocumentsDataAllDesignDocs *data = [[ICDControllerDocumentsDataAllDesignDocs alloc] initWithDatabaseName:self.dbNameOrNil
+                                                                                                           networkManager:self.networkManagerOrNil];
     
-    [designDocsTVC useNetworkManager:self.networkManagerOrNil databaseName:self.dbNameOrNil];
+    documentsTVC.title = NSLocalizedString(@"All Design Docs", @"All Design Docs");
+    [documentsTVC useData:data];
 }
 
 

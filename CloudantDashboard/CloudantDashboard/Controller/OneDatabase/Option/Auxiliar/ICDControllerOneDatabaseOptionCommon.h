@@ -12,8 +12,8 @@
 
 @interface ICDControllerOneDatabaseOptionCommon : NSObject
 
++ (NSString *)commonSegue;
 + (UITableViewCell *)dequeueCommonCellFromTableView:(UITableView *)tableView
                                         atIndexPath:(NSIndexPath *)indexPath;
-
 
 @end

@@ -14,23 +14,14 @@
 /* Class = "IBUINavigationItem"; title = "Databases"; ObjectID = "G8l-7N-qJq"; */
 "G8l-7N-qJq.title" = "Bases de Datos";
 
-/* Class = "IBUINavigationItem"; title = "All Design Docs"; ObjectID = "KNk-n5-b2t"; */
-"KNk-n5-b2t.title" = "Todos los documentos de diseño";
-
 /* Class = "IBUINavigationItem"; title = "Views"; ObjectID = "KUX-th-VUr"; */
 "KUX-th-VUr.title" = "Vistas";
-
-/* Class = "IBUILabel"; text = "Design Doc ID"; ObjectID = "KWt-SG-MXS"; */
-"KWt-SG-MXS.text" = "ID del documento de diseño";
 
 /* Class = "IBUITableViewController"; title = "Documents"; ObjectID = "L1e-ud-3uE"; */
 "L1e-ud-3uE.title" = "Documentos";
 
 /* Class = "IBUILabel"; text = "Document ID"; ObjectID = "Xm5-55-MPO"; */
 "Xm5-55-MPO.text" = "ID del documento";
-
-/* Class = "IBUILabel"; text = "Design Doc Revision"; ObjectID = "Ydo-2b-x0j"; */
-"Ydo-2b-x0j.text" = "Revisión del documento de diseño";
 
 /* Class = "IBUILabel"; text = "Document Revision"; ObjectID = "cBH-1m-eFb"; */
 "cBH-1m-eFb.text" = "Revisión del documento";

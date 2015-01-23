@@ -24,7 +24,9 @@
 
 - (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
              databaseName:(NSString *)databaseName
-                 document:(ICDModelDocument *)document;
+                 document:(ICDModelDocument *)document
+            allowCopyData:(BOOL)allowCopy;
+
 @end
 
 

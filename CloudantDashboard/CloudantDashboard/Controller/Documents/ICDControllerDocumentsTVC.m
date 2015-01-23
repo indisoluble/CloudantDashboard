@@ -10,10 +10,10 @@
 
 #import "ICDControllerOneDocumentVC.h"
 
-#import "ICDControllerDocumentsData.h"
+#import "ICDControllerDocumentsDataDummy.h"
 
-#import "NSDictionary+CloudantSpecialKeys.h"
 #import "NSIndexPath+IndexSetHelper.h"
+#import "NSDictionary+CloudantSpecialKeys.h"
 #import "UITableViewController+RefreshControlHelper.h"
 
 
@@ -24,7 +24,7 @@ NSString * const kICDControllerDocumentsTVCCellID = @"documentCell";
 
 @interface ICDControllerDocumentsTVC () <ICDControllerOneDocumentVCDelegate, ICDControllerDocumentsDataDelegate>
 
-@property (strong, nonatomic, readonly) ICDControllerDocumentsData *data;
+@property (strong, nonatomic, readonly) id<ICDControllerDocumentsDataProtocol> data;
 
 @property (assign, nonatomic) BOOL isViewVisible;
 
@@ -40,7 +40,7 @@ NSString * const kICDControllerDocumentsTVCCellID = @"documentCell";
     self = [super initWithCoder:aDecoder];
     if (self)
     {
-        _data = [[ICDControllerDocumentsData alloc] init];
+        _data = [[ICDControllerDocumentsDataDummy alloc] init];
         _data.delegate = self;
         
         _isViewVisible = NO;
@@ -66,8 +66,9 @@ NSString * const kICDControllerDocumentsTVCCellID = @"documentCell";
     
     self.clearsSelectionOnViewWillAppear = NO;
     
-    [self customizeUI];
+    [self updateRightBarButtonItemWithData:self.data];
     
+    [self addRefreshControl];
     if (self.data.isRefreshingDocs)
     {
         [self forceShowRefreshControlAnimation];
@@ -120,7 +121,7 @@ NSString * const kICDControllerDocumentsTVCCellID = @"documentCell";
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return YES;
+    return [self.data respondsToSelector:@selector(asyncDeleteDocAtIndex:)];
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -136,12 +137,15 @@ NSString * const kICDControllerDocumentsTVCCellID = @"documentCell";
 {
     [vc.navigationController popToViewController:self animated:YES];
     
-    [self.data asyncBulkDocsWithData:[data dictionaryWithoutCloudantSpecialKeys] numberOfCopies:numberOfCopies];
+    if ([self.data respondsToSelector:@selector(asyncBulkDocsWithData:numberOfCopies:)])
+    {
+        [self.data asyncBulkDocsWithData:[data dictionaryWithoutCloudantSpecialKeys] numberOfCopies:numberOfCopies];
+    }
 }
 
 
 #pragma mark - ICDControllerDocumentsDataDelegate methods
-- (void)icdControllerDocumentsDataWillRefreshDocs:(ICDControllerDocumentsData *)data
+- (void)icdControllerDocumentsDataWillRefreshDocs:(id<ICDControllerDocumentsDataProtocol>)data
 {
     if ([self isViewLoaded])
     {
@@ -149,7 +153,7 @@ NSString * const kICDControllerDocumentsTVCCellID = @"documentCell";
     }
 }
 
-- (void)icdControllerDocumentsData:(ICDControllerDocumentsData *)data
+- (void)icdControllerDocumentsData:(id<ICDControllerDocumentsDataProtocol>)data
           didRefreshDocsWithResult:(BOOL)success
 {
     if ([self isViewLoaded])
@@ -163,7 +167,7 @@ NSString * const kICDControllerDocumentsTVCCellID = @"documentCell";
     }
 }
 
-- (void)icdControllerDocumentsData:(ICDControllerDocumentsData *)data
+- (void)icdControllerDocumentsData:(id<ICDControllerDocumentsDataProtocol>)data
             didCreateDocsAtIndexes:(NSIndexSet *)indexes
 {
     NSArray *indexPaths = [NSIndexPath indexPathsForRows:indexes inSection:0];
@@ -175,7 +179,7 @@ NSString * const kICDControllerDocumentsTVCCellID = @"documentCell";
     }
 }
 
-- (void)icdControllerDocumentsData:(ICDControllerDocumentsData *)data
+- (void)icdControllerDocumentsData:(id<ICDControllerDocumentsDataProtocol>)data
                didUpdateDocAtIndex:(NSUInteger)index
 {
     if ([self isViewLoaded])
@@ -192,7 +196,7 @@ NSString * const kICDControllerDocumentsTVCCellID = @"documentCell";
     }
 }
 
-- (void)icdControllerDocumentsData:(ICDControllerDocumentsData *)data
+- (void)icdControllerDocumentsData:(id<ICDControllerDocumentsDataProtocol>)data
                didDeleteDocAtIndex:(NSUInteger)index
 {
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
@@ -201,16 +205,17 @@ NSString * const kICDControllerDocumentsTVCCellID = @"documentCell";
 
 
 #pragma mark - Public methods
-- (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
-             databaseName:(NSString *)databaseName
-{    
-    [self recreateDataWithDatabaseName:databaseName networkManager:networkManager];
+- (void)useData:(id<ICDControllerDocumentsDataProtocol>)data
+{
+    [self replaceData:data];
     
     if ([self isViewLoaded])
     {
         [self.tableView reloadData];
         
         [self.refreshControl endRefreshing];
+        
+        [self updateRightBarButtonItemWithData:self.data];
     }
     
     [self.data asyncRefreshDocs];
@@ -218,24 +223,18 @@ NSString * const kICDControllerDocumentsTVCCellID = @"documentCell";
 
 
 #pragma mark - Private methods
-- (void)customizeUI
+- (void)updateRightBarButtonItemWithData:(id<ICDControllerDocumentsDataProtocol>)thisData
 {
-    [self addRightBarButtonItems];
-    [self addRefreshControl];
-}
-
-- (void)addRightBarButtonItems
-{
-    self.navigationItem.rightBarButtonItems = @[[self addBarButtomItem]];
-}
-
-- (UIBarButtonItem *)addBarButtomItem
-{
-    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                                                          target:self.data
-                                                                          action:@selector(asyncCreateDoc)];
+    UIBarButtonItem *item = nil;
     
-    return item;
+    if ([thisData respondsToSelector:@selector(asyncCreateDoc)])
+    {
+        item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                                             target:thisData
+                                                             action:@selector(asyncCreateDoc)];
+    }
+    
+    self.navigationItem.rightBarButtonItem = item;
 }
 
 - (void)addRefreshControl
@@ -263,17 +262,19 @@ NSString * const kICDControllerDocumentsTVCCellID = @"documentCell";
     ICDModelDocument *document = [self.data documentAtIndex:indexPath.row];
     
     documentVC.delegate = self;
+    
+#warning self.data could be replaced at any moment after this VC is initializated
     [documentVC useNetworkManager:self.data.networkManager
                      databaseName:self.data.databaseNameOrNil
-                         document:document];
+                         document:document
+                    allowCopyData:[self.data respondsToSelector:@selector(asyncBulkDocsWithData:numberOfCopies:)]];
 }
 
-- (void)recreateDataWithDatabaseName:(NSString *)databaseName
-                      networkManager:(id<ICDNetworkManagerProtocol>)networkManager
+- (void)replaceData:(id<ICDControllerDocumentsDataProtocol>)data
 {
     [self releaseData];
     
-    _data = [[ICDControllerDocumentsData alloc] initWithDatabaseName:databaseName networkManager:networkManager];
+    _data = (data ? data : [[ICDControllerDocumentsDataDummy alloc] init]);
     _data.delegate = self;
 }
 

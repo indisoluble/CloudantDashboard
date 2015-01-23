@@ -1,12 +1,12 @@
 //
-//  ICDControllerDocumentsData.m
+//  ICDControllerDocumentsDataAllDocuments.m
 //  CloudantDashboard
 //
 //  Created by Enrique de la Torre (dev) on 04/01/2015.
 //  Copyright (c) 2015 Enrique de la Torre. All rights reserved.
 //
 
-#import "ICDControllerDocumentsData.h"
+#import "ICDControllerDocumentsDataAllDocuments.h"
 
 #import "ICDNetworkManagerFactory.h"
 
@@ -20,7 +20,7 @@
 
 
 
-@interface ICDControllerDocumentsData ()
+@interface ICDControllerDocumentsDataAllDocuments ()
     <ICDRequestAllDocumentsDelegate,
     ICDRequestCreateDocumentDelegate,
     ICDRequestBulkDocumentsDelegate,
@@ -36,7 +36,14 @@
 
 
 
-@implementation ICDControllerDocumentsData
+@implementation ICDControllerDocumentsDataAllDocuments
+
+#pragma mark - Synthesize properties
+@synthesize databaseNameOrNil = _databaseNameOrNil;
+@synthesize networkManager = _networkManager;
+
+@synthesize delegate = _delegate;
+
 
 #pragma mark - Init object
 - (id)init
@@ -71,7 +78,48 @@
 }
 
 
-#pragma mark - ICDRequestAllDocumentsForADatabaseDelegate methods
+#pragma mark - ICDControllerDocumentsDataProtocol methods
+- (NSInteger)numberOfDocuments
+{
+    return [self.allDocuments count];
+}
+
+- (ICDModelDocument *)documentAtIndex:(NSUInteger)index
+{
+    return (ICDModelDocument *)self.allDocuments[index];
+}
+
+- (BOOL)asyncRefreshDocs
+{
+    self.isRefreshingDocs = [self executeRequestAllDocs];
+    if (self.isRefreshingDocs && self.delegate)
+    {
+        [self.delegate icdControllerDocumentsDataWillRefreshDocs:self];
+    }
+    
+    return self.isRefreshingDocs;
+}
+
+- (BOOL)asyncCreateDoc
+{
+    return [self executeRequestCreateDoc];
+}
+
+- (BOOL)asyncBulkDocsWithData:(NSDictionary *)data
+               numberOfCopies:(NSUInteger)numberOfCopies
+{
+    return [self executeRequestBulkDocsWithData:data numberOfCopies:numberOfCopies];
+}
+
+- (BOOL)asyncDeleteDocAtIndex:(NSUInteger)index
+{
+    ICDModelDocument *document = [self documentAtIndex:index];
+    
+    return [self executeRequestDeleteDocWithData:document];
+}
+
+
+#pragma mark - ICDRequestAllDocumentsDelegate methods
 - (void)requestAllDocuments:(id<ICDRequestProtocol>)request didGetDocuments:(NSArray *)documents
 {
     self.isRefreshingDocs = NO;
@@ -159,7 +207,16 @@
 {
     // Update data
     ICDModelDocument *document = [ICDModelDocument documentWithId:docId rev:docRev];
-    NSUInteger index = [self.allDocuments indexOfObject:document];
+    
+    NSComparator comparator = ^NSComparisonResult(id obj1, id obj2)
+    {
+        return [(ICDModelDocument *)obj1 compare:(ICDModelDocument *)obj2];
+    };
+    
+    NSUInteger index = [self.allDocuments indexOfObject:document
+                                          inSortedRange:NSMakeRange(0, [self.allDocuments count])
+                                                options:kNilOptions
+                                        usingComparator:comparator];
     if (index == NSNotFound)
     {
         ICDLogError(@"Document <%@> is not in the list. Abort", document);
@@ -180,47 +237,6 @@
              didFailWithError:(NSError *)error
 {
     ICDLogError(@"Error: %@", error);
-}
-
-
-#pragma mark - Public methods
-- (NSInteger)numberOfDocuments
-{
-    return [self.allDocuments count];
-}
-
-- (ICDModelDocument *)documentAtIndex:(NSUInteger)index
-{
-    return (ICDModelDocument *)self.allDocuments[index];
-}
-
-- (BOOL)asyncRefreshDocs
-{
-    self.isRefreshingDocs = [self executeRequestAllDocs];
-    if (self.isRefreshingDocs && self.delegate)
-    {
-        [self.delegate icdControllerDocumentsDataWillRefreshDocs:self];
-    }
-    
-    return self.isRefreshingDocs;
-}
-
-- (BOOL)asyncCreateDoc
-{
-    return [self executeRequestCreateDoc];
-}
-
-- (BOOL)asyncBulkDocsWithData:(NSDictionary *)data
-               numberOfCopies:(NSUInteger)numberOfCopies
-{
-    return [self executeRequestBulkDocsWithData:data numberOfCopies:numberOfCopies];
-}
-
-- (BOOL)asyncDeleteDocAtIndex:(NSUInteger)index
-{
-    ICDModelDocument *document = [self documentAtIndex:index];
-    
-    return [self executeRequestDeleteDocWithData:document];
 }
 
 
@@ -261,18 +277,15 @@
     
     ICDModelDocument *revision = notification.userInfo[kICDRequestAddRevisionNotificationDidAddRevisionUserInfoKeyRevision];
     
-    NSUInteger index = [self.allDocuments indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        ICDModelDocument *otherDocument = (ICDModelDocument *)obj;
-        if ([otherDocument.documentId isEqualToString:revision.documentId])
-        {
-            *stop = YES;
-            
-            return YES;
-        }
-        
-        return NO;
-    }];
+    NSComparator comparator = ^NSComparisonResult(id obj1, id obj2)
+    {
+        return [[(ICDModelDocument *)obj1 documentId] compare:[(ICDModelDocument *)obj2 documentId]];
+    };
     
+    NSUInteger index = [self.allDocuments indexOfObject:revision
+                                          inSortedRange:NSMakeRange(0, [self.allDocuments count])
+                                                options:kNilOptions
+                                        usingComparator:comparator];
     if (index == NSNotFound)
     {
         ICDLogWarning(@"No document for this revision: %@", revision);
