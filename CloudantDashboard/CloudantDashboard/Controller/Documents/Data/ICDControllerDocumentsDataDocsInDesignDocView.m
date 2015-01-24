@@ -1,27 +1,30 @@
 //
-//  ICDControllerDocumentsDataAllDesignDocs.m
+//  ICDControllerDocumentsDataDocsInDesignDocView.m
 //  CloudantDashboard
 //
-//  Created by Enrique de la Torre (dev) on 17/01/2015.
+//  Created by Enrique de la Torre (dev) on 24/01/2015.
 //  Copyright (c) 2015 Enrique de la Torre. All rights reserved.
 //
 
-#import "ICDControllerDocumentsDataAllDesignDocs.h"
+#import "ICDControllerDocumentsDataDocsInDesignDocView.h"
 
 #import "ICDNetworkManagerFactory.h"
 
-#import "ICDRequestAllDocuments.h"
+#import "ICDRequestDocsInDesignDocView.h"
 #import "ICDRequestAddRevisionNotification.h"
 
 #import "ICDLog.h"
 
 
 
-@interface ICDControllerDocumentsDataAllDesignDocs () <ICDRequestAllDocumentsDelegate>
+@interface ICDControllerDocumentsDataDocsInDesignDocView () <ICDRequestDocsInDesignDocViewDelegate>
+
+@property (strong, nonatomic, readonly) NSString *designDocIdOrNil;
+@property (strong, nonatomic, readonly) NSString *viewnameOrNil;
 
 @property (assign, nonatomic) BOOL isRefreshingDocs;
 
-@property (strong, nonatomic) NSMutableArray *allDesignDocs;
+@property (strong, nonatomic) NSMutableArray *allDocuments;
 
 @property (assign, nonatomic) BOOL didAddRevisionObserverAdded;
 
@@ -29,7 +32,7 @@
 
 
 
-@implementation ICDControllerDocumentsDataAllDesignDocs
+@implementation ICDControllerDocumentsDataDocsInDesignDocView
 
 #pragma mark - Synthesize properties
 @synthesize databaseNameOrNil = _databaseNameOrNil;
@@ -38,24 +41,28 @@
 @synthesize delegate = _delegate;
 
 
-#pragma mark - Init object
+#pragma mark - Init
 - (id)init
 {
-    return [self initWithDatabaseName:nil networkManager:nil];
+    return [self initWithDatabaseName:nil designDoc:nil designDocView:nil networkManager:nil];
 }
 
 - (id)initWithDatabaseName:(NSString *)databaseNameOrNil
-            networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil
+                 designDoc:(ICDModelDocument *)designDocOrNil
+             designDocView:(ICDModelDesignDocumentView *)designDocViewOrNil
+            networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil;
 {
     self = [super init];
     if (self)
     {
         _databaseNameOrNil = databaseNameOrNil;
+        _designDocIdOrNil = (designDocOrNil ? designDocOrNil.documentId : nil);
+        _viewnameOrNil = (designDocViewOrNil ? designDocViewOrNil.viewname : nil);
         _networkManager = (networkManagerOrNil ? networkManagerOrNil : [ICDNetworkManagerFactory networkManager]);
         
         _isRefreshingDocs = NO;
         
-        _allDesignDocs = [NSMutableArray array];
+        _allDocuments = [NSMutableArray array];
         
         _didAddRevisionObserverAdded = NO;
     }
@@ -74,17 +81,17 @@
 #pragma mark - ICDControllerDocumentsDataProtocol methods
 - (NSInteger)numberOfDocuments
 {
-    return [self.allDesignDocs count];
+    return [self.allDocuments count];
 }
 
 - (ICDModelDocument *)documentAtIndex:(NSUInteger)index
 {
-    return (ICDModelDocument *)self.allDesignDocs[index];
+    return (ICDModelDocument *)self.allDocuments[index];
 }
 
 - (BOOL)asyncRefreshDocs
 {
-    self.isRefreshingDocs = [self executeRequestAllDesignDocs];
+    self.isRefreshingDocs = [self executeRequestDocInDesignView];
     if (self.isRefreshingDocs && self.delegate)
     {
         [self.delegate icdControllerDocumentsDataWillRefreshDocs:self];
@@ -94,16 +101,16 @@
 }
 
 
-#pragma mark - ICDRequestAllDocumentsDelegate methods
-- (void)requestAllDocuments:(id<ICDRequestProtocol>)request didGetDocuments:(NSArray *)documents
+#pragma mark - ICDRequestDocsInDesignDocViewDelegate methods
+- (void)requestDocsInDesignDocView:(id<ICDRequestProtocol>)request didGetDocuments:(NSArray *)documents
 {
     self.isRefreshingDocs = NO;
     
     [self addObserverForDidAddRevisionNotification];
     
     // Update data
-    self.allDesignDocs = [NSMutableArray arrayWithArray:documents];
-    [self.allDesignDocs sortUsingSelector:@selector(compare:)];
+    self.allDocuments = [NSMutableArray arrayWithArray:documents];
+    [self.allDocuments sortUsingSelector:@selector(compare:)];
     
     // Notify
     if (self.delegate)
@@ -112,7 +119,7 @@
     }
 }
 
-- (void)requestAllDocuments:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
+- (void)requestDocsInDesignDocView:(id<ICDRequestProtocol>)request didFailWithError:(NSError *)error
 {
     ICDLogError(@"Error: %@", error);
     
@@ -127,21 +134,21 @@
 
 
 #pragma mark - Private methods
-- (BOOL)executeRequestAllDesignDocs
+- (BOOL)executeRequestDocInDesignView
 {
-    ICDRequestAllDocumentsArguments *arguments = [ICDRequestAllDocumentsArguments allDesignDocs];
-    ICDRequestAllDocuments *requestAllDocs = [[ICDRequestAllDocuments alloc] initWithDatabaseName:self.databaseNameOrNil
-                                                                                        arguments:arguments];
-    if (!requestAllDocs)
+    ICDRequestDocsInDesignDocView *requestDocsInDesignView = [[ICDRequestDocsInDesignDocView alloc] initWithDatabaseName:self.databaseNameOrNil
+                                                                                                             designDocId:self.designDocIdOrNil
+                                                                                                                viewname:self.viewnameOrNil];
+    if (!requestDocsInDesignView)
     {
-        ICDLogWarning(@"Request not created with database name <%@>. Abort", self.databaseNameOrNil);
+        ICDLogWarning(@"Request not created with <%@, %@, %@>. Abort", self.databaseNameOrNil, self.designDocIdOrNil, self.viewnameOrNil);
         
         return NO;
     }
     
-    requestAllDocs.delegate = self;
+    requestDocsInDesignView.delegate = self;
     
-    return [self.networkManager asyncExecuteRequest:requestAllDocs];
+    return [self.networkManager asyncExecuteRequest:requestDocsInDesignView];
 }
 
 - (void)addObserverForDidAddRevisionNotification
@@ -185,10 +192,10 @@
         return [[(ICDModelDocument *)obj1 documentId] compare:[(ICDModelDocument *)obj2 documentId]];
     };
     
-    NSUInteger index = [self.allDesignDocs indexOfObject:revision
-                                           inSortedRange:NSMakeRange(0, [self.allDesignDocs count])
-                                                 options:kNilOptions
-                                         usingComparator:comparator];
+    NSUInteger index = [self.allDocuments indexOfObject:revision
+                                          inSortedRange:NSMakeRange(0, [self.allDocuments count])
+                                                options:kNilOptions
+                                        usingComparator:comparator];
     if (index == NSNotFound)
     {
         ICDLogWarning(@"No document for this revision: %@", revision);
@@ -197,7 +204,7 @@
     }
     
     // Update data
-    [self.allDesignDocs replaceObjectAtIndex:index withObject:revision];
+    [self.allDocuments replaceObjectAtIndex:index withObject:revision];
     
     // Notify
     if (self.delegate)

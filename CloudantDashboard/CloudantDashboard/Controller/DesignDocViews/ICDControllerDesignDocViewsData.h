@@ -21,6 +21,10 @@
 
 @interface ICDControllerDesignDocViewsData : NSObject
 
+@property (strong, nonatomic, readonly) NSString *databaseNameOrNil;
+@property (strong, nonatomic, readonly) ICDModelDocument *designDocOrNil;
+@property (strong, nonatomic, readonly) id<ICDNetworkManagerProtocol> networkManager;
+
 @property (assign, nonatomic, readonly) BOOL isRefreshingDesignDocViews;
 
 @property (weak, nonatomic) id<ICDControllerDesignDocViewsDataDelegate> delegate;

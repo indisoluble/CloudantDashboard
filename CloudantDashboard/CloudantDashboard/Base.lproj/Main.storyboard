@@ -108,6 +108,9 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="L1e-ud-3uE" kind="show" identifier="showDocsInDesignDocView" id="NvW-aO-gUq"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -119,7 +122,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zTA-Wv-yQF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1020" y="1201"/>
+            <point key="canvasLocation" x="1020" y="1197"/>
         </scene>
         <!--Options-->
         <scene sceneID="tgP-u4-u9V">
@@ -213,4 +216,7 @@
             <point key="canvasLocation" x="-535" y="422"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="NvW-aO-gUq"/>
+    </inferredMetricsTieBreakers>
 </document>

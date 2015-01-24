@@ -64,7 +64,7 @@
 
 
 
-#pragma mark - ICDRequestAllDocumentsForADatabaseDelegate methods
+#pragma mark - ICDRequestAllDocumentsDelegate methods
 - (void)requestAllDocuments:(id<ICDRequestProtocol>)request didGetDocuments:(NSArray *)documents
 {
     self.isRefreshingDesignDocs = NO;

@@ -8,7 +8,10 @@
 
 #import "ICDControllerDesignDocViewsTVC.h"
 
+#import "ICDControllerDocumentsTVC.h"
+
 #import "ICDControllerDesignDocViewsData.h"
+#import "ICDControllerDocumentsDataDocsInDesignDocView.h"
 
 #import "UITableViewController+RefreshControlHelper.h"
 
@@ -63,6 +66,17 @@ NSString * const kICDControllerDesignDocViewsTVCCellID = @"designDocViewCell";
     if (self.data.isRefreshingDesignDocViews)
     {
         [self forceShowRefreshControlAnimation];
+    }
+}
+
+
+#pragma mark - Navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([sender isKindOfClass:[UITableViewCell class]] &&
+        [segue.destinationViewController isKindOfClass:[ICDControllerDocumentsTVC class]])
+    {
+        [self prepareForSegueDocumentsTVC:segue.destinationViewController withCell:sender];
     }
 }
 
@@ -154,6 +168,21 @@ NSString * const kICDControllerDesignDocViewsTVCCellID = @"designDocViewCell";
     {
         [self.refreshControl endRefreshing];
     }
+}
+
+- (void)prepareForSegueDocumentsTVC:(ICDControllerDocumentsTVC *)documentsTVC
+                           withCell:(UITableViewCell *)cell
+{
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    ICDModelDesignDocumentView *designDocView = [self.data designDocViewAtIndex:indexPath.row];
+    
+    ICDControllerDocumentsDataDocsInDesignDocView *viewData = [[ICDControllerDocumentsDataDocsInDesignDocView alloc] initWithDatabaseName:self.data.databaseNameOrNil
+                                                                                                                                designDoc:self.data.designDocOrNil
+                                                                                                                            designDocView:designDocView
+                                                                                                                           networkManager:self.data.networkManager];
+    
+    documentsTVC.title = designDocView.viewname;
+    [documentsTVC useData:viewData];
 }
 
 - (void)recreateDataWithDatabaseName:(NSString *)databaseName
