@@ -10,8 +10,6 @@
 
 #import "ICDNetworkManagerProtocol.h"
 
-#import "ICDModelDocument.h"
-
 
 
 @protocol ICDControllerOneDocumentVCDelegate;
@@ -24,7 +22,7 @@
 
 - (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
              databaseName:(NSString *)databaseName
-                 document:(ICDModelDocument *)document
+               documentId:(NSString *)documentId
             allowCopyData:(BOOL)allowCopy;
 
 @end

@@ -10,14 +10,12 @@
 
 #import "ICDNetworkManagerProtocol.h"
 
-#import "ICDModelDocument.h"
-
 
 
 @interface ICDControllerDesignDocViewsTVC : UITableViewController
 
 - (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
              databaseName:(NSString *)databaseName
-                designDoc:(ICDModelDocument *)designDoc;
+              designDocId:(NSString *)designDocId;
 
 @end

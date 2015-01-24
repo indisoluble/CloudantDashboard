@@ -75,7 +75,7 @@
 - (void)icdControllerOneDocumentData:(ICDControllerOneDocumentData *)data
              didGetFullDocWithResult:(BOOL)success
 {
-    self.title = self.data.documentOrNil.documentId;
+    self.title = self.data.documentIdOrNil;
     
     if (success)
     {
@@ -86,7 +86,7 @@
 - (void)icdControllerOneDocumentData:(ICDControllerOneDocumentData *)data
               didUpdateDocWithResult:(BOOL)success
 {
-    self.title = self.data.documentOrNil.documentId;
+    self.title = self.data.documentIdOrNil;
     
     if (success)
     {
@@ -102,7 +102,7 @@
 #pragma mark - Public methods
 - (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
              databaseName:(NSString *)databaseName
-                 document:(ICDModelDocument *)document
+               documentId:(NSString *)documentId
             allowCopyData:(BOOL)allowCopy
 {
     self.allowCopy = allowCopy;
@@ -113,15 +113,15 @@
         [self clearUI];
     }
     
-    [self recreateDataWithNetworkManager:networkManager databaseName:databaseName document:document];
+    [self recreateDataWithNetworkManager:networkManager databaseName:databaseName documentId:documentId];
     
     if ([self.data asyncGetFullDocument])
     {
         self.title = NSLocalizedString(@"Downloading ...", @"Downloading ..");
     }
-    else if (self.data.documentOrNil && self.data.documentOrNil.documentId)
+    else if (self.data.documentIdOrNil)
     {
-        self.title = self.data.documentOrNil.documentId;
+        self.title = self.data.documentIdOrNil;
     }
 }
 
@@ -292,13 +292,13 @@
 
 - (void)recreateDataWithNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
                           databaseName:(NSString *)databaseName
-                              document:(ICDModelDocument *)document
+                            documentId:(NSString *)documentId
 {
     [self releaseData];
     
     _data = [[ICDControllerOneDocumentData alloc] initWithNetworkManager:networkManager
                                                             databaseName:databaseName
-                                                                document:document];
+                                                              documentId:documentId];
     _data.delegate = self;
 }
 

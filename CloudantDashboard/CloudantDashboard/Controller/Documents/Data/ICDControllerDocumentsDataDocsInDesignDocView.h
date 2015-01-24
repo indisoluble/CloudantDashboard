@@ -10,16 +10,13 @@
 
 #import "ICDControllerDocumentsDataProtocol.h"
 
-#import "ICDModelDocument.h"
-#import "ICDModelDesignDocumentView.h"
-
 
 
 @interface ICDControllerDocumentsDataDocsInDesignDocView : NSObject <ICDControllerDocumentsDataProtocol>
 
 - (id)initWithDatabaseName:(NSString *)databaseNameOrNil
-                 designDoc:(ICDModelDocument *)designDocOrNil
-             designDocView:(ICDModelDesignDocumentView *)designDocViewOrNil
+               designDocId:(NSString *)designDocIdOrNil
+                  viewname:(NSString *)viewnameOrNil
             networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil;
 
 @end

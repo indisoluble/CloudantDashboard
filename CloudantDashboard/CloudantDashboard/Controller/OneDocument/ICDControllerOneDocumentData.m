@@ -15,6 +15,8 @@
 
 #import "ICDLog.h"
 
+#import "NSDictionary+CloudantSpecialKeys.h"
+
 
 
 @interface ICDControllerOneDocumentData () <ICDRequestDocumentDelegate, ICDRequestAddRevisionDelegate>
@@ -23,7 +25,8 @@
 
 @property (strong, nonatomic, readonly) NSString *databaseNameOrNil;
 
-@property (strong, nonatomic) ICDModelDocument *documentOrNil;
+@property (strong, nonatomic) NSString *documentIdOrNil;
+@property (strong, nonatomic) NSString *documentRevOrNil;
 @property (strong, nonatomic) NSDictionary *fullDocument;
 
 @property (assign, nonatomic) BOOL requestDocumentOngoing;
@@ -38,12 +41,12 @@
 #pragma mark - Init object
 - (id)init
 {
-    return [self initWithNetworkManager:nil databaseName:nil document:nil];
+    return [self initWithNetworkManager:nil databaseName:nil documentId:nil];
 }
 
 - (id)initWithNetworkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil
                 databaseName:(NSString *)databaseNameOrNil
-                    document:(ICDModelDocument *)documentOrNil
+                  documentId:(NSString *)documentIdOrNil
 {
     self = [super init];
     if (self)
@@ -51,7 +54,8 @@
         _networkManager = (networkManagerOrNil ? networkManagerOrNil : [ICDNetworkManagerFactory networkManager]);
         
         _databaseNameOrNil = databaseNameOrNil;
-        _documentOrNil = documentOrNil;
+        _documentIdOrNil = documentIdOrNil;
+        _documentRevOrNil = nil;
         
         _fullDocument = @{};
         
@@ -68,6 +72,7 @@
 {
     self.requestDocumentOngoing = NO;
     
+    self.documentRevOrNil = (NSString *)[document objectForKey:kNSDictionaryCloudantSpecialKeysDocumentRev];
     self.fullDocument = document;
     
     if (self.delegate)
@@ -94,7 +99,8 @@
 {
     self.requestAddRevisionOngoing = NO;
     
-    self.documentOrNil = revision;
+    self.documentIdOrNil = revision.documentId;
+    self.documentRevOrNil = revision.documentRev;
     self.fullDocument = [(ICDRequestCustomAddRevision *)request docData];
     
     if (self.delegate)
@@ -140,12 +146,11 @@
     }
     
     // Create
-    NSString *documentIdOrNil = (self.documentOrNil ? self.documentOrNil.documentId : nil);
     ICDRequestDocument *requestDocument = [[ICDRequestDocument alloc] initWithDatabaseName:self.databaseNameOrNil
-                                                                                documentId:documentIdOrNil];
+                                                                                documentId:self.documentIdOrNil];
     if (!requestDocument)
     {
-        ICDLogWarning(@"Request not created with dbName <%@> and docId <%@>", self.databaseNameOrNil, documentIdOrNil);
+        ICDLogWarning(@"Request not created with dbName <%@> and docId <%@>", self.databaseNameOrNil, self.documentIdOrNil);
         
         return NO;
     }
@@ -169,16 +174,14 @@
     }
     
     // Create
-    NSString *documentIdOrNil = (self.documentOrNil ? self.documentOrNil.documentId : nil );
-    NSString *documentRevOrNil = (self.documentOrNil ? self.documentOrNil.documentRev : nil);
     ICDRequestCustomAddRevision *requestAddRev = [[ICDRequestCustomAddRevision alloc] initWithDatabaseName:self.databaseNameOrNil
-                                                                                                documentId:documentIdOrNil
-                                                                                               documentRev:documentRevOrNil
+                                                                                                documentId:self.documentIdOrNil
+                                                                                               documentRev:self.documentRevOrNil
                                                                                               documentData:data];
     if (!requestAddRev)
     {
-        ICDLogWarning(@"Request not created with dbName <%@>, document %@ and data <%@>",
-                      self.databaseNameOrNil, self.documentOrNil, data);
+        ICDLogWarning(@"Request not created with dbName <%@>, document <%@, %@> and data <%@>",
+                      self.databaseNameOrNil, self.documentIdOrNil, self.documentRevOrNil, data);
         
         return NO;
     }

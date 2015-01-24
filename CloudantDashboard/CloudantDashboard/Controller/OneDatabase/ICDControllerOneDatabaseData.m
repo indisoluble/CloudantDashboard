@@ -142,9 +142,9 @@
                                                                               networkManager:self.networkManager];
     for (ICDModelDocument *oneDocument in designDocs)
     {
-        [nextOptions addObject:[ICDControllerOneDatabaseOptionDesignDoc optionWithDesignDoc:oneDocument
-                                                                               databaseName:self.databaseNameOrNil
-                                                                             networkManager:self.networkManager]];
+        [nextOptions addObject:[ICDControllerOneDatabaseOptionDesignDoc optionWithDesignDocId:oneDocument.documentId
+                                                                                 databaseName:self.databaseNameOrNil
+                                                                               networkManager:self.networkManager]];
     }
     
     _options = nextOptions;

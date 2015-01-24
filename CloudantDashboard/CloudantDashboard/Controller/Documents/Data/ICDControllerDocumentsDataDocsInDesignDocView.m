@@ -44,20 +44,20 @@
 #pragma mark - Init
 - (id)init
 {
-    return [self initWithDatabaseName:nil designDoc:nil designDocView:nil networkManager:nil];
+    return [self initWithDatabaseName:nil designDocId:nil viewname:nil networkManager:nil];
 }
 
 - (id)initWithDatabaseName:(NSString *)databaseNameOrNil
-                 designDoc:(ICDModelDocument *)designDocOrNil
-             designDocView:(ICDModelDesignDocumentView *)designDocViewOrNil
-            networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil;
+               designDocId:(NSString *)designDocIdOrNil
+                  viewname:(NSString *)viewnameOrNil
+            networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil
 {
     self = [super init];
     if (self)
     {
         _databaseNameOrNil = databaseNameOrNil;
-        _designDocIdOrNil = (designDocOrNil ? designDocOrNil.documentId : nil);
-        _viewnameOrNil = (designDocViewOrNil ? designDocViewOrNil.viewname : nil);
+        _designDocIdOrNil = designDocIdOrNil;
+        _viewnameOrNil = viewnameOrNil;
         _networkManager = (networkManagerOrNil ? networkManagerOrNil : [ICDNetworkManagerFactory networkManager]);
         
         _isRefreshingDocs = NO;

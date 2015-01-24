@@ -126,14 +126,14 @@ NSString * const kICDControllerDesignDocViewsTVCCellID = @"designDocViewCell";
 #pragma mark - Public methods
 - (void)useNetworkManager:(id<ICDNetworkManagerProtocol>)networkManager
              databaseName:(NSString *)databaseName
-                designDoc:(ICDModelDocument *)designDoc
+              designDocId:(NSString *)designDocId
 {
-    if (designDoc)
+    if (designDocId)
     {
-        self.title = designDoc.documentId;
+        self.title = designDocId;
     }
     
-    [self recreateDataWithDatabaseName:databaseName designDoc:designDoc networkManager:networkManager];
+    [self recreateDataWithDatabaseName:databaseName designDocId:designDocId networkManager:networkManager];
     
     if ([self isViewLoaded])
     {
@@ -176,24 +176,28 @@ NSString * const kICDControllerDesignDocViewsTVCCellID = @"designDocViewCell";
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     ICDModelDesignDocumentView *designDocView = [self.data designDocViewAtIndex:indexPath.row];
     
-    ICDControllerDocumentsDataDocsInDesignDocView *viewData = [[ICDControllerDocumentsDataDocsInDesignDocView alloc] initWithDatabaseName:self.data.databaseNameOrNil
-                                                                                                                                designDoc:self.data.designDocOrNil
-                                                                                                                            designDocView:designDocView
-                                                                                                                           networkManager:self.data.networkManager];
+    NSString *databaseOrNil = self.data.databaseNameOrNil;
+    NSString *docIdOrNil = self.data.designDocIdOrNil;
+    NSString *viewnameOrNil = designDocView.viewname;
+    id<ICDNetworkManagerProtocol> manager = self.data.networkManager;
+    ICDControllerDocumentsDataDocsInDesignDocView *viewData = [[ICDControllerDocumentsDataDocsInDesignDocView alloc] initWithDatabaseName:databaseOrNil
+                                                                                                                              designDocId:docIdOrNil
+                                                                                                                                 viewname:viewnameOrNil
+                                                                                                                           networkManager:manager];
     
     documentsTVC.title = designDocView.viewname;
     [documentsTVC useData:viewData];
 }
 
 - (void)recreateDataWithDatabaseName:(NSString *)databaseName
-                           designDoc:(ICDModelDocument *)designDoc
+                         designDocId:(NSString *)designDocId
                       networkManager:(id<ICDNetworkManagerProtocol>)networkManager
 {
     [self releaseData];
     
     _data = [[ICDControllerDesignDocViewsData alloc] initWithNetworkManager:networkManager
                                                                databaseName:databaseName
-                                                                  designDoc:designDoc];
+                                                                designDocId:designDocId];
     _data.delegate = self;
 }
 

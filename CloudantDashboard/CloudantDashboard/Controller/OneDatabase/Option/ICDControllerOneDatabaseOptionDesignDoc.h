@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ICDModelDocument.h"
-
 #import "ICDControllerOneDatabaseOptionProtocol.h"
 #import "ICDNetworkManagerProtocol.h"
 
@@ -17,12 +15,12 @@
 
 @interface ICDControllerOneDatabaseOptionDesignDoc : NSObject <ICDControllerOneDatabaseOptionProtocol>
 
-- (id)initWithDesignDoc:(ICDModelDocument *)designDoc
-           databaseName:(NSString *)databaseNameOrNil
-         networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil;
+- (id)initWithDesignDocId:(NSString *)designDocId
+             databaseName:(NSString *)databaseNameOrNil
+           networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil;
 
-+ (instancetype)optionWithDesignDoc:(ICDModelDocument *)designDoc
-                       databaseName:(NSString *)databaseNameOrNil
-                     networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil;
++ (instancetype)optionWithDesignDocId:(NSString *)designDocId
+                         databaseName:(NSString *)databaseNameOrNil
+                       networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil;
 
 @end

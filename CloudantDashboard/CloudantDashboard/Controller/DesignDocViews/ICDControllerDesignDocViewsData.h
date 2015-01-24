@@ -10,7 +10,6 @@
 
 #import "ICDNetworkManagerProtocol.h"
 
-#import "ICDModelDocument.h"
 #import "ICDModelDesignDocumentView.h"
 
 
@@ -22,7 +21,7 @@
 @interface ICDControllerDesignDocViewsData : NSObject
 
 @property (strong, nonatomic, readonly) NSString *databaseNameOrNil;
-@property (strong, nonatomic, readonly) ICDModelDocument *designDocOrNil;
+@property (strong, nonatomic, readonly) NSString *designDocIdOrNil;
 @property (strong, nonatomic, readonly) id<ICDNetworkManagerProtocol> networkManager;
 
 @property (assign, nonatomic, readonly) BOOL isRefreshingDesignDocViews;
@@ -31,7 +30,7 @@
 
 - (id)initWithNetworkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil
                 databaseName:(NSString *)databaseNameOrNil
-                   designDoc:(ICDModelDocument *)designDocOrNil;
+                 designDocId:(NSString *)designDocIdOrNil;
 
 - (NSInteger)numberOfDesignDocViews;
 - (ICDModelDesignDocumentView *)designDocViewAtIndex:(NSUInteger)index;

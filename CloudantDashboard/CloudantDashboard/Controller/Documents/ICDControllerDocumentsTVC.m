@@ -266,7 +266,7 @@ NSString * const kICDControllerDocumentsTVCCellID = @"documentCell";
 #warning self.data could be replaced at any moment after this VC is initializated
     [documentVC useNetworkManager:self.data.networkManager
                      databaseName:self.data.databaseNameOrNil
-                         document:document
+                       documentId:document.documentId
                     allowCopyData:[self.data respondsToSelector:@selector(asyncBulkDocsWithData:numberOfCopies:)]];
 }
 

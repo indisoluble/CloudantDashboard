@@ -10,8 +10,6 @@
 
 #import "ICDNetworkManagerProtocol.h"
 
-#import "ICDModelDocument.h"
-
 
 
 @protocol ICDControllerOneDocumentDataDelegate;
@@ -20,14 +18,14 @@
 
 @interface ICDControllerOneDocumentData : NSObject
 
-@property (strong, nonatomic, readonly) ICDModelDocument *documentOrNil;
+@property (strong, nonatomic, readonly) NSString *documentIdOrNil;
 @property (strong, nonatomic, readonly) NSDictionary *fullDocument;
 
 @property (weak, nonatomic) id<ICDControllerOneDocumentDataDelegate> delegate;
 
 - (id)initWithNetworkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil
                 databaseName:(NSString *)databaseNameOrNil
-                    document:(ICDModelDocument *)documentOrNil;
+                  documentId:(NSString *)documentIdOrNil;
 
 - (BOOL)asyncGetFullDocument;
 - (BOOL)asyncUpdateDocumentWithData:(NSDictionary *)data;

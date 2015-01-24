@@ -20,8 +20,6 @@
 
 @interface ICDControllerDesignDocViewsData () <ICDRequestDesignDocDelegate>
 
-@property (strong, nonatomic, readonly) NSString *designDocIdOrNil;
-
 @property (assign, nonatomic) BOOL isRefreshingDesignDocViews;
 
 @property (strong, nonatomic) NSArray *allDesignDocViews;
@@ -32,29 +30,22 @@
 
 @implementation ICDControllerDesignDocViewsData
 
-#pragma mark - Synthesize properties
-- (NSString *)designDocIdOrNil
-{
-    return (self.designDocOrNil ? self.designDocOrNil.documentId : nil);
-}
-
-
 #pragma mark - Init object
 - (id)init
 {
-    return [self initWithNetworkManager:nil databaseName:nil designDoc:nil];
+    return [self initWithNetworkManager:nil databaseName:nil designDocId:nil];
 }
 
 - (id)initWithNetworkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil
                 databaseName:(NSString *)databaseNameOrNil
-                   designDoc:(ICDModelDocument *)designDocOrNil
+                 designDocId:(NSString *)designDocIdOrNil
 {
     self = [super init];
     if (self)
     {
         _networkManager = (networkManagerOrNil ? networkManagerOrNil : [ICDNetworkManagerFactory networkManager]);
         _databaseNameOrNil = databaseNameOrNil;
-        _designDocOrNil = designDocOrNil;
+        _designDocIdOrNil = designDocIdOrNil;
         
         _isRefreshingDesignDocViews = NO;
         

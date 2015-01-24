@@ -20,7 +20,7 @@
 
 @interface ICDControllerOneDatabaseOptionDesignDoc ()
 
-@property (strong, nonatomic, readonly) ICDModelDocument *designDoc;
+@property (strong, nonatomic, readonly) NSString *designDocId;
 @property (strong, nonatomic, readonly) NSString *databaseNameOrNil;
 @property (strong, nonatomic, readonly) id<ICDNetworkManagerProtocol> networkManagerOrNil;
 
@@ -31,20 +31,20 @@
 @implementation ICDControllerOneDatabaseOptionDesignDoc
 
 #pragma mark - Init object
-- (id)initWithDesignDoc:(ICDModelDocument *)designDoc
-           databaseName:(NSString *)databaseNameOrNil
-         networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil
+- (id)initWithDesignDocId:(NSString *)designDocId
+             databaseName:(NSString *)databaseNameOrNil
+           networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil
 {
     self = [super init];
     if (self)
     {
-        if (!designDoc)
+        if (!designDocId)
         {
             self = nil;
         }
         else
         {
-            _designDoc = designDoc;
+            _designDocId = designDocId;
             _databaseNameOrNil = databaseNameOrNil;
             _networkManagerOrNil = networkManagerOrNil;
         }
@@ -60,7 +60,7 @@
 {
     UITableViewCell *cell = [ICDControllerOneDatabaseOptionCommon dequeueCommonCellFromTableView:tableView
                                                                                      atIndexPath:indexPath];
-    cell.textLabel.text = self.designDoc.documentId;
+    cell.textLabel.text = self.designDocId;
     
     return cell;
 }
@@ -76,18 +76,18 @@
     
     [designDocViewsTVC useNetworkManager:self.networkManagerOrNil
                             databaseName:self.databaseNameOrNil
-                               designDoc:self.designDoc];
+                             designDocId:self.designDocId];
 }
 
 
 #pragma mark - Public class methods
-+ (instancetype)optionWithDesignDoc:(ICDModelDocument *)designDoc
-                       databaseName:(NSString *)databaseNameOrNil
-                     networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil
++ (instancetype)optionWithDesignDocId:(NSString *)designDocId
+                         databaseName:(NSString *)databaseNameOrNil
+                       networkManager:(id<ICDNetworkManagerProtocol>)networkManagerOrNil
 {
-    return [[[self class] alloc] initWithDesignDoc:designDoc
-                                      databaseName:databaseNameOrNil
-                                    networkManager:networkManagerOrNil];
+    return [[[self class] alloc] initWithDesignDocId:designDocId
+                                        databaseName:databaseNameOrNil
+                                      networkManager:networkManagerOrNil];
 }
 
 @end
