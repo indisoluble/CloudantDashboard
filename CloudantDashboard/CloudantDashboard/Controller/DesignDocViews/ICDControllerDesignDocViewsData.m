@@ -73,8 +73,11 @@
     
     self.allCellCreators = [NSMutableArray arrayWithCapacity:[designDoc.views count]];
     
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:ICDMODELDESIGNDOCUMENTVIEW_PROPERTY_KEY_VIEWNAME ascending:YES];
+    NSArray *sortedViews = [designDoc.views sortedArrayUsingDescriptors:@[sortDescriptor]];
+    
     ICDControllerDesignDocViewsCellCreatorShowDocuments *cellCreator = nil;
-    for (ICDModelDesignDocumentView *oneView in designDoc.views)
+    for (ICDModelDesignDocumentView *oneView in sortedViews)
     {
         cellCreator = [[ICDControllerDesignDocViewsCellCreatorShowDocuments alloc] initWithNetworkManager:self.networkManager
                                                                                              databaseName:self.databaseNameOrNil
