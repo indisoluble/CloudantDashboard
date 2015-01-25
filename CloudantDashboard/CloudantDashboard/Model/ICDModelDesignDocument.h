@@ -10,12 +10,16 @@
 
 
 
-#define ICDMODELDESIGNDOCUMENT_PROPERTY_KEY_VIEWS   @"views"
+#define ICDMODELDESIGNDOCUMENT_PROPERTY_KEY_LANGUAGE    @"language"
+#define ICDMODELDESIGNDOCUMENT_PROPERTY_KEY_VIEWS       @"views"
 
 
 
 @interface ICDModelDesignDocument : ICDModelDocument
 
+@property (strong, nonatomic) NSString *language;
 @property (strong, nonatomic) NSSet *views;
+
+- (BOOL)isASecondaryIndex;
 
 @end

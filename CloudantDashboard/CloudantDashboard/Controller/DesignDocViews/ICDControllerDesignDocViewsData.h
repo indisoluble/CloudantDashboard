@@ -34,6 +34,7 @@
 
 - (NSInteger)numberOfDesignDocViews;
 - (ICDModelDesignDocumentView *)designDocViewAtIndex:(NSUInteger)index;
+- (BOOL)canSelectDesignDocViewAtIndex:(NSUInteger)index;
 
 - (BOOL)asyncRefreshDesignDocViews;
 

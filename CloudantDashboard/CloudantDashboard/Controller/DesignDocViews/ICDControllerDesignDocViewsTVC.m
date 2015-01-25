@@ -99,6 +99,13 @@ NSString * const kICDControllerDesignDocViewsTVCCellID = @"designDocViewCell";
 }
 
 
+#pragma mark - UITableViewDelegate methods
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath;
+{
+    return ([self.data canSelectDesignDocViewAtIndex:indexPath.row] ? indexPath : nil);
+}
+
+
 #pragma mark - ICDControllerDesignDocViewsDataDelegate methods
 - (void)icdControllerDesignDocViewsDataWillRefreshDesignDocViews:(ICDControllerDesignDocViewsData *)data
 {

@@ -23,8 +23,8 @@
 
 #define ICDREQUESTDESIGNDOC_JSON_DESIGNDOC_KEY_ID       @"_id"
 #define ICDREQUESTDESIGNDOC_JSON_DESIGNDOC_KEY_REV      @"_rev"
+#define ICDREQUESTDESIGNDOC_JSON_DESIGNDOC_KEY_LANGUAGE @"language"
 #define ICDREQUESTDESIGNDOC_JSON_DESIGNDOC_KEY_VIEWS    @"views"
-#define ICDREQUESTDESIGNDOC_JSON_DESIGNDOCVIEW_KEY_MAP  @"map"
 
 
 
@@ -147,13 +147,10 @@
     viewMapping.forceCollectionMapping = YES; // RestKit cannot infer this is a collection, so we force it
     [viewMapping addAttributeMappingFromKeyOfRepresentationToAttribute:ICDMODELDESIGNDOCUMENTVIEW_PROPERTY_KEY_VIEWNAME];
     
-    NSString *mapKey = [NSString stringWithFormat:@"{%@}.%@",
-                        ICDMODELDESIGNDOCUMENTVIEW_PROPERTY_KEY_VIEWNAME, ICDREQUESTDESIGNDOC_JSON_DESIGNDOCVIEW_KEY_MAP];
-    [viewMapping addAttributeMappingsFromDictionary:@{mapKey: ICDMODELDESIGNDOCUMENTVIEW_PROPERTY_KEY_MAPFUNCTION}];
-    
     RKObjectMapping *designDocMapping = [RKObjectMapping mappingForClass:[ICDModelDesignDocument class]];
     [designDocMapping addAttributeMappingsFromDictionary:@{ICDREQUESTDESIGNDOC_JSON_DESIGNDOC_KEY_ID: ICDMODELDOCUMENT_PROPERTY_KEY_ID,
-                                                           ICDREQUESTDESIGNDOC_JSON_DESIGNDOC_KEY_REV: ICDMODELDOCUMENT_PROPERTY_KEY_REV}];
+                                                           ICDREQUESTDESIGNDOC_JSON_DESIGNDOC_KEY_REV: ICDMODELDOCUMENT_PROPERTY_KEY_REV,
+                                                           ICDREQUESTDESIGNDOC_JSON_DESIGNDOC_KEY_LANGUAGE: ICDMODELDESIGNDOCUMENT_PROPERTY_KEY_LANGUAGE}];
     [designDocMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:ICDREQUESTDESIGNDOC_JSON_DESIGNDOC_KEY_VIEWS
                                                                                      toKeyPath:ICDMODELDESIGNDOCUMENT_PROPERTY_KEY_VIEWS
                                                                                    withMapping:viewMapping]];

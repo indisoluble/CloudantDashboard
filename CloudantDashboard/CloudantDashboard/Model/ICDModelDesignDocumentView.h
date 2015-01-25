@@ -11,13 +11,11 @@
 
 
 #define ICDMODELDESIGNDOCUMENTVIEW_PROPERTY_KEY_VIEWNAME    @"viewname"
-#define ICDMODELDESIGNDOCUMENTVIEW_PROPERTY_KEY_MAPFUNCTION @"mapFunction"
 
 
 
 @interface ICDModelDesignDocumentView : NSObject
 
 @property (strong, nonatomic) NSString *viewname;
-@property (strong, nonatomic) NSString *mapFunction;
 
 @end

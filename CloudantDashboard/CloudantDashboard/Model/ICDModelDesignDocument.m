@@ -10,6 +10,10 @@
 
 
 
+#define ICDMODELDESIGNDOCUMENT_LANGUAGE_VALUE_JAVASCRIPT    @"javascript"
+
+
+
 @interface ICDModelDesignDocument ()
 
 @end
@@ -19,6 +23,11 @@
 @implementation ICDModelDesignDocument
 
 #pragma mark - Synthesize properties
+- (void)setLanguage:(NSString *)language
+{
+    _language = (language ? language : @"");
+}
+
 - (void)setViews:(NSSet *)views
 {
     _views = (views ? views : [NSSet set]);
@@ -31,6 +40,7 @@
     self = [super init];
     if (self)
     {
+        _language = @"";
         _views = [NSSet set];
     }
     
@@ -41,8 +51,15 @@
 #pragma mark - NSObject methods
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"Design doc <%@, %@> Views <%@>",
-            self.documentId, self.documentRev, self.views];
+    return [NSString stringWithFormat:@"Design doc <%@, %@> Language <%@> Views <%@>",
+            self.documentId, self.documentRev, self.language, self.views];
+}
+
+
+#pragma mark - Public methods
+- (BOOL)isASecondaryIndex
+{
+    return [self.language isEqualToString:ICDMODELDESIGNDOCUMENT_LANGUAGE_VALUE_JAVASCRIPT];
 }
 
 @end

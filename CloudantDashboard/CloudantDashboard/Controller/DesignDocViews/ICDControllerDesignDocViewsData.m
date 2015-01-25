@@ -22,6 +22,7 @@
 
 @property (assign, nonatomic) BOOL isRefreshingDesignDocViews;
 
+@property (assign, nonatomic) BOOL isASecondaryIndex;
 @property (strong, nonatomic) NSArray *allDesignDocViews;
 
 @end
@@ -49,6 +50,7 @@
         
         _isRefreshingDesignDocViews = NO;
         
+        _isASecondaryIndex = NO;
         _allDesignDocViews = @[];
     }
     
@@ -62,6 +64,7 @@
     self.isRefreshingDesignDocViews = NO;
     
     // Update data
+    self.isASecondaryIndex = [designDoc isASecondaryIndex];
     self.allDesignDocViews = [designDoc.views allObjects];
     
     // Notify
@@ -94,6 +97,11 @@
 - (ICDModelDesignDocumentView *)designDocViewAtIndex:(NSUInteger)index
 {
     return (ICDModelDesignDocumentView *)self.allDesignDocViews[index];
+}
+
+- (BOOL)canSelectDesignDocViewAtIndex:(NSUInteger)index
+{
+    return self.isASecondaryIndex;
 }
 
 - (BOOL)asyncRefreshDesignDocViews
