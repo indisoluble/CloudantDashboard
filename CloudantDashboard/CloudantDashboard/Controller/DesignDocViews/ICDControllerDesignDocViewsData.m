@@ -8,11 +8,14 @@
 
 #import "ICDControllerDesignDocViewsData.h"
 
+#import "ICDControllerDesignDocViewsCellCreatorShowDocuments.h"
+
 #import "ICDNetworkManagerFactory.h"
 
 #import "ICDRequestDesignDoc.h"
 
 #import "ICDModelDesignDocument.h"
+#import "ICDModelDesignDocumentView.h"
 
 #import "ICDLog.h"
 
@@ -20,10 +23,13 @@
 
 @interface ICDControllerDesignDocViewsData () <ICDRequestDesignDocDelegate>
 
-@property (assign, nonatomic) BOOL isRefreshingDesignDocViews;
+@property (strong, nonatomic, readonly) NSString *databaseNameOrNil;
+@property (strong, nonatomic, readonly) NSString *designDocIdOrNil;
+@property (strong, nonatomic, readonly) id<ICDNetworkManagerProtocol> networkManager;
 
-@property (assign, nonatomic) BOOL isASecondaryIndex;
-@property (strong, nonatomic) NSArray *allDesignDocViews;
+@property (assign, nonatomic) BOOL isRefreshingCellCreators;
+
+@property (strong, nonatomic) NSMutableArray *allCellCreators;
 
 @end
 
@@ -48,10 +54,9 @@
         _databaseNameOrNil = databaseNameOrNil;
         _designDocIdOrNil = designDocIdOrNil;
         
-        _isRefreshingDesignDocViews = NO;
+        _isRefreshingCellCreators = NO;
         
-        _isASecondaryIndex = NO;
-        _allDesignDocViews = @[];
+        _allCellCreators = [NSMutableArray array];
     }
     
     return self;
@@ -61,16 +66,29 @@
 #pragma mark - ICDRequestDesignDocDelegate methods
 - (void)requestDesignDoc:(id<ICDRequestProtocol>)request didGetDesignDoc:(ICDModelDesignDocument *)designDoc
 {
-    self.isRefreshingDesignDocViews = NO;
+    self.isRefreshingCellCreators = NO;
     
     // Update data
-    self.isASecondaryIndex = [designDoc isASecondaryIndex];
-    self.allDesignDocViews = [designDoc.views allObjects];
+    BOOL isASecondaryIndex = [designDoc isASecondaryIndex];
+    
+    self.allCellCreators = [NSMutableArray arrayWithCapacity:[designDoc.views count]];
+    
+    ICDControllerDesignDocViewsCellCreatorShowDocuments *cellCreator = nil;
+    for (ICDModelDesignDocumentView *oneView in designDoc.views)
+    {
+        cellCreator = [[ICDControllerDesignDocViewsCellCreatorShowDocuments alloc] initWithNetworkManager:self.networkManager
+                                                                                             databaseName:self.databaseNameOrNil
+                                                                                              designDocId:self.designDocIdOrNil
+                                                                                                 viewname:oneView.viewname
+                                                                                           allowSelection:isASecondaryIndex];
+        
+        [self.allCellCreators addObject:cellCreator];
+    }
     
     // Notify
     if (self.delegate)
     {
-        [self.delegate icdControllerDesignDocViewsData:self didRefreshDesignDocViewsWithResult:YES];
+        [self.delegate icdControllerDesignDocViewsData:self didRefreshCellCreatorsWithResult:YES];
     }
 }
 
@@ -78,41 +96,36 @@
 {
     ICDLogError(@"Error: %@", error);
     
-    self.isRefreshingDesignDocViews = NO;
+    self.isRefreshingCellCreators = NO;
     
     // Notify
     if (self.delegate)
     {
-        [self.delegate icdControllerDesignDocViewsData:self didRefreshDesignDocViewsWithResult:NO];
+        [self.delegate icdControllerDesignDocViewsData:self didRefreshCellCreatorsWithResult:NO];
     }
 }
 
 
 #pragma mark - Public methods
-- (NSInteger)numberOfDesignDocViews
+- (NSInteger)numberOfCellCreators
 {
-    return [self.allDesignDocViews count];
+    return [self.allCellCreators count];
 }
 
-- (ICDModelDesignDocumentView *)designDocViewAtIndex:(NSUInteger)index
+- (id<ICDControllerDesignDocViewsCellCreatorProtocol>)cellCreatorAtIndex:(NSUInteger)index
 {
-    return (ICDModelDesignDocumentView *)self.allDesignDocViews[index];
+    return (id<ICDControllerDesignDocViewsCellCreatorProtocol>)self.allCellCreators[index];
 }
 
-- (BOOL)canSelectDesignDocViewAtIndex:(NSUInteger)index
+- (BOOL)asyncRefreshCellCreators
 {
-    return self.isASecondaryIndex;
-}
-
-- (BOOL)asyncRefreshDesignDocViews
-{
-    self.isRefreshingDesignDocViews = [self executeRequestDesignDoc];
-    if (self.isRefreshingDesignDocViews && self.delegate)
+    self.isRefreshingCellCreators = [self executeRequestDesignDoc];
+    if (self.isRefreshingCellCreators && self.delegate)
     {
-        [self.delegate icdControllerDesignDocViewsDataWillRefreshDesignDocViews:self];
+        [self.delegate icdControllerDesignDocViewsDataWillRefreshCellCreators:self];
     }
     
-    return self.isRefreshingDesignDocViews;
+    return self.isRefreshingCellCreators;
 }
 
 

@@ -18,6 +18,7 @@
 		FF21D9F01A69BE9100261AB5 /* ICDControllerOneDatabaseOptionCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = FF21D9EF1A69BE9100261AB5 /* ICDControllerOneDatabaseOptionCommon.m */; };
 		FF3C90EE1A74153100DE6528 /* ICDRequestDocsInDesignDocViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3C90ED1A74153100DE6528 /* ICDRequestDocsInDesignDocViewTests.m */; };
 		FF3C90F11A74292600DE6528 /* ICDControllerDocumentsDataDocsInDesignDocView.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3C90F01A74292600DE6528 /* ICDControllerDocumentsDataDocsInDesignDocView.m */; };
+		FF43CE451A7571B5001D97F7 /* ICDControllerDesignDocViewsCellCreatorShowDocuments.m in Sources */ = {isa = PBXBuildFile; fileRef = FF43CE441A7571B5001D97F7 /* ICDControllerDesignDocViewsCellCreatorShowDocuments.m */; };
 		FF468FF81A587A8B00D2E1A6 /* ICDNetworkManagerFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = FF468FF71A587A8B00D2E1A6 /* ICDNetworkManagerFactory.m */; };
 		FF468FFB1A587AEF00D2E1A6 /* ICDNetworkManagerDummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FF468FFA1A587AEF00D2E1A6 /* ICDNetworkManagerDummy.m */; };
 		FF60A2C91A6EFB260080BB86 /* ICDControllerDesignDocViewsTVC.m in Sources */ = {isa = PBXBuildFile; fileRef = FF60A2C81A6EFB260080BB86 /* ICDControllerDesignDocViewsTVC.m */; };
@@ -118,6 +119,9 @@
 		FF3C90ED1A74153100DE6528 /* ICDRequestDocsInDesignDocViewTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDRequestDocsInDesignDocViewTests.m; sourceTree = "<group>"; };
 		FF3C90EF1A74292600DE6528 /* ICDControllerDocumentsDataDocsInDesignDocView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDControllerDocumentsDataDocsInDesignDocView.h; sourceTree = "<group>"; };
 		FF3C90F01A74292600DE6528 /* ICDControllerDocumentsDataDocsInDesignDocView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDControllerDocumentsDataDocsInDesignDocView.m; sourceTree = "<group>"; };
+		FF43CE421A756FB7001D97F7 /* ICDControllerDesignDocViewsCellCreatorProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDControllerDesignDocViewsCellCreatorProtocol.h; sourceTree = "<group>"; };
+		FF43CE431A7571B5001D97F7 /* ICDControllerDesignDocViewsCellCreatorShowDocuments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDControllerDesignDocViewsCellCreatorShowDocuments.h; sourceTree = "<group>"; };
+		FF43CE441A7571B5001D97F7 /* ICDControllerDesignDocViewsCellCreatorShowDocuments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDControllerDesignDocViewsCellCreatorShowDocuments.m; sourceTree = "<group>"; };
 		FF468FF51A5879A200D2E1A6 /* ICDNetworkManagerProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDNetworkManagerProtocol.h; sourceTree = "<group>"; };
 		FF468FF61A587A8B00D2E1A6 /* ICDNetworkManagerFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICDNetworkManagerFactory.h; sourceTree = "<group>"; };
 		FF468FF71A587A8B00D2E1A6 /* ICDNetworkManagerFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICDNetworkManagerFactory.m; sourceTree = "<group>"; };
@@ -441,9 +445,20 @@
 			path = DocsInDesignDocView;
 			sourceTree = "<group>";
 		};
+		FF43CE411A756F2C001D97F7 /* CellCreator */ = {
+			isa = PBXGroup;
+			children = (
+				FF43CE421A756FB7001D97F7 /* ICDControllerDesignDocViewsCellCreatorProtocol.h */,
+				FF43CE431A7571B5001D97F7 /* ICDControllerDesignDocViewsCellCreatorShowDocuments.h */,
+				FF43CE441A7571B5001D97F7 /* ICDControllerDesignDocViewsCellCreatorShowDocuments.m */,
+			);
+			path = CellCreator;
+			sourceTree = "<group>";
+		};
 		FF60A2C61A6EFA250080BB86 /* DesignDocViews */ = {
 			isa = PBXGroup;
 			children = (
+				FF43CE411A756F2C001D97F7 /* CellCreator */,
 				FF75C96D1A6F0AD4007EB00F /* ICDControllerDesignDocViewsData.h */,
 				FF75C96E1A6F0AD4007EB00F /* ICDControllerDesignDocViewsData.m */,
 				FF60A2C71A6EFB260080BB86 /* ICDControllerDesignDocViewsTVC.h */,
@@ -1128,6 +1143,7 @@
 				FFA07EA71A4DD33B0092351A /* ICDAuthorizationKeychain.m in Sources */,
 				FFBC78721A6B03D1008FD15D /* ICDRequestCreateDatabase.m in Sources */,
 				FFBC786E1A6B03C3008FD15D /* ICDRequestBulkDocuments.m in Sources */,
+				FF43CE451A7571B5001D97F7 /* ICDControllerDesignDocViewsCellCreatorShowDocuments.m in Sources */,
 				FF0F99241A68870400B64872 /* ICDControllerOneDatabaseOptionAllDesignDocs.m in Sources */,
 				FFBC786A1A6B03B7008FD15D /* ICDRequestAllDatabases.m in Sources */,
 				FFBC78651A6B03AA008FD15D /* ICDRequestAddRevision.m in Sources */,

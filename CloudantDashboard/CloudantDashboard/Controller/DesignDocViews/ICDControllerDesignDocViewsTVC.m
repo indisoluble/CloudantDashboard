@@ -8,16 +8,9 @@
 
 #import "ICDControllerDesignDocViewsTVC.h"
 
-#import "ICDControllerDocumentsTVC.h"
-
 #import "ICDControllerDesignDocViewsData.h"
-#import "ICDControllerDocumentsDataDocsInDesignDocView.h"
 
 #import "UITableViewController+RefreshControlHelper.h"
-
-
-
-NSString * const kICDControllerDesignDocViewsTVCCellID = @"designDocViewCell";
 
 
 
@@ -63,7 +56,7 @@ NSString * const kICDControllerDesignDocViewsTVCCellID = @"designDocViewCell";
     
     [self customizeUI];
     
-    if (self.data.isRefreshingDesignDocViews)
+    if (self.data.isRefreshingCellCreators)
     {
         [self forceShowRefreshControlAnimation];
     }
@@ -73,10 +66,12 @@ NSString * const kICDControllerDesignDocViewsTVCCellID = @"designDocViewCell";
 #pragma mark - Navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if ([sender isKindOfClass:[UITableViewCell class]] &&
-        [segue.destinationViewController isKindOfClass:[ICDControllerDocumentsTVC class]])
+    if ([sender isKindOfClass:[UITableViewCell class]])
     {
-        [self prepareForSegueDocumentsTVC:segue.destinationViewController withCell:sender];
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)sender];
+        id<ICDControllerDesignDocViewsCellCreatorProtocol> cellCreator = [self.data cellCreatorAtIndex:indexPath.row];
+        
+        [cellCreator configureViewController:segue.destinationViewController];
     }
 }
 
@@ -84,30 +79,28 @@ NSString * const kICDControllerDesignDocViewsTVCCellID = @"designDocViewCell";
 #pragma mark - UITableViewDataSource methods
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.data numberOfDesignDocViews];
+    return [self.data numberOfCellCreators];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ICDModelDesignDocumentView *designDocView = [self.data designDocViewAtIndex:indexPath.row];
+    id<ICDControllerDesignDocViewsCellCreatorProtocol> cellCreator = [self.data cellCreatorAtIndex:indexPath.row];
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kICDControllerDesignDocViewsTVCCellID
-                                                            forIndexPath:indexPath];
-    cell.textLabel.text = designDocView.viewname;
-    
-    return cell;
+    return [cellCreator cellForTableView:tableView atIndexPath:indexPath];
 }
 
 
 #pragma mark - UITableViewDelegate methods
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath;
 {
-    return ([self.data canSelectDesignDocViewAtIndex:indexPath.row] ? indexPath : nil);
+    id<ICDControllerDesignDocViewsCellCreatorProtocol> cellCreator = [self.data cellCreatorAtIndex:indexPath.row];
+    
+    return ([cellCreator canSelectCell] ? indexPath : nil);
 }
 
 
 #pragma mark - ICDControllerDesignDocViewsDataDelegate methods
-- (void)icdControllerDesignDocViewsDataWillRefreshDesignDocViews:(ICDControllerDesignDocViewsData *)data
+- (void)icdControllerDesignDocViewsDataWillRefreshCellCreators:(ICDControllerDesignDocViewsData *)data
 {
     if ([self isViewLoaded])
     {
@@ -116,7 +109,7 @@ NSString * const kICDControllerDesignDocViewsTVCCellID = @"designDocViewCell";
 }
 
 - (void)icdControllerDesignDocViewsData:(ICDControllerDesignDocViewsData *)data
-     didRefreshDesignDocViewsWithResult:(BOOL)success
+       didRefreshCellCreatorsWithResult:(BOOL)success
 {
     if ([self isViewLoaded])
     {
@@ -149,7 +142,7 @@ NSString * const kICDControllerDesignDocViewsTVCCellID = @"designDocViewCell";
         [self.refreshControl endRefreshing];
     }
     
-    [self.data asyncRefreshDesignDocViews];
+    [self.data asyncRefreshCellCreators];
 }
 
 
@@ -171,29 +164,10 @@ NSString * const kICDControllerDesignDocViewsTVCCellID = @"designDocViewCell";
 
 - (void)executeActionAfterPullingToRefresh
 {
-    if (![self.data asyncRefreshDesignDocViews])
+    if (![self.data asyncRefreshCellCreators])
     {
         [self.refreshControl endRefreshing];
     }
-}
-
-- (void)prepareForSegueDocumentsTVC:(ICDControllerDocumentsTVC *)documentsTVC
-                           withCell:(UITableViewCell *)cell
-{
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    ICDModelDesignDocumentView *designDocView = [self.data designDocViewAtIndex:indexPath.row];
-    
-    NSString *databaseOrNil = self.data.databaseNameOrNil;
-    NSString *docIdOrNil = self.data.designDocIdOrNil;
-    NSString *viewnameOrNil = designDocView.viewname;
-    id<ICDNetworkManagerProtocol> manager = self.data.networkManager;
-    ICDControllerDocumentsDataDocsInDesignDocView *viewData = [[ICDControllerDocumentsDataDocsInDesignDocView alloc] initWithDatabaseName:databaseOrNil
-                                                                                                                              designDocId:docIdOrNil
-                                                                                                                                 viewname:viewnameOrNil
-                                                                                                                           networkManager:manager];
-    
-    documentsTVC.title = designDocView.viewname;
-    [documentsTVC useData:viewData];
 }
 
 - (void)recreateDataWithDatabaseName:(NSString *)databaseName

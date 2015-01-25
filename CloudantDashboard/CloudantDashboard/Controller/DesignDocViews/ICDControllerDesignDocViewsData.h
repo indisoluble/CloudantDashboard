@@ -10,7 +10,7 @@
 
 #import "ICDNetworkManagerProtocol.h"
 
-#import "ICDModelDesignDocumentView.h"
+#import "ICDControllerDesignDocViewsCellCreatorProtocol.h"
 
 
 
@@ -20,11 +20,7 @@
 
 @interface ICDControllerDesignDocViewsData : NSObject
 
-@property (strong, nonatomic, readonly) NSString *databaseNameOrNil;
-@property (strong, nonatomic, readonly) NSString *designDocIdOrNil;
-@property (strong, nonatomic, readonly) id<ICDNetworkManagerProtocol> networkManager;
-
-@property (assign, nonatomic, readonly) BOOL isRefreshingDesignDocViews;
+@property (assign, nonatomic, readonly) BOOL isRefreshingCellCreators;
 
 @property (weak, nonatomic) id<ICDControllerDesignDocViewsDataDelegate> delegate;
 
@@ -32,11 +28,10 @@
                 databaseName:(NSString *)databaseNameOrNil
                  designDocId:(NSString *)designDocIdOrNil;
 
-- (NSInteger)numberOfDesignDocViews;
-- (ICDModelDesignDocumentView *)designDocViewAtIndex:(NSUInteger)index;
-- (BOOL)canSelectDesignDocViewAtIndex:(NSUInteger)index;
+- (NSInteger)numberOfCellCreators;
+- (id<ICDControllerDesignDocViewsCellCreatorProtocol>)cellCreatorAtIndex:(NSUInteger)index;
 
-- (BOOL)asyncRefreshDesignDocViews;
+- (BOOL)asyncRefreshCellCreators;
 
 @end
 
@@ -44,8 +39,8 @@
 
 @protocol ICDControllerDesignDocViewsDataDelegate <NSObject>
 
-- (void)icdControllerDesignDocViewsDataWillRefreshDesignDocViews:(ICDControllerDesignDocViewsData *)data;
+- (void)icdControllerDesignDocViewsDataWillRefreshCellCreators:(ICDControllerDesignDocViewsData *)data;
 - (void)icdControllerDesignDocViewsData:(ICDControllerDesignDocViewsData *)data
-     didRefreshDesignDocViewsWithResult:(BOOL)success;
+       didRefreshCellCreatorsWithResult:(BOOL)success;
 
 @end
